@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "flamingo"
+version = "0.1.0"
+description = "General-purpose tools for processing FLAMINGO lightcone maps, catalogues, and pressure profiles."
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [{ name = "Boris Bolliet" }]
+dependencies = [
+    "numpy>=1.24",
+    "healpy>=1.16",
+    "pandas>=2.0",
+    "hmfast>=0.1",
+]
+
+[project.optional-dependencies]
+# Power-spectrum estimation relies on NaMaster (pymaster), which is heavy and
+# is installed separately. Everything else works without it.
+powerspectra = ["pymaster>=1.5"]
+plot = ["matplotlib>=3.7"]
+dev = ["pytest>=7"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.black]
+line-length = 100

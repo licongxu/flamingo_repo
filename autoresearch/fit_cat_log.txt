@@ -1,0 +1,25 @@
+/scratch/scratch-lxu/agent_dev/auto_research_agent/mcfit/mcfit/mcfit.py:132: UserWarning: use backend='jax' if desired
+  warnings.warn("use backend='jax' if desired")
+--- warm-start: a2h=1.200  ab=0.860 0.860 0.860 0.860
+    qbin0: c500=1.099 gamma=0.219 beta=5.613
+    qbin1: c500=1.687 gamma=0.204 beta=4.846
+    qbin2: c500=1.530 gamma=0.020 beta=5.324
+    qbin3: c500=1.409 gamma=0.393 beta=5.077
+   full: med=13.12%  90pct= 13.71%  max= 15.26%  <1%=  0%
+     50: med=13.17%  90pct= 14.00%  max= 17.65%  <1%=  0%
+     20: med=13.21%  90pct= 13.82%  max= 27.98%  <1%=  0%
+     10: med=13.22%  90pct= 13.87%  max= 17.65%  <1%=  0%
+      5: med=13.09%  90pct= 14.72%  max= 20.80%  <1%=  0%
+  ALL  : med=13.17%  90pct= 13.90%  max= 27.98%  <1%=  0%  <2%=  0%
+trial 0: fun=0.04955 nit=75
+--- after trial 0: a2h=1.454  ab=0.924 0.901 1.037 0.778
+    qbin0: c500=1.102 gamma=0.227 beta=5.593
+    qbin1: c500=1.876 gamma=0.020 beta=4.842
+    qbin2: c500=1.640 gamma=0.228 beta=4.737
+    qbin3: c500=1.584 gamma=0.020 beta=5.605
+   full: med= 0.30%  90pct=  0.92%  max= 11.00%  <1%= 93%
+     50: med= 0.29%  90pct=  0.99%  max=  8.82%  <1%= 90%
+     20: med= 0.32%  90pct=  1.16%  max=  7.28%  <1%= 87%
+     10: med= 0.30%  90pct=  0.98%  max=  8.84%  <1%= 90%
+      5: med= 0.33%  90pct=  1.47%  max= 12.32%  <1%= 82%
+  ALL  : med= 0.31%  90pct=  1.10%  max= 12.32%  <1%= 88%  <2%= 96%

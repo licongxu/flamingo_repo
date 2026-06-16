@@ -1,0 +1,63 @@
+# flamingo
+
+General-purpose tools for processing FLAMINGO lightcone products: HEALPix maps,
+catalogue handling, cluster masking, GNFW pressure profiles, and power spectra.
+
+## Install
+
+```bash
+pip install -e .                 # core (numpy, healpy, pandas, hmfast, jax)
+pip install -e ".[powerspectra]" # + NaMaster (pymaster) for pseudo-Cl
+```
+
+The bundled data lives under `data/`. Point at another copy with
+`export FLAMINGO_ROOT=/path/to/tree` (same layout).
+
+## Layout
+
+| Subpackage             | Backend        | Contents                                                  |
+|------------------------|----------------|-----------------------------------------------------------|
+| `flamingo.maps`        | NumPy / healpy | map I/O, sample at positions, neighbour-max sampling      |
+| `flamingo.masking`     | NumPy / healpy | binary N×R500 disc masks, sky fraction                    |
+| `flamingo.profiles`    | **JAX / GPU**  | GNFW (Arnaud default) + line-of-sight projection          |
+| `flamingo.profiles`    | NumPy / healpy | radial / normalized / stacked map profiles                |
+| `flamingo.catalogue`   | NumPy / hmfast | SOAP CSV loading, `theta_500`, `E(z)`, `D_A(z)`, rotation check|
+| `flamingo.powerspectra`| pymaster       | apodization + mask-decoupled `D_ell` (optional)           |
+
+The model kernels (`gnfw`, `projected_shape`) are JAX, jittable/`vmap`-able, and
+enable float64. HEALPix-bound code stays NumPy because `healpy` pixel queries
+are CPU-only.
+
+## Quick start
+
+```python
+import numpy as np
+from flamingo import paths
+from flamingo.maps import read_map, sample_neighbour_max
+from flamingo.catalogue import load_catalogue, theta_500
+from flamingo.masking import disc_mask, fsky
+from flamingo.profiles import gnfw, projected_shape
+
+ymap = read_map(paths.HYDRO_MAP)            # NSIDE=4096 Compton-y map
+df = load_catalogue(paths.HYDRO_CATALOGUE)  # yang26-rotated SOAP catalogue
+
+th, ph = df["theta_rot_rad"].to_numpy(float), df["phi_rot_rad"].to_numpy(float)
+y_max, y_central = sample_neighbour_max(ymap, th, ph)
+
+t500 = theta_500(df["R_500c_Mpc"].to_numpy(float), df["z"].to_numpy(float))
+mask = disc_mask(4096, th, ph, 5.0 * t500)  # 5*R500 discs
+print("fsky:", fsky(mask))
+
+x = np.linspace(0.01, 5, 100)
+p = gnfw(x)                  # Arnaud A10 by default
+y = projected_shape(x)       # line-of-sight projection, unity at centre
+```
+
+Use the **rotated** columns (`theta_rot_rad`, `phi_rot_rad`): the L2p8 map is in
+the yang26-rotated frame.
+
+## Tests
+
+```bash
+pytest -q
+```

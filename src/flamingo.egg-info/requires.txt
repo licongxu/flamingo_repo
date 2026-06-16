@@ -1,0 +1,13 @@
+numpy>=1.24
+healpy>=1.16
+pandas>=2.0
+hmfast>=0.1
+
+[dev]
+pytest>=7
+
+[plot]
+matplotlib>=3.7
+
+[powerspectra]
+pymaster>=1.5
