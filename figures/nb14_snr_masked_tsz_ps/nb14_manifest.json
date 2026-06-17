@@ -1,0 +1,21 @@
+{
+  "source": "notebooks/14_catalogue_tsz_power_spectrum.ipynb (+ theory from nb09 cache)",
+  "git_hash": "e0cc699a6df275fd8a86b63c474d8d0da4ecb0ec",
+  "map_cache": "data/nb09_tsz_map_ps.npz",
+  "theory_cache": "data/nb09_tsz_theory_ps.npz",
+  "q_cuts": [
+    50,
+    20,
+    10,
+    5
+  ],
+  "n_clusters": 1555542,
+  "C_white_fullsky": 2.942672902344751e-16,
+  "C_white_cut": {
+    "50": 2.8807796508777464e-16,
+    "20": 2.303545013475147e-16,
+    "10": 7.080479408502013e-17,
+    "5": 1.26163416767926e-17
+  },
+  "median_cat_over_map_fullsky": 1.027648355128442
+}

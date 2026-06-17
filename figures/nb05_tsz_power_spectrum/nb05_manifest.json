@@ -1,0 +1,21 @@
+{
+  "source": "notebooks/05_tsz_power_spectrum.ipynb",
+  "git_hash": "e0cc699a6df275fd8a86b63c474d8d0da4ecb0ec",
+  "NSIDE": 4096,
+  "LMAX": 6000,
+  "f_sky": 1.0,
+  "monopole_mean_y": 1.5360727091771686e-06,
+  "dl_th_ell3000_tinker08": 1.5918300729577241e-12,
+  "C_white_catalogue": 2.936e-16,
+  "C_white_tinker08": 2.421e-16,
+  "A10_params": {
+    "P0": 8.403,
+    "c500": 1.177,
+    "gamma": 0.3081,
+    "alpha": 1.051,
+    "beta": 5.4905,
+    "B": 1.0
+  },
+  "map_path": "/scratch/scratch-lxu/flamingo_repo/data/hydro_L2p8m9/map/y_unlensed_L2p8_m9_lc0.fits",
+  "catalogue_path": "/scratch/scratch-lxu/flamingo_repo/data/hydro_L2p8m9/catalogue/halo_catalogue_M500c_5e13_zlt3_soap_snr_d3a_yang26rot.csv"
+}

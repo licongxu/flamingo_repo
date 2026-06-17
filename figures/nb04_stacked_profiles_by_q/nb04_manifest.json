@@ -1,0 +1,27 @@
+{
+  "source": "notebooks/04_stacked_profiles_by_q.ipynb",
+  "git_hash": "e0cc699a6df275fd8a86b63c474d8d0da4ecb0ec",
+  "map": "/rds/rds-lxu/tsz_project/flamingo_highres_maps/y_unlensed_L2p8_m9_lc0_nside16384.fits",
+  "NSIDE": 16384,
+  "estimator": "empirical aperture-normalised, split by detection significance q (differential bins)",
+  "background": "median y in 3-5 theta500 ring, subtracted before profiling",
+  "q_bins": {
+    "q>30": {
+      "N_total": 26,
+      "N_used": 26
+    },
+    "10<q<30": {
+      "N_total": 510,
+      "N_used": 510
+    },
+    "5<q<10": {
+      "N_total": 1856,
+      "N_used": 1856
+    },
+    "2<q<5": {
+      "N_total": 11493,
+      "N_used": 4000
+    }
+  },
+  "figures_resolution": "notebook inline PNG (~100 dpi), not regenerated vector"
+}
