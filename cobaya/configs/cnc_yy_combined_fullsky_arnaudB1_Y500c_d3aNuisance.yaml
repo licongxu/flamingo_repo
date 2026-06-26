@@ -1,0 +1,115 @@
+# Combined CNC + full-sky tSZ PS: D3A cosmology fixed; sample alpha_SZ, B, sigma_lnY.
+# Priors match configs/cnc_cosmo_arnaudB1_Y500c_d3aNuisance.yaml
+output: /scratch/scratch-lxu/flamingo_repo/chains/cnc_yy_combined_fullsky_arnaudB1_Y500c_d3aNuisance/combined
+
+likelihood:
+  cnc_likelihood.CNCBinnedFlamingoLikelihood:
+    input_params: [sigma8, omega_cdm, omega_b, h, H0, n_s, tau_reio, m_nu, A_SZ, alpha_SZ, sigma_lnY, B]
+    data_file: /scratch/scratch-lxu/flamingo_repo/data/cnc/N2d_z_q_bin_arnaudB1_Y500c.txt
+    z_min: 0.005
+    z_max: 1.0
+    n_z_bins: 10
+    q_min: 5.0
+    q_max: 40.0
+    n_q_bins: 5
+    n_points: 2048
+    n_z: 50
+    M_min: 50000000000000.0
+    M_max: 1.0e+16
+    f_sky: 1.0
+    M_pivot: 210000000000000.0
+  yy_ellcut_likelihood.YYEllCutGaussianLikelihood:
+    data_directory: /scratch/scratch-lxu/flamingo_repo/data/bandpowers_arnaudB1_Y500c
+    data_file: Dl_yy_fullsky_binned_18_Y500c.txt
+    cov_file: /scratch/scratch-lxu/flamingo_repo/data/theory_cov_arnaudB1/cov_full_fullsky_Dl_yy_binned_18.npy
+    keep_last: 9
+    log_every: 50
+
+theory:
+  hmfast_tsz_iter_cprofile.HMFastTSZIterCProfile:
+    q_cat: 1.0e9
+    include_2h: true
+    a_sz_sr: -4.28739604
+    alpha_sr: 1.12
+    b_sr: 1.0
+
+params:
+  sigma8:
+    value: 0.811
+    latex: \sigma_8
+  omega_cdm:
+    value: 0.118729
+    latex: \omega_c
+  omega_b:
+    value: 0.022539
+    latex: \omega_b
+  h:
+    value: 0.681
+    latex: h
+  H0:
+    value: 'lambda h: 100.0 * h'
+    latex: H_0
+  n_s:
+    value: 0.967
+    latex: n_s
+  tau_reio:
+    value: 0.0544
+  m_nu:
+    value: 0.06
+  Omega_m:
+    derived: 'lambda omega_cdm, h, omega_b: (omega_cdm + omega_b + 0.000644) / h**2'
+    latex: \Omega_m
+  A_SZ:
+    value: -4.28739604
+    latex: A_{SZ}
+  alpha_SZ:
+    prior:
+      min: 0.9
+      max: 1.2
+    ref:
+      dist: norm
+      loc: 1.05
+      scale: 0.05
+    proposal: 0.03
+    latex: \alpha
+  sigma_lnY:
+    prior:
+      dist: norm
+      loc: 0.173
+      scale: 0.023
+    ref:
+      dist: norm
+      loc: 0.173
+      scale: 0.023
+    proposal: 0.015
+    latex: \sigma_{\ln Y}
+  B:
+    prior:
+      min: 1.0
+      max: 2.0
+    ref:
+      dist: norm
+      loc: 1.1
+      scale: 0.05
+    proposal: 0.05
+    latex: B
+  c_500:
+    value: 1.156
+    latex: c_{500}
+  beta_SZ:
+    value: 0.0
+    latex: \beta_{SZ}
+
+sampler:
+  mcmc:
+    Rminus1_stop: 0.05
+    Rminus1_cl_stop: 0.2
+    drag: false
+    proposal_scale: 1.2
+    learn_every: 20
+    learn_proposal: true
+    burn_in: 50
+    max_tries: 100000
+
+timing: true
+logging_level: info
