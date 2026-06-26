@@ -33,6 +33,74 @@ import numpy as np
 
 from hmfast.halos.mass_definition import MassDefinition, convert_m_delta
 from hmfast.halos.profiles.pressure import GNFWPressureProfile
+from hmfast.utils import Const
+
+# nb17 lowest-z catalogue Y-M fit (Y = D_A^2 Y in Mpc^2); see notebooks 17/19.
+NB17_YM_INTERCEPT = -9.266
+_SIGMA_T_CM2 = 6.6524587e-25
+_M_E_C2_EV = 510998.95
+_RHO_CRIT0_NORM = 2.77536627e11  # Msun/Mpc^3 at h=1
+
+
+def gnfw_y_shape_integral(
+    P0: float,
+    c500: float,
+    alpha: float,
+    beta: float,
+    gamma: float,
+    *,
+    r_out: float = 5.0,
+    n: int = 5000,
+) -> float:
+    """Volume integral ``∫ 4π x² p(x) dx`` for the dimensionless GNFW shape.
+
+    Used to connect ``P_{500,0}`` to the nb17 :math:`Y_{5R500c}` intercept
+    (same convention as notebook 19).
+    """
+    xg = np.logspace(-4, np.log10(r_out), n)
+    p = (c500 * xg) ** (-gamma) * (1 + (c500 * xg) ** alpha) ** ((gamma - beta) / alpha)
+    return float(np.trapezoid(p * 4 * np.pi * xg ** 2, xg))
+
+
+def p500_0_from_nb17(
+    cosmology,
+    alpha_amp: float,
+    shape: dict,
+    *,
+    M_piv: float = 6.0e14,
+    C17: float = NB17_YM_INTERCEPT,
+) -> float:
+    """Calibrate ``P500_0`` so ``Y_{5R500c}(M_\\mathrm{piv}, z=0) = e^{C17}``.
+
+    Parameters
+    ----------
+    cosmology : hmfast.Cosmology
+        Cosmology (for ``h``).
+    alpha_amp : float
+        Mass exponent in :math:`P_{500}` (nb17 pressure slope ``α_YM - 1``).
+    shape : dict
+        GNFW shape keys ``P0, c500, alpha, beta, gamma``.
+    M_piv : float
+        Pivot mass in :math:`M_\\odot` (default ``6e14``).
+    C17 : float
+        nb17 intercept in ``ln Y`` (default from catalogue fit).
+    """
+    h = cosmology.H0 / 100.0
+    rho_crit0 = _RHO_CRIT0_NORM * h ** 2
+    r500c_Mpc = (3 * M_piv / (4 * np.pi * 500 * rho_crit0)) ** (1.0 / 3.0)
+    mpc_cm = Const._Mpc_over_m_ * 100.0
+    I_shape = gnfw_y_shape_integral(
+        shape["P0"], shape["c500"], shape["alpha"], shape["beta"], shape["gamma"]
+    )
+    Y_unit = (
+        (_SIGMA_T_CM2 / _M_E_C2_EV)
+        * (M_piv ** alpha_amp)
+        * shape["P0"]
+        * (r500c_Mpc * mpc_cm) ** 3
+        * I_shape
+        / mpc_cm ** 2
+    )
+    return float(np.exp(C17) / Y_unit)
 
 
 class SelfSimilarGNFWPressureProfile(GNFWPressureProfile):
