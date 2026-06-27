@@ -18,13 +18,17 @@ import hdfstream
 import numpy as np
 import pandas as pd
 
-from build_y_map_highres import ANGLES_L2P8
+from build_y_map import _angles_for
 
 
-BASE = "FLAMINGO/L2p8_m9/L2p8_m9"
-LIGHTCONE = f"{BASE}/halo_lightcone/lightcone0"
-SOAP_TMPL = f"{BASE}/SOAP-HBT/halo_properties_{{snap:04d}}.hdf5"
-OUT = Path(
+def _sim_base(parent: str | None, variant: str) -> str:
+    if parent is None:
+        return f"FLAMINGO/{variant}/{variant}"
+    return f"FLAMINGO/{parent}/{variant}"
+
+
+DEFAULT_VARIANT = "L2p8_m9"
+DEFAULT_OUT = Path(
     "/scratch/scratch-lxu/flamingo_repo/data/hydro_L2p8m9/catalogue/"
     "halo_catalogue_M500c_1e13_zlt3_soap_hdfstream_yang26rot.csv"
 )
@@ -71,14 +75,20 @@ def angles_from_xyz(xyz: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray
     return r, theta, phi
 
 
-def rotate_positions(r: np.ndarray, theta_nat: np.ndarray, phi_nat: np.ndarray, shell_idx: np.ndarray):
+def rotate_positions(
+    r: np.ndarray,
+    theta_nat: np.ndarray,
+    phi_nat: np.ndarray,
+    shell_idx: np.ndarray,
+    angles: np.ndarray,
+):
     theta_rot = np.empty_like(theta_nat)
     phi_rot = np.empty_like(phi_nat)
     for shell in np.unique(shell_idx):
-        if shell < 0 or shell >= ANGLES_L2P8.shape[1]:
+        if shell < 0 or shell >= angles.shape[1]:
             raise ValueError(f"No yang26 angle for shell_idx={shell}")
         sel = shell_idx == shell
-        theta_angle, phi_angle = ANGLES_L2P8[:, shell]
+        theta_angle, phi_angle = angles[:, shell]
         rot = hp.Rotator(rot=[phi_angle * 180.0 / np.pi, theta_angle * 180.0 / np.pi], inv=True)
         theta_rot[sel], phi_rot[sel] = rot(theta_nat[sel], phi_nat[sel])
     xyz_rot = np.column_stack([
@@ -121,8 +131,9 @@ def load_selected_soap(soap, mass_min: float, chunk_size: int) -> tuple[np.ndarr
 
 def write_header(path: Path, args: argparse.Namespace) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
+    tag = f"{args.parent}/{args.variant}" if args.parent else args.variant
     with path.open("w") as f:
-        f.write("# FLAMINGO L2p8_m9 halo lightcone0 catalogue from hdfstream.\n")
+        f.write(f"# FLAMINGO {tag} halo lightcone0 catalogue from hdfstream.\n")
         f.write("# Selection: M_500c >= 1e13 Msun and 0 <= z < 3.0.\n")
         f.write("# Joined to SOAP-HBT by InputHalos/SOAPIndex.\n")
         f.write("# Masses are Msun; radii and positions are Mpc; Compton-Y aperture values are Mpc^2.\n")
@@ -130,8 +141,16 @@ def write_header(path: Path, args: argparse.Namespace) -> None:
         f.write(f"# soap_chunk_size={args.soap_chunk_size}; lightcone_chunk_size={args.lightcone_chunk_size}\n")
 
 
-def append_lightcone_matches(root, snap: int, selected_idx: np.ndarray, soap_cols: dict[str, np.ndarray], args, wrote_header: bool):
-    lc = root[f"{LIGHTCONE}/lightcone_halos_{snap:04d}.hdf5"]
+def append_lightcone_matches(
+    root,
+    lightcone: str,
+    snap: int,
+    selected_idx: np.ndarray,
+    soap_cols: dict[str, np.ndarray],
+    args: argparse.Namespace,
+    wrote_header: bool,
+):
+    lc = root[f"{lightcone}/lightcone_halos_{snap:04d}.hdf5"]
     n = lc["Lightcone/Redshift"].shape[0]
     rows = 0
     for start in range(0, n, args.lightcone_chunk_size):
@@ -165,7 +184,9 @@ def append_lightcone_matches(root, snap: int, selected_idx: np.ndarray, soap_col
 
         r, theta_nat, phi_nat = angles_from_xyz(xyz)
         shell_idx = np.floor(z / 0.05).astype(np.int16)
-        theta_rot, phi_rot, xyz_rot = rotate_positions(r, theta_nat, phi_nat, shell_idx)
+        theta_rot, phi_rot, xyz_rot = rotate_positions(
+            r, theta_nat, phi_nat, shell_idx, args.angles
+        )
         matched_cols = {col: values[loc] for col, values in soap_cols.items()}
         df = pd.DataFrame({
             "snap": np.full(z.size, snap, dtype=np.int16),
@@ -201,6 +222,11 @@ def append_lightcone_matches(root, snap: int, selected_idx: np.ndarray, soap_col
 
 
 def build(args: argparse.Namespace) -> None:
+    base = _sim_base(args.parent, args.variant)
+    lightcone = f"{base}/halo_lightcone/lightcone{args.observer}"
+    soap_tmpl = f"{base}/SOAP-HBT/halo_properties_{{snap:04d}}.hdf5"
+    args.angles = _angles_for(args.parent)
+
     root = hdfstream.open("cosma", "/")
     progress_path = args.out.with_suffix(args.out.suffix + ".progress.json")
     completed = set()
@@ -221,11 +247,13 @@ def build(args: argparse.Namespace) -> None:
             print(f"snap {snap:04d}: already complete", flush=True)
             continue
         print(f"snap {snap:04d}: scanning SOAP for M500c>=1e13", flush=True)
-        soap = root[SOAP_TMPL.format(snap=snap)]
+        soap = root[soap_tmpl.format(snap=snap)]
         selected_idx, soap_cols = load_selected_soap(soap, MASS_MIN, args.soap_chunk_size)
         print(f"snap {snap:04d}: kept {selected_idx.size:,} SOAP halos; joining lightcone", flush=True)
         if selected_idx.size:
-            rows, wrote_header, stop = append_lightcone_matches(root, snap, selected_idx, soap_cols, args, wrote_header)
+            rows, wrote_header, stop = append_lightcone_matches(
+                root, lightcone, snap, selected_idx, soap_cols, args, wrote_header
+            )
         else:
             rows, stop = 0, False
         print(f"snap {snap:04d}: wrote {rows:,} rows ({(time.time()-t0)/60:.1f} min total)", flush=True)
@@ -243,15 +271,30 @@ def build(args: argparse.Namespace) -> None:
 
 def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument("--out", type=Path, default=OUT)
+    p.add_argument("--variant", default=DEFAULT_VARIANT)
+    p.add_argument(
+        "--parent",
+        default=None,
+        help="Parent FLAMINGO folder for L1_m9 variants (use L1_m9).",
+    )
+    p.add_argument("--observer", type=int, default=0)
+    p.add_argument("--out", type=Path, default=DEFAULT_OUT)
     p.add_argument("--snap-start", type=int, default=18)
-    p.add_argument("--snap-stop", type=int, default=78)
+    p.add_argument(
+        "--snap-stop",
+        type=int,
+        default=None,
+        help="Last snapshot inclusive (default 77 for L1_m9, 78 for L2p8).",
+    )
     p.add_argument("--soap-chunk-size", type=int, default=2_000_000)
     p.add_argument("--lightcone-chunk-size", type=int, default=1_000_000)
     p.add_argument("--progress-every", type=int, default=100_000)
     p.add_argument("--max-rows", type=int, default=None)
     p.add_argument("--resume", action="store_true")
-    return p.parse_args()
+    args = p.parse_args()
+    if args.snap_stop is None:
+        args.snap_stop = 77 if args.parent == "L1_m9" else 78
+    return args
 
 
 if __name__ == "__main__":
