@@ -1,0 +1,6 @@
+=== nb30 CCCP batch start Fri Jun 26 08:38:42 AM UTC 2026 ===
+=== 08:38:42 GPU0 -> run_cnc_cosmo_B135_cccp.sh ===
+=== 08:38:42 GPU1 -> run_yy_fullsky_B135_cccp.sh ===
+=== 08:38:42 YY fullsky B135 CCCP chain start ===
+=== 08:38:42 CNC cosmo B135 fullsky CCCP chain start ===
+=== 08:41:50 YY fullsky B135 CCCP chain done exit=0 ===

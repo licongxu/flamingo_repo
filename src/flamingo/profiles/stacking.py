@@ -7,6 +7,7 @@ evaluation and line-of-sight projection) is the JAX/GPU part, in
 """
 from __future__ import annotations
 
+import healpy as hp
 import numpy as np
 
 from ..geometry import query_disc_separation
@@ -90,54 +91,58 @@ def normalized_profile(
     theta500_arcmin: float,
     x_edges: np.ndarray,
     *,
-    bkg_in: float = 4.0,
-    bkg_out: float = 6.0,
     nest: bool = False,
-) -> np.ndarray:
-    """Profile binned in scaled radius ``x = theta / theta_500``.
+) -> tuple[np.ndarray, float]:
+    """Per-cluster annular profile and aperture amplitude in scaled radius.
 
-    Returning the profile on a common ``x`` grid makes it stackable across
-    clusters of different angular size.
+    Empirical estimator: bin map pixels by ``x = theta / theta_500`` and also
+    measure the aperture-mean signal inside ``x < 1``. Dividing the first by the
+    second gives a dimensionless, mass-independent profile that stacks across
+    clusters of different angular size (see :func:`stack_normalized`).
 
     Parameters
     ----------
     m : numpy.ndarray
         HEALPix map.
     theta_c, phi_c : float
-        Centre in radians.
+        Centre (colatitude, longitude) in radians.
     theta500_arcmin : float
         Cluster angular scale in arcmin.
     x_edges : numpy.ndarray
         Bin edges in units of ``theta_500`` (e.g. ``np.linspace(0, 6, 13)``).
-    bkg_in, bkg_out : float, optional
-        Background annulus in units of ``theta_500``.
     nest : bool, optional
         Pixel ordering of ``m``.
 
     Returns
     -------
-    numpy.ndarray
-        Mean background-subtracted value in each ``x`` bin; ``nan`` where a bin
-        is empty. Length ``len(x_edges) - 1``.
+    ybar : numpy.ndarray
+        Annular-mean map value per ``x`` bin, ``ybar_i = sum_{p in i} y_p / N_i``
+        (equal pixel weights); ``nan`` where a bin is empty. Length
+        ``len(x_edges) - 1``.
+    y_norm : float
+        Aperture-mean signal inside ``x < 1``,
+        ``y_norm = Y500 / (pi theta500^2)`` with
+        ``Y500 = sum_{x < 1} y_p Omega_pix``.
     """
     nside = nside_of(m)
-    r_out_arcmin = x_edges[-1] * theta500_arcmin
-    pix, sep_rad = query_disc_separation(
-        nside, theta_c, phi_c, r_out_arcmin / ARCMIN_PER_RAD, nest=nest
-    )
+    theta500_rad = theta500_arcmin / ARCMIN_PER_RAD
+    r_out_rad = x_edges[-1] * theta500_rad
+    pix, sep_rad = query_disc_separation(nside, theta_c, phi_c, r_out_rad, nest=nest)
     vals = m[pix]
-    x = sep_rad * ARCMIN_PER_RAD / theta500_arcmin
+    x = sep_rad / theta500_rad
 
-    annulus = (x >= bkg_in) & (x <= bkg_out)
-    bkg = float(np.median(vals[annulus])) if annulus.sum() > 5 else 0.0
-
-    out = np.full(len(x_edges) - 1, np.nan)
+    ybar = np.full(len(x_edges) - 1, np.nan)
     idx = np.digitize(x, x_edges) - 1
-    for b in range(out.size):
+    for b in range(ybar.size):
         sel = idx == b
         if sel.any():
-            out[b] = (vals[sel] - bkg).mean()
-    return out
+            ybar[b] = vals[sel].mean()
+
+    inside = x < 1.0
+    omega_pix = hp.nside2pixarea(nside)
+    Y500 = vals[inside].sum() * omega_pix
+    y_norm = Y500 / (np.pi * theta500_rad**2)
+    return ybar, y_norm
 
 
 def stack_normalized(
@@ -147,11 +152,13 @@ def stack_normalized(
     theta500_arcmin: np.ndarray,
     x_edges: np.ndarray,
     *,
-    bkg_in: float = 4.0,
-    bkg_out: float = 6.0,
     nest: bool = False,
-) -> tuple[np.ndarray, np.ndarray]:
-    """Stack scaled-radius profiles over many clusters.
+) -> dict:
+    """Stack self-normalised profiles over many clusters.
+
+    Each cluster contributes ``g_i = ybar_i / y_norm`` (from
+    :func:`normalized_profile`), so the stack measures the average *shape* with
+    equal weight per cluster, independent of mass/amplitude.
 
     Parameters
     ----------
@@ -161,30 +168,36 @@ def stack_normalized(
         Per-cluster centres (radians) and angular scales (arcmin), length ``N``.
     x_edges : numpy.ndarray
         Common ``x = theta/theta_500`` bin edges.
-    bkg_in, bkg_out : float, optional
-        Background annulus in units of ``theta_500``.
     nest : bool, optional
         Pixel ordering of ``m``.
 
     Returns
     -------
-    x_mid : numpy.ndarray
-        Bin-centre scaled radii.
-    y_stack : numpy.ndarray
-        Mean profile across clusters (``nan`` bins ignored per cluster).
+    dict
+        ``x_mid`` (area-weighted bin-centre radii), ``fhat`` (mean stacked
+        profile), ``sem`` (standard error on the stack), ``p16``/``p84``
+        (cluster-to-cluster scatter percentiles), and ``n`` (number of clusters
+        stacked). Per-cluster ``nan`` bins are ignored.
     """
     theta_c = np.asarray(theta_c, dtype=float)
     phi_c = np.asarray(phi_c, dtype=float)
     theta500_arcmin = np.asarray(theta500_arcmin, dtype=float)
 
-    profiles = np.vstack(
-        [
-            normalized_profile(
-                m, t, p, t5, x_edges, bkg_in=bkg_in, bkg_out=bkg_out, nest=nest
-            )
-            for t, p, t5 in zip(theta_c, phi_c, theta500_arcmin)
-        ]
+    g_rows = []
+    for t, p, t5 in zip(theta_c, phi_c, theta500_arcmin):
+        ybar, y_norm = normalized_profile(m, t, p, t5, x_edges, nest=nest)
+        if np.isfinite(y_norm) and y_norm > 0:
+            g_rows.append(ybar / y_norm)
+    G = np.vstack(g_rows)
+
+    x_lo, x_hi = x_edges[:-1], x_edges[1:]
+    x_mid = (2.0 / 3.0) * (x_hi**3 - x_lo**3) / (x_hi**2 - x_lo**2)
+    n = np.sum(np.isfinite(G), axis=0)
+    return dict(
+        x_mid=x_mid,
+        fhat=np.nanmean(G, axis=0),
+        sem=np.nanstd(G, axis=0) / np.sqrt(np.maximum(n, 1)),
+        p16=np.nanpercentile(G, 16, axis=0),
+        p84=np.nanpercentile(G, 84, axis=0),
+        n=G.shape[0],
     )
-    x_mid = 0.5 * (x_edges[:-1] + x_edges[1:])
-    y_stack = np.nanmean(profiles, axis=0)
-    return x_mid, y_stack

@@ -24,7 +24,7 @@ catalogue handling, cluster masking, GNFW pressure profiles, and power spectra.
 ## Install
 
 ```bash
-pip install -e .                 # core (numpy, healpy, pandas, astropy, jax)
+pip install -e .                 # core (numpy, healpy, pandas, hmfast, jax)
 pip install -e ".[powerspectra]" # + NaMaster (pymaster) for pseudo-Cl
 ```
 
@@ -39,7 +39,7 @@ The bundled data lives under `data/`. Point at another copy with
 | `flamingo.masking`     | NumPy / healpy | binary N×R500 disc masks, sky fraction                    |
 | `flamingo.profiles`    | **JAX / GPU**  | GNFW (Arnaud default) + line-of-sight projection          |
 | `flamingo.profiles`    | NumPy / healpy | radial / normalized / stacked map profiles                |
-| `flamingo.catalogue`   | NumPy / astropy| SOAP CSV loading, `theta_500`, rotation-frame sanity check|
+| `flamingo.catalogue`   | NumPy / hmfast | SOAP CSV loading, `theta_500`, `E(z)`, `D_A(z)`, rotation check|
 | `flamingo.powerspectra`| pymaster       | apodization + mask-decoupled `D_ell` (optional)           |
 
 The model kernels (`gnfw`, `projected_shape`) are JAX, jittable/`vmap`-able, and

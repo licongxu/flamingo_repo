@@ -1,0 +1,143 @@
+# tSZ PS only: unrotated z<0.35 full-sky mock (B=1.35 selection bandpowers).
+# CCCP: 1-b ~ N(0.780,0.092), B=1/(1-b); same priors as unrot CCCP combined chain.
+output: /scratch/scratch-lxu/flamingo_repo/chains/yy_unrot_z0p35_arnaudB135_Y500c_cccp/yy
+
+likelihood:
+  yy_ellcut_likelihood.YYEllCutGaussianLikelihood:
+    data_directory: /scratch/scratch-lxu/flamingo_repo/data/bandpowers_arnaudB135_Y500c_unrot_z0p35
+    data_file: Dl_yy_unrot_z0p35_fullsky_binned_18_Y500c.txt
+    cov_file: /scratch/scratch-lxu/flamingo_repo/data/theory_cov_arnaudB135_unrot_z0p35/cov_full_unrot_z0p35_fullsky_Dl_yy_binned_18.npy
+    keep_last: 9
+    log_every: 50
+
+theory:
+  hmfast_tsz_iter_cprofile.HMFastTSZIterCProfile:
+    q_cat: 1.0e9
+    include_2h: true
+    z_max: 0.35
+    a_sz_sr: -4.28739604
+    alpha_sr: 1.12
+    b_sr: 1.0
+
+params:
+  Omega_m:
+    prior:
+      min: 0.2
+      max: 0.5
+    ref:
+      dist: norm
+      loc: 0.306
+      scale: 0.02
+    proposal: 0.015
+    latex: \Omega_m
+  omega_cdm:
+    value: 'lambda Omega_m, h, omega_b: Omega_m * h**2 - omega_b - 0.000644'
+    latex: \omega_c
+  sigma8:
+    prior:
+      min: 0.7
+      max: 0.9
+    ref:
+      dist: norm
+      loc: 0.811
+      scale: 0.02
+    proposal: 0.02
+    latex: \sigma_8
+  h:
+    prior:
+      dist: norm
+      loc: 0.681
+      scale: 0.024
+    ref:
+      dist: norm
+      loc: 0.681
+      scale: 0.024
+    proposal: 0.015
+    latex: h
+  omega_b:
+    value: 0.022539
+    latex: \omega_b
+  n_s:
+    prior:
+      dist: norm
+      loc: 0.967
+      scale: 0.014
+    ref:
+      dist: norm
+      loc: 0.967
+      scale: 0.014
+    proposal: 0.008
+    latex: n_s
+  tau_reio:
+    value: 0.0544
+  H0:
+    value: 'lambda h: 100.0 * h'
+    latex: H_0
+  alpha_SZ:
+    prior:
+      dist: norm
+      loc: 1.12
+      scale: 0.05
+    ref:
+      dist: norm
+      loc: 1.12
+      scale: 0.05
+    proposal: 0.03
+    latex: \alpha
+  A_SZ:
+    value: -4.28739604
+    latex: A_{SZ}
+  sigma_lnY:
+    prior:
+      dist: norm
+      loc: 0.173
+      scale: 0.023
+    ref:
+      dist: norm
+      loc: 0.173
+      scale: 0.023
+    proposal: 0.015
+    latex: \sigma_{\ln Y}
+  one_minus_b:
+    prior:
+      dist: norm
+      loc: 0.780
+      scale: 0.092
+    ref:
+      dist: norm
+      loc: 0.780
+      scale: 0.092
+    proposal: 0.02
+    latex: 1-b
+  B:
+    value: 'lambda one_minus_b: 1.0 / one_minus_b'
+    latex: B
+  c_500:
+    value: 1.156
+    latex: c_{500}
+  beta_SZ:
+    value: 0.0
+    latex: \beta_{SZ}
+
+sampler:
+  mcmc:
+    Rminus1_stop: 0.05
+    Rminus1_cl_stop: 0.2
+    drag: false
+    proposal_scale: 1.2
+    learn_every: 20
+    learn_proposal: true
+    burn_in: 100
+    max_tries: 100000
+    covmat_params:
+      - Omega_m
+      - sigma8
+      - h
+      - n_s
+      - alpha_SZ
+      - sigma_lnY
+      - one_minus_b
+    fallback_covmat_scale: 1.5
+
+timing: true
+logging_level: info

@@ -1,0 +1,7 @@
+=== 16:45:34 waiting for CNC-only + masked combined to converge ===
+16:45:34  CNC converged=0  masked-combined converged=0  (sleep 120s)
+16:47:34  CNC converged=0  masked-combined converged=0  (sleep 120s)
+16:49:34  CNC converged=0  masked-combined converged=0  (sleep 120s)
+16:51:34  CNC converged=1  masked-combined converged=0  (sleep 120s)
+16:53:34  CNC converged=1  masked-combined converged=0  (sleep 120s)
+16:55:34  CNC converged=1  masked-combined converged=0  (sleep 120s)

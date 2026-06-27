@@ -1,0 +1,139 @@
+# tSZ PS only: unrotated z<0.35 full-sky mock (B=1.35 selection bandpowers).
+# Same priors as cnc_yy_combined_unrot_z0p35_arnaudB135_Y500c_uniformB.yaml (no CNC).
+output: /scratch/scratch-lxu/flamingo_repo/chains/yy_unrot_z0p35_arnaudB135_Y500c_uniformB/yy
+
+likelihood:
+  yy_ellcut_likelihood.YYEllCutGaussianLikelihood:
+    data_directory: /scratch/scratch-lxu/flamingo_repo/data/bandpowers_arnaudB135_Y500c_unrot_z0p35
+    data_file: Dl_yy_unrot_z0p35_fullsky_binned_18_Y500c.txt
+    cov_file: /scratch/scratch-lxu/flamingo_repo/data/theory_cov_arnaudB135_unrot_z0p35/cov_full_unrot_z0p35_fullsky_Dl_yy_binned_18.npy
+    keep_last: 9
+    log_every: 50
+
+theory:
+  hmfast_tsz_iter_cprofile.HMFastTSZIterCProfile:
+    q_cat: 1.0e9
+    include_2h: true
+    z_max: 0.35
+    a_sz_sr: -4.28739604
+    alpha_sr: 1.12
+    b_sr: 1.0
+
+params:
+  omega_cdm:
+    prior:
+      min: 0.0804
+      max: 0.204
+    ref:
+      dist: norm
+      loc: 0.1187
+      scale: 0.01
+    proposal: 0.01
+    latex: \omega_c
+  Omega_m:
+    derived: 'lambda omega_cdm, h, omega_b: (omega_cdm + omega_b + 0.000644) / h**2'
+    latex: \Omega_m
+  sigma8:
+    prior:
+      min: 0.7
+      max: 0.9
+    ref:
+      dist: norm
+      loc: 0.811
+      scale: 0.02
+    proposal: 0.02
+    latex: \sigma_8
+  h:
+    prior:
+      dist: norm
+      loc: 0.681
+      scale: 0.024
+    ref:
+      dist: norm
+      loc: 0.681
+      scale: 0.024
+    proposal: 0.015
+    latex: h
+  omega_b:
+    value: 0.022539
+    latex: \omega_b
+  n_s:
+    prior:
+      dist: norm
+      loc: 0.967
+      scale: 0.014
+    ref:
+      dist: norm
+      loc: 0.967
+      scale: 0.014
+    proposal: 0.008
+    latex: n_s
+  tau_reio:
+    value: 0.0544
+  H0:
+    value: 'lambda h: 100.0 * h'
+    latex: H_0
+  alpha_SZ:
+    prior:
+      min: 0.9
+      max: 1.2
+    ref:
+      dist: norm
+      loc: 1.05
+      scale: 0.05
+    proposal: 0.03
+    latex: \alpha
+  A_SZ:
+    value: -4.28739604
+    latex: A_{SZ}
+  sigma_lnY:
+    prior:
+      dist: norm
+      loc: 0.173
+      scale: 0.023
+    ref:
+      dist: norm
+      loc: 0.173
+      scale: 0.023
+    proposal: 0.015
+    latex: \sigma_{\ln Y}
+  B:
+    prior:
+      min: 1.0
+      max: 2.0
+    ref:
+      dist: norm
+      loc: 1.35
+      scale: 0.05
+    proposal: 0.05
+    latex: B
+  c_500:
+    value: 1.156
+    latex: c_{500}
+  beta_SZ:
+    value: 0.0
+    latex: \beta_{SZ}
+
+sampler:
+  mcmc:
+    Rminus1_stop: 0.05
+    Rminus1_cl_stop: 0.2
+    drag: false
+    proposal_scale: 1.2
+    learn_every: 20
+    learn_proposal: true
+    burn_in: 100
+    max_tries: 100000
+    covmat: /scratch/scratch-lxu/flamingo_repo/chains/cnc_cosmo_arnaudB1_Y500c_uniformB/cnc_cosmo.covmat
+    covmat_params:
+      - omega_cdm
+      - sigma8
+      - h
+      - n_s
+      - alpha_SZ
+      - sigma_lnY
+      - B
+    fallback_covmat_scale: 1.5
+
+timing: true
+logging_level: info
