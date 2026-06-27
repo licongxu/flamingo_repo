@@ -133,7 +133,7 @@ def write_header(path: Path, args: argparse.Namespace) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     tag = f"{args.parent}/{args.variant}" if args.parent else args.variant
     with path.open("w") as f:
-        f.write(f"# FLAMINGO {tag} halo lightcone0 catalogue from hdfstream.\n")
+        f.write(f"# FLAMINGO {tag} halo lightcone{args.observer} catalogue from hdfstream.\n")
         f.write("# Selection: M_500c >= 1e13 Msun and 0 <= z < 3.0.\n")
         f.write("# Joined to SOAP-HBT by InputHalos/SOAPIndex.\n")
         f.write("# Masses are Msun; radii and positions are Mpc; Compton-Y aperture values are Mpc^2.\n")
