@@ -1,4 +1,5 @@
-# CNC-only: Y500c, 1-b ~ CCCP, omega_b fixed D3A, Gaussian h/n_s.
+# CNC-only: B=1 selection mock, yang26-rot full z coverage.
+# CCCP: 1-b ~ N(0.780,0.092), B=1/(1-b); Gaussian omega_b/h/n_s, alpha_SZ.
 output: /scratch/scratch-lxu/flamingo_repo/chains/cnc_cosmo_arnaudB1_Y500c_cccp/cnc_cosmo
 
 likelihood:
@@ -27,23 +28,23 @@ likelihood:
     n_points: 2048
     n_z: 50
     M_min: 50000000000000.0
-    M_max: 1.0e+16
+    M_max: 1.0e16
     f_sky: 1.0
     M_pivot: 210000000000000.0
 params:
-  omega_cdm:
+  Omega_m:
     prior:
-      min: 0.0804
-      max: 0.204
+      min: 0.2
+      max: 0.5
     ref:
       dist: norm
-      loc: 0.1187
-      scale: 0.01
-    proposal: 0.01
-    latex: \omega_c
-  Omega_m:
-    derived: 'lambda omega_cdm, h, omega_b: (omega_cdm + omega_b + 0.000644) / h**2'
+      loc: 0.306
+      scale: 0.02
+    proposal: 0.015
     latex: \Omega_m
+  omega_cdm:
+    value: 'lambda Omega_m, h, omega_b: Omega_m * h**2 - omega_b - 0.000644'
+    latex: \omega_c
   sigma8:
     prior:
       min: 0.7
@@ -66,7 +67,15 @@ params:
     proposal: 0.015
     latex: h
   omega_b:
-    value: 0.022539
+    prior:
+      dist: norm
+      loc: 0.022539
+      scale: 0.002
+    ref:
+      dist: norm
+      loc: 0.022539
+      scale: 0.002
+    proposal: 0.001
     latex: \omega_b
   m_nu:
     value: 0.06
@@ -89,13 +98,13 @@ params:
   alpha_SZ:
     prior:
       dist: norm
-      loc: 1.0
-      scale: 0.1
+      loc: 1.12
+      scale: 0.05
     ref:
       dist: norm
-      loc: 1.0
-      scale: 0.1
-    proposal: 0.05
+      loc: 1.12
+      scale: 0.05
+    proposal: 0.03
     latex: \alpha
   A_SZ:
     value: -4.28739604
@@ -134,14 +143,15 @@ sampler:
     learn_proposal: true
     burn_in: 100
     max_tries: 100000
-    covmat: /scratch/scratch-lxu/flamingo_repo/chains/cnc_cosmo_arnaudB1_Y500c/cnc_cosmo.covmat
     covmat_params:
-      - omega_cdm
+      - Omega_m
       - sigma8
       - h
+      - omega_b
       - n_s
       - alpha_SZ
       - sigma_lnY
+      - one_minus_b
     fallback_covmat_scale: 1.5
 timing: true
 logging_level: info

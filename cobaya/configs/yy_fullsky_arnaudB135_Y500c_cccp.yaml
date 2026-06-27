@@ -54,7 +54,15 @@ params:
     proposal: 0.015
     latex: h
   omega_b:
-    value: 0.022539
+    prior:
+      dist: norm
+      loc: 0.022539
+      scale: 0.002
+    ref:
+      dist: norm
+      loc: 0.022539
+      scale: 0.002
+    proposal: 0.001
     latex: \omega_b
   n_s:
     prior:
@@ -132,6 +140,7 @@ sampler:
       - Omega_m
       - sigma8
       - h
+      - omega_b
       - n_s
       - alpha_SZ
       - sigma_lnY

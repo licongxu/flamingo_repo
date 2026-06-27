@@ -1,0 +1,624 @@
+SKIP 01_catalogue_investigation.ipynb (already ok)
+SKIP 02_cluster_map_investigation.ipynb (already ok)
+
+========================================================================
+EXEC 03_stacked_pressure_profiles.ipynb
+========================================================================
+[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
+OK 03_stacked_pressure_profiles.ipynb (259s)
+SKIP 04_stacked_profiles_by_q.ipynb (already ok)
+SKIP 05_tsz_power_spectrum.ipynb (already ok)
+
+========================================================================
+EXEC 06_masked_tsz_power_spectrum.ipynb
+========================================================================
+[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1782461456.992993 2692142 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1782461456.993510 2692142 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1782461458.015408 2692142 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1782461458.015674 2692142 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+OK 06_masked_tsz_power_spectrum.ipynb (120s)
+
+========================================================================
+EXEC 07_mass_redshift_masked_tsz.ipynb
+========================================================================
+[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1782461647.141663 2707506 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1782461647.142097 2707506 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1782461648.159255 2707506 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1782461648.159606 2707506 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+OK 07_mass_redshift_masked_tsz.ipynb (186s)
+SKIP 08_halo_mass_function.ipynb (already ok)
+SKIP 09_cluster_number_counts.ipynb (already ok)
+SKIP 10_tsz_ps_white_normalization.ipynb (already ok)
+SKIP 12_y0_M500c_scaling.ipynb (already ok)
+SKIP 13_infer_B_from_Y5R500c.ipynb (already ok)
+SKIP 14_catalogue_tsz_power_spectrum.ipynb (already ok)
+SKIP 15_mz_masked_tsz_power_spectrum.ipynb (already ok)
+SKIP 16_yM_scaling_fit.ipynb (already ok)
+SKIP 17_yM_linear_regression.ipynb (already ok)
+SKIP 18_stacked_gas_profiles_particles.ipynb (already ok)
+SKIP 19_tsz_power_spectrum_shells.ipynb (already ok)
+SKIP 20_tsz_ps_alpha_beta_shape.ipynb (already ok)
+SKIP 21_tsz_ps_gnfw_shape.ipynb (already ok)
+SKIP 22_pureGNFW_bestfitB_tsz_ps.ipynb (already ok)
+SKIP 23_unrotated_z0p35_tsz_ps.ipynb (already ok)
+SKIP 23b_unrotated_z0p35_white_plateau.ipynb (already ok)
+SKIP 24_catalogue_tsz_ps_default_gnfw.ipynb (already ok)
+SKIP 25_arnaudB1_fitB_ellgt100.ipynb (already ok)
+
+========================================================================
+EXEC 25_scatter_ellgt100_contours_bestfit.ipynb
+========================================================================
+[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
+FAIL 25_scatter_ellgt100_contours_bestfit.ipynb: An error occurred while executing the following cell:
+------------------
+samples, labels, bestfit = [], [], {}
+for cut in CUTS:
+    s = loadMCSamples(os.path.join(CHAIN_DIR, cut["root"]), settings={"ignore_rows": 0.3})
+    s.root = cut["label"]
+    samples.append(s); labels.append(cut["label"])
+    p = s.getParams(); i = int(np.argmin(s.loglikes))
+    bestfit[cut["tag"]] = dict(B=float(p.B[i]), sigma_lnY=float(p.sigma_lnY[i]))
+    print(f"{cut['label']:8s}  B = {s.mean('B'):.4f} +/- {s.std('B'):.4f}   "
+          f"sigma_lnY = {s.mean('sigma_lnY'):.4f} +/- {s.std('sigma_lnY'):.4f}   "
+          f"(MAP: B={bestfit[cut['tag']]['B']:.4f}, s={bestfit[cut['tag']]['sigma_lnY']:.4f})")
+------------------
+
+
+[31m---------------------------------------------------------------------------[39m
+[31mFileNotFoundError[39m                         Traceback (most recent call last)
+[36mCell[39m[36m [39m[32mIn[3][39m[32m, line 3[39m
+[32m      1[39m samples, labels, bestfit = [], [], {}
+[32m      2[39m [38;5;28;01mfor[39;00m cut [38;5;28;01min[39;00m CUTS:
+[32m----> [39m[32m3[39m     s = loadMCSamples(os.path.join(CHAIN_DIR, cut[[33m"root"[39m]), settings={[33m"ignore_rows"[39m: [32m0.3[39m})
+[32m      4[39m     s.root = cut[[33m"label"[39m]
+[32m      5[39m     samples.append(s); labels.append(cut[[33m"label"[39m])
+[32m      6[39m     p = s.getParams(); i = int(np.argmin(s.loglikes))
+
+[36mFile [39m[32m~/miniconda3/envs/hmfast_py311/lib/python3.11/site-packages/getdist/mcsamples.py:76[39m, in [36mloadMCSamples[39m[34m(file_root, ini, jobItem, no_cache, settings, chain_exclude)[39m
+[32m     74[39m [38;5;28;01mif[39;00m chain_exclude:
+[32m     75[39m     no_cache = [38;5;28;01mTrue[39;00m
+[32m---> [39m[32m76[39m files = [30;43mchainFiles[39;49m[30;43m([39;49m[30;43mfile_root[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43mchain_exclude[39;49m[30;43m=[39;49m[30;43mchain_exclude[39;49m[30;43m)[39;49m
+[32m     77[39m [38;5;28;01mif[39;00m [38;5;129;01mnot[39;00m files:  [38;5;66;03m# try new Cobaya format[39;00m
+[32m     78[39m     files = chainFiles(file_root, separator=[33m"[39m[33m.[39m[33m"[39m, chain_exclude=chain_exclude)
+
+[36mFile [39m[32m~/miniconda3/envs/hmfast_py311/lib/python3.11/site-packages/getdist/chains.py:98[39m, in [36mchainFiles[39m[34m(root, chain_indices, ext, separator, first_chain, last_chain, chain_exclude)[39m
+[32m     96[39m     reg_exp = re.compile(re.escape(basename) + [33m"[39m[33m([39m[33m"[39m + re.escape(separator) + [33m"[39m[33m(?P<num>[0-9]+))?[39m[33m"[39m + re.escape(ext))
+[32m     97[39m files = []
+[32m---> [39m[32m98[39m [38;5;28;01mfor[39;00m f [38;5;129;01min[39;00m [38;5;28msorted[39m([30;43mos[39;49m[30;43m.[39;49m[30;43mlistdir[39;49m[30;43m([39;49m[30;43mfolder[39;49m[30;43m)[39;49m):
+[32m     99[39m     [38;5;28;01mif[39;00m match := reg_exp.fullmatch(f):
+[32m    100[39m         index = [38;5;28mint[39m(match.group([33m"[39m[33mnum[39m[33m"[39m) [38;5;129;01mor[39;00m [32m0[39m)
+
+[31mFileNotFoundError[39m: [Errno 2] No such file or directory: '/scratch/scratch-lxu/flamingo_repo/chains/mcmc_pureGNFW_fitB_scatter_ellgt100'
+
+Traceback (most recent call last):
+  File "/scratch/scratch-lxu/flamingo_repo/scripts/execute_all_notebooks.py", line 130, in main
+    success, msg = execute_one(nb_path)
+                   ^^^^^^^^^^^^^^^^^^^^
+  File "/scratch/scratch-lxu/flamingo_repo/scripts/execute_all_notebooks.py", line 69, in execute_one
+    client.execute()
+  File "/home/lxu/miniconda3/envs/hmfast_py311/lib/python3.11/site-packages/jupyter_core/utils/__init__.py", line 165, in wrapped
+    return loop.run_until_complete(inner)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/lxu/miniconda3/envs/hmfast_py311/lib/python3.11/asyncio/base_events.py", line 654, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/home/lxu/miniconda3/envs/hmfast_py311/lib/python3.11/site-packages/nbclient/client.py", line 709, in async_execute
+    await self.async_execute_cell(
+  File "/home/lxu/miniconda3/envs/hmfast_py311/lib/python3.11/site-packages/nbclient/client.py", line 1062, in async_execute_cell
+    await self._check_raise_for_error(cell, cell_index, exec_reply)
+  File "/home/lxu/miniconda3/envs/hmfast_py311/lib/python3.11/site-packages/nbclient/client.py", line 918, in _check_raise_for_error
+    raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
+nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
+------------------
+samples, labels, bestfit = [], [], {}
+for cut in CUTS:
+    s = loadMCSamples(os.path.join(CHAIN_DIR, cut["root"]), settings={"ignore_rows": 0.3})
+    s.root = cut["label"]
+    samples.append(s); labels.append(cut["label"])
+    p = s.getParams(); i = int(np.argmin(s.loglikes))
+    bestfit[cut["tag"]] = dict(B=float(p.B[i]), sigma_lnY=float(p.sigma_lnY[i]))
+    print(f"{cut['label']:8s}  B = {s.mean('B'):.4f} +/- {s.std('B'):.4f}   "
+          f"sigma_lnY = {s.mean('sigma_lnY'):.4f} +/- {s.std('sigma_lnY'):.4f}   "
+          f"(MAP: B={bestfit[cut['tag']]['B']:.4f}, s={bestfit[cut['tag']]['sigma_lnY']:.4f})")
+------------------
+
+
+[31m---------------------------------------------------------------------------[39m
+[31mFileNotFoundError[39m                         Traceback (most recent call last)
+[36mCell[39m[36m [39m[32mIn[3][39m[32m, line 3[39m
+[32m      1[39m samples, labels, bestfit = [], [], {}
+[32m      2[39m [38;5;28;01mfor[39;00m cut [38;5;28;01min[39;00m CUTS:
+[32m----> [39m[32m3[39m     s = loadMCSamples(os.path.join(CHAIN_DIR, cut[[33m"root"[39m]), settings={[33m"ignore_rows"[39m: [32m0.3[39m})
+[32m      4[39m     s.root = cut[[33m"label"[39m]
+[32m      5[39m     samples.append(s); labels.append(cut[[33m"label"[39m])
+[32m      6[39m     p = s.getParams(); i = int(np.argmin(s.loglikes))
+
+[36mFile [39m[32m~/miniconda3/envs/hmfast_py311/lib/python3.11/site-packages/getdist/mcsamples.py:76[39m, in [36mloadMCSamples[39m[34m(file_root, ini, jobItem, no_cache, settings, chain_exclude)[39m
+[32m     74[39m [38;5;28;01mif[39;00m chain_exclude:
+[32m     75[39m     no_cache = [38;5;28;01mTrue[39;00m
+[32m---> [39m[32m76[39m files = [30;43mchainFiles[39;49m[30;43m([39;49m[30;43mfile_root[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43mchain_exclude[39;49m[30;43m=[39;49m[30;43mchain_exclude[39;49m[30;43m)[39;49m
+[32m     77[39m [38;5;28;01mif[39;00m [38;5;129;01mnot[39;00m files:  [38;5;66;03m# try new Cobaya format[39;00m
+[32m     78[39m     files = chainFiles(file_root, separator=[33m"[39m[33m.[39m[33m"[39m, chain_exclude=chain_exclude)
+
+[36mFile [39m[32m~/miniconda3/envs/hmfast_py311/lib/python3.11/site-packages/getdist/chains.py:98[39m, in [36mchainFiles[39m[34m(root, chain_indices, ext, separator, first_chain, last_chain, chain_exclude)[39m
+[32m     96[39m     reg_exp = re.compile(re.escape(basename) + [33m"[39m[33m([39m[33m"[39m + re.escape(separator) + [33m"[39m[33m(?P<num>[0-9]+))?[39m[33m"[39m + re.escape(ext))
+[32m     97[39m files = []
+[32m---> [39m[32m98[39m [38;5;28;01mfor[39;00m f [38;5;129;01min[39;00m [38;5;28msorted[39m([30;43mos[39;49m[30;43m.[39;49m[30;43mlistdir[39;49m[30;43m([39;49m[30;43mfolder[39;49m[30;43m)[39;49m):
+[32m     99[39m     [38;5;28;01mif[39;00m match := reg_exp.fullmatch(f):
+[32m    100[39m         index = [38;5;28mint[39m(match.group([33m"[39m[33mnum[39m[33m"[39m) [38;5;129;01mor[39;00m [32m0[39m)
+
+[31mFileNotFoundError[39m: [Errno 2] No such file or directory: '/scratch/scratch-lxu/flamingo_repo/chains/mcmc_pureGNFW_fitB_scatter_ellgt100'
+
+SKIP 26_arnaudB1_fitBeta_ellgt100.ipynb (already ok)
+SKIP 27_cnc_cosmo_contours.ipynb (already ok)
+
+========================================================================
+EXEC 28_cnc_yy_combined_contours.ipynb
+========================================================================
+[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
+FAIL 28_cnc_yy_combined_contours.ipynb: An error occurred while executing the following cell:
+------------------
+from matplotlib.lines import Line2D
+
+if len(d3a_chains) >= 2:
+    pairs = [
+        ("B", "sigma_lnY", "d3a_B_sigma.pdf"),
+        ("alpha_SZ", "B", "d3a_alpha_B.pdf"),
+        ("alpha_SZ", "sigma_lnY", "d3a_alpha_sigma.pdf"),
+    ]
+    for x, y, fname in pairs:
+        g2d = plots.get_single_plotter(width_inch=4.5)
+        g2d.plot_2d(d3a_chains, x, y, filled=True, colors=d3a_colors)
+        ax = g2d.get_axes()
+        if x in TRUTH and y in TRUTH:
+            ax.plot(TRUTH[x], TRUTH[y], "*", color="crimson", ms=14, mec="k", zorder=5)
+        handles = [
+            Line2D([], [], color=c, lw=8, alpha=0.7, label=l)
+            for c, l in zip(d3a_colors, d3a_labels)
+        ]
+        ax.legend(handles=handles, fontsize=9, loc="best", frameon=False)
+        ax.set_title(f"D3A nuisance: {x} vs {y}", fontsize=10)
+        g2d.export(os.path.join(OUTDIR, fname))
+        g2d.export(os.path.join(OUTDIR, fname.replace(".pdf", ".png"), dpi=300))
+        plt.show()
+else:
+    print("D3A 2D panels skipped.")
+
+------------------
+
+
+[31m---------------------------------------------------------------------------[39m
+[31mTypeError[39m                                 Traceback (most recent call last)
+[36mCell[39m[36m [39m[32mIn[12][39m[32m, line 22[39m
+[32m     18[39m         ]
+[32m     19[39m         ax.legend(handles=handles, fontsize=[32m9[39m, loc=[33m"best"[39m, frameon=[38;5;28;01mFalse[39;00m)
+[32m     20[39m         ax.set_title([33mf"D3A nuisance: {x} vs {y}"[39m, fontsize=[32m10[39m)
+[32m     21[39m         g2d.export(os.path.join(OUTDIR, fname))
+[32m---> [39m[32m22[39m         g2d.export(os.path.join(OUTDIR, fname.replace([33m".pdf"[39m, [33m".png"[39m), dpi=[32m300[39m))
+[32m     23[39m         plt.show()
+[32m     24[39m [38;5;28;01melse[39;00m:
+[32m     25[39m     print([33m"D3A 2D panels skipped."[39m)
+
+[31mTypeError[39m: join() got an unexpected keyword argument 'dpi'
+
+Traceback (most recent call last):
+  File "/scratch/scratch-lxu/flamingo_repo/scripts/execute_all_notebooks.py", line 130, in main
+    success, msg = execute_one(nb_path)
+                   ^^^^^^^^^^^^^^^^^^^^
+  File "/scratch/scratch-lxu/flamingo_repo/scripts/execute_all_notebooks.py", line 69, in execute_one
+    client.execute()
+  File "/home/lxu/miniconda3/envs/hmfast_py311/lib/python3.11/site-packages/jupyter_core/utils/__init__.py", line 165, in wrapped
+    return loop.run_until_complete(inner)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/lxu/miniconda3/envs/hmfast_py311/lib/python3.11/asyncio/base_events.py", line 654, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/home/lxu/miniconda3/envs/hmfast_py311/lib/python3.11/site-packages/nbclient/client.py", line 709, in async_execute
+    await self.async_execute_cell(
+  File "/home/lxu/miniconda3/envs/hmfast_py311/lib/python3.11/site-packages/nbclient/client.py", line 1062, in async_execute_cell
+    await self._check_raise_for_error(cell, cell_index, exec_reply)
+  File "/home/lxu/miniconda3/envs/hmfast_py311/lib/python3.11/site-packages/nbclient/client.py", line 918, in _check_raise_for_error
+    raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
+nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
+------------------
+from matplotlib.lines import Line2D
+
+if len(d3a_chains) >= 2:
+    pairs = [
+        ("B", "sigma_lnY", "d3a_B_sigma.pdf"),
+        ("alpha_SZ", "B", "d3a_alpha_B.pdf"),
+        ("alpha_SZ", "sigma_lnY", "d3a_alpha_sigma.pdf"),
+    ]
+    for x, y, fname in pairs:
+        g2d = plots.get_single_plotter(width_inch=4.5)
+        g2d.plot_2d(d3a_chains, x, y, filled=True, colors=d3a_colors)
+        ax = g2d.get_axes()
+        if x in TRUTH and y in TRUTH:
+            ax.plot(TRUTH[x], TRUTH[y], "*", color="crimson", ms=14, mec="k", zorder=5)
+        handles = [
+            Line2D([], [], color=c, lw=8, alpha=0.7, label=l)
+            for c, l in zip(d3a_colors, d3a_labels)
+        ]
+        ax.legend(handles=handles, fontsize=9, loc="best", frameon=False)
+        ax.set_title(f"D3A nuisance: {x} vs {y}", fontsize=10)
+        g2d.export(os.path.join(OUTDIR, fname))
+        g2d.export(os.path.join(OUTDIR, fname.replace(".pdf", ".png"), dpi=300))
+        plt.show()
+else:
+    print("D3A 2D panels skipped.")
+
+------------------
+
+
+[31m---------------------------------------------------------------------------[39m
+[31mTypeError[39m                                 Traceback (most recent call last)
+[36mCell[39m[36m [39m[32mIn[12][39m[32m, line 22[39m
+[32m     18[39m         ]
+[32m     19[39m         ax.legend(handles=handles, fontsize=[32m9[39m, loc=[33m"best"[39m, frameon=[38;5;28;01mFalse[39;00m)
+[32m     20[39m         ax.set_title([33mf"D3A nuisance: {x} vs {y}"[39m, fontsize=[32m10[39m)
+[32m     21[39m         g2d.export(os.path.join(OUTDIR, fname))
+[32m---> [39m[32m22[39m         g2d.export(os.path.join(OUTDIR, fname.replace([33m".pdf"[39m, [33m".png"[39m), dpi=[32m300[39m))
+[32m     23[39m         plt.show()
+[32m     24[39m [38;5;28;01melse[39;00m:
+[32m     25[39m     print([33m"D3A 2D panels skipped."[39m)
+
+[31mTypeError[39m: join() got an unexpected keyword argument 'dpi'
+
+
+========================================================================
+EXEC 29_unrot_z0p35_uniformB_contours.ipynb
+========================================================================
+[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
+OK 29_unrot_z0p35_uniformB_contours.ipynb (25s)
+
+========================================================================
+EXEC 30_fullsky_cccp_contours.ipynb
+========================================================================
+[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
+OK 30_fullsky_cccp_contours.ipynb (13s)
+SKIP 31_fourier_stacked_tsz_profile.ipynb (already ok)
+
+========================================================================
+EXEC 32_cnc_qz_binned_counts_Y500c_vs_Y5R500c.ipynb
+========================================================================
+[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1782461747.270221 2737050 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1782461747.270578 2737050 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+I0000 00:00:1782461747.297618 2737050 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI AVX512_BF16 AVX_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1782461748.376685 2737050 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1782461748.376910 2737050 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+E0000 00:00:1782461748.499357 2737050 cuda_platform.cc:52] failed call to cuInit: INTERNAL: CUDA error: Failed call to cuInit: CUDA_ERROR_NO_DEVICE: no CUDA-capable device is detected
+I0000 00:00:1782461748.499388 2737050 cuda_diagnostics.cc:160] env: CUDA_VISIBLE_DEVICES=""
+I0000 00:00:1782461748.499399 2737050 cuda_diagnostics.cc:163] CUDA_VISIBLE_DEVICES is set to an empty string - this hides all GPUs from CUDA
+I0000 00:00:1782461748.499408 2737050 cuda_diagnostics.cc:171] verbose logging is disabled. Rerun with verbose logging (usually --v=1 or --vmodule=cuda_diagnostics=1) to get more diagnostic output from this module
+I0000 00:00:1782461748.499409 2737050 cuda_diagnostics.cc:176] retrieving CUDA diagnostic information for host: orion
+I0000 00:00:1782461748.499412 2737050 cuda_diagnostics.cc:183] hostname: orion
+I0000 00:00:1782461748.499484 2737050 cuda_diagnostics.cc:190] libcuda reported version is: 580.95.5
+I0000 00:00:1782461748.499496 2737050 cuda_diagnostics.cc:194] kernel reported version is: 580.95.5
+I0000 00:00:1782461748.499497 2737050 cuda_diagnostics.cc:284] kernel version seems to match DSO: 580.95.5
+FAIL 32_cnc_qz_binned_counts_Y500c_vs_Y5R500c.ipynb: An error occurred while executing the following cell:
+------------------
+from pathlib import Path
+
+import os
+
+# cosmocnc_jax / TF init (same pattern as cobaya/likelihood/cnc_likelihood.py)
+os.environ.setdefault("JAX_ENABLE_X64", "1")
+os.environ.setdefault("XLA_PYTHON_CLIENT_PREALLOCATE", "true")
+os.environ.setdefault("XLA_PYTHON_CLIENT_MEM_FRACTION", "0.30")
+_cuda = os.environ.get("CUDA_VISIBLE_DEVICES", "0")
+os.environ["CUDA_VISIBLE_DEVICES"] = ""
+import tensorflow as tf
+try:
+    tf.config.set_visible_devices([], "GPU")
+except Exception:
+    pass
+os.environ["CUDA_VISIBLE_DEVICES"] = _cuda
+
+from cosmocnc_jax import cluster_number_counts
+from cosmocnc_jax.params import (
+    cnc_params_default,
+    cosmo_params_default,
+    scaling_relation_params_default,
+)
+
+COSMOCNC_PKG = Path("/scratch/scratch-lxu/agent_dev/auto_research_agent/cosmocnc_jax/cosmocnc_jax")
+
+# FLAMINGO / D3A fiducials (nb27)
+OM_TRUTH, S8_TRUTH = 0.306, 0.808
+H_FID, OMB_FID = 0.681, 0.022539
+OMEGA_CDM = OM_TRUTH * H_FID**2 - OMB_FID - 0.000644
+FID_COSMO = {
+    "h": H_FID,
+    "Ob0h2": OMB_FID,
+    "Oc0h2": OMEGA_CDM,
+    "n_s": 0.967,
+    "tau_reio": 0.0544,
+    "m_nu": 0.06,
+    "sigma_8": S8_TRUTH,
+}
+FID_SCAL = {
+    "A_szifi": -4.3054,
+    "alpha_szifi": 1.12,
+    "sigma_lnq_szifi": 0.173,
+}
+
+_cnc_params = dict(cnc_params_default)
+_cnc_params.update(
+    {
+        "survey_sr": str(COSMOCNC_PKG / "surveys/survey_sr_planck_sim.py"),
+        "survey_cat": str(COSMOCNC_PKG / "surveys/survey_cat_planck_sim.py"),
+        "tszsbi_noise_dir": "/scratch/scratch-lxu/tszsbi/noise_files",
+        "tszsbi_filter_name": "immf6",
+        "load_catalogue": False,
+        "likelihood_type": "binned",
+        "binned_lik_type": "z_and_obs_select",
+        "data_lik_from_abundance": False,
+        "obs_select": "q_planck_sim",
+        "observables": [["q_planck_sim"]],
+        "obs_select_min": float(q_edges[0]),
+        "obs_select_max": float(q_edges[-1]),
+        "z_min": float(z_edges[0]),
+        "z_max": float(z_edges[-1]),
+        "bins_edges_z": z_edges,
+        "bins_edges_obs_select": q_edges,
+        "n_points": 2048,
+        "n_z": 50,
+        "M_min": 5.0e13,
+        "M_max": 1.0e16,
+        "planck_sim_M_pivot": 2.1e14,
+        "cosmology_tool": "hmfast",
+        "hmfast_path": "/scratch/scratch-lxu/agent_dev/auto_research_agent/hmfast/src",
+        "hmf_calc": "cnc",
+        "cosmo_param_density": "physical",
+        "cosmo_amplitude_parameter": "sigma_8",
+        "cosmocnc_verbose": "none",
+    }
+)
+
+_cnc = cluster_number_counts(cnc_params=_cnc_params)
+_cosmo = dict(cosmo_params_default)
+_cosmo.update(FID_COSMO)
+_cnc.cosmo_params = _cosmo
+_cnc.scal_rel_params = dict(scaling_relation_params_default)
+_cnc.initialise()
+print("cosmocnc_jax initialised")
+
+
+def theory_n2d(B):
+    """Single y0-based N(q,z) for hydrostatic bias B."""
+    scal = dict(scaling_relation_params_default)
+    scal.update(FID_SCAL)
+    scal["bias_sz"] = 1.0 / B
+    _cnc.update_params(_cosmo, scal)
+    _cnc.get_log_lik_binned()
+    return np.asarray(_cnc.n_binned, float)
+
+
+theory = {}
+for B in sorted(data):
+    N = theory_n2d(B)
+    theory[B] = {"N2d": N, "n_qgt5": float(N.sum())}
+    print(f"theory B={B:.2f}  y0  N={N.sum():.1f}")
+
+vmax_th = max(float(theory[B]["N2d"].max()) for B in theory)
+
+for B in sorted(theory):
+    plot_theory_y0(B, theory[B]["N2d"], theory[B]["n_qgt5"], vmax=vmax_th, as_int=False)
+    plt.show()
+
+------------------
+
+----- stderr -----
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1782461747.270221 2737050 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1782461747.270578 2737050 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+I0000 00:00:1782461747.297618 2737050 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI AVX512_BF16 AVX_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+----- stderr -----
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1782461748.376685 2737050 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1782461748.376910 2737050 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+E0000 00:00:1782461748.499357 2737050 cuda_platform.cc:52] failed call to cuInit: INTERNAL: CUDA error: Failed call to cuInit: CUDA_ERROR_NO_DEVICE: no CUDA-capable device is detected
+I0000 00:00:1782461748.499388 2737050 cuda_diagnostics.cc:160] env: CUDA_VISIBLE_DEVICES=""
+I0000 00:00:1782461748.499399 2737050 cuda_diagnostics.cc:163] CUDA_VISIBLE_DEVICES is set to an empty string - this hides all GPUs from CUDA
+I0000 00:00:1782461748.499408 2737050 cuda_diagnostics.cc:171] verbose logging is disabled. Rerun with verbose logging (usually --v=1 or --vmodule=cuda_diagnostics=1) to get more diagnostic output from this module
+I0000 00:00:1782461748.499409 2737050 cuda_diagnostics.cc:176] retrieving CUDA diagnostic information for host: orion
+I0000 00:00:1782461748.499412 2737050 cuda_diagnostics.cc:183] hostname: orion
+I0000 00:00:1782461748.499484 2737050 cuda_diagnostics.cc:190] libcuda reported version is: 580.95.5
+I0000 00:00:1782461748.499496 2737050 cuda_diagnostics.cc:194] kernel reported version is: 580.95.5
+I0000 00:00:1782461748.499497 2737050 cuda_diagnostics.cc:284] kernel version seems to match DSO: 580.95.5
+------------------
+
+[31m---------------------------------------------------------------------------[39m
+[31mModuleNotFoundError[39m                       Traceback (most recent call last)
+[36mCell[39m[36m [39m[32mIn[3][39m[32m, line 18[39m
+[32m     14[39m [38;5;28;01mexcept[39;00m Exception:
+[32m     15[39m     [38;5;28;01mpass[39;00m
+[32m     16[39m os.environ[[33m"CUDA_VISIBLE_DEVICES"[39m] = _cuda
+[32m     17[39m 
+[32m---> [39m[32m18[39m [38;5;28;01mfrom[39;00m cosmocnc_jax [38;5;28;01mimport[39;00m cluster_number_counts
+[32m     19[39m from cosmocnc_jax.params import (
+[32m     20[39m     cnc_params_default,
+[32m     21[39m     cosmo_params_default,
+
+[31mModuleNotFoundError[39m: No module named 'cosmocnc_jax'
+
+Traceback (most recent call last):
+  File "/scratch/scratch-lxu/flamingo_repo/scripts/execute_all_notebooks.py", line 130, in main
+    success, msg = execute_one(nb_path)
+                   ^^^^^^^^^^^^^^^^^^^^
+  File "/scratch/scratch-lxu/flamingo_repo/scripts/execute_all_notebooks.py", line 69, in execute_one
+    client.execute()
+  File "/home/lxu/miniconda3/envs/hmfast_py311/lib/python3.11/site-packages/jupyter_core/utils/__init__.py", line 165, in wrapped
+    return loop.run_until_complete(inner)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/lxu/miniconda3/envs/hmfast_py311/lib/python3.11/asyncio/base_events.py", line 654, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/home/lxu/miniconda3/envs/hmfast_py311/lib/python3.11/site-packages/nbclient/client.py", line 709, in async_execute
+    await self.async_execute_cell(
+  File "/home/lxu/miniconda3/envs/hmfast_py311/lib/python3.11/site-packages/nbclient/client.py", line 1062, in async_execute_cell
+    await self._check_raise_for_error(cell, cell_index, exec_reply)
+  File "/home/lxu/miniconda3/envs/hmfast_py311/lib/python3.11/site-packages/nbclient/client.py", line 918, in _check_raise_for_error
+    raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
+nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
+------------------
+from pathlib import Path
+
+import os
+
+# cosmocnc_jax / TF init (same pattern as cobaya/likelihood/cnc_likelihood.py)
+os.environ.setdefault("JAX_ENABLE_X64", "1")
+os.environ.setdefault("XLA_PYTHON_CLIENT_PREALLOCATE", "true")
+os.environ.setdefault("XLA_PYTHON_CLIENT_MEM_FRACTION", "0.30")
+_cuda = os.environ.get("CUDA_VISIBLE_DEVICES", "0")
+os.environ["CUDA_VISIBLE_DEVICES"] = ""
+import tensorflow as tf
+try:
+    tf.config.set_visible_devices([], "GPU")
+except Exception:
+    pass
+os.environ["CUDA_VISIBLE_DEVICES"] = _cuda
+
+from cosmocnc_jax import cluster_number_counts
+from cosmocnc_jax.params import (
+    cnc_params_default,
+    cosmo_params_default,
+    scaling_relation_params_default,
+)
+
+COSMOCNC_PKG = Path("/scratch/scratch-lxu/agent_dev/auto_research_agent/cosmocnc_jax/cosmocnc_jax")
+
+# FLAMINGO / D3A fiducials (nb27)
+OM_TRUTH, S8_TRUTH = 0.306, 0.808
+H_FID, OMB_FID = 0.681, 0.022539
+OMEGA_CDM = OM_TRUTH * H_FID**2 - OMB_FID - 0.000644
+FID_COSMO = {
+    "h": H_FID,
+    "Ob0h2": OMB_FID,
+    "Oc0h2": OMEGA_CDM,
+    "n_s": 0.967,
+    "tau_reio": 0.0544,
+    "m_nu": 0.06,
+    "sigma_8": S8_TRUTH,
+}
+FID_SCAL = {
+    "A_szifi": -4.3054,
+    "alpha_szifi": 1.12,
+    "sigma_lnq_szifi": 0.173,
+}
+
+_cnc_params = dict(cnc_params_default)
+_cnc_params.update(
+    {
+        "survey_sr": str(COSMOCNC_PKG / "surveys/survey_sr_planck_sim.py"),
+        "survey_cat": str(COSMOCNC_PKG / "surveys/survey_cat_planck_sim.py"),
+        "tszsbi_noise_dir": "/scratch/scratch-lxu/tszsbi/noise_files",
+        "tszsbi_filter_name": "immf6",
+        "load_catalogue": False,
+        "likelihood_type": "binned",
+        "binned_lik_type": "z_and_obs_select",
+        "data_lik_from_abundance": False,
+        "obs_select": "q_planck_sim",
+        "observables": [["q_planck_sim"]],
+        "obs_select_min": float(q_edges[0]),
+        "obs_select_max": float(q_edges[-1]),
+        "z_min": float(z_edges[0]),
+        "z_max": float(z_edges[-1]),
+        "bins_edges_z": z_edges,
+        "bins_edges_obs_select": q_edges,
+        "n_points": 2048,
+        "n_z": 50,
+        "M_min": 5.0e13,
+        "M_max": 1.0e16,
+        "planck_sim_M_pivot": 2.1e14,
+        "cosmology_tool": "hmfast",
+        "hmfast_path": "/scratch/scratch-lxu/agent_dev/auto_research_agent/hmfast/src",
+        "hmf_calc": "cnc",
+        "cosmo_param_density": "physical",
+        "cosmo_amplitude_parameter": "sigma_8",
+        "cosmocnc_verbose": "none",
+    }
+)
+
+_cnc = cluster_number_counts(cnc_params=_cnc_params)
+_cosmo = dict(cosmo_params_default)
+_cosmo.update(FID_COSMO)
+_cnc.cosmo_params = _cosmo
+_cnc.scal_rel_params = dict(scaling_relation_params_default)
+_cnc.initialise()
+print("cosmocnc_jax initialised")
+
+
+def theory_n2d(B):
+    """Single y0-based N(q,z) for hydrostatic bias B."""
+    scal = dict(scaling_relation_params_default)
+    scal.update(FID_SCAL)
+    scal["bias_sz"] = 1.0 / B
+    _cnc.update_params(_cosmo, scal)
+    _cnc.get_log_lik_binned()
+    return np.asarray(_cnc.n_binned, float)
+
+
+theory = {}
+for B in sorted(data):
+    N = theory_n2d(B)
+    theory[B] = {"N2d": N, "n_qgt5": float(N.sum())}
+    print(f"theory B={B:.2f}  y0  N={N.sum():.1f}")
+
+vmax_th = max(float(theory[B]["N2d"].max()) for B in theory)
+
+for B in sorted(theory):
+    plot_theory_y0(B, theory[B]["N2d"], theory[B]["n_qgt5"], vmax=vmax_th, as_int=False)
+    plt.show()
+
+------------------
+
+----- stderr -----
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1782461747.270221 2737050 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1782461747.270578 2737050 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+I0000 00:00:1782461747.297618 2737050 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI AVX512_BF16 AVX_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+----- stderr -----
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1782461748.376685 2737050 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1782461748.376910 2737050 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+E0000 00:00:1782461748.499357 2737050 cuda_platform.cc:52] failed call to cuInit: INTERNAL: CUDA error: Failed call to cuInit: CUDA_ERROR_NO_DEVICE: no CUDA-capable device is detected
+I0000 00:00:1782461748.499388 2737050 cuda_diagnostics.cc:160] env: CUDA_VISIBLE_DEVICES=""
+I0000 00:00:1782461748.499399 2737050 cuda_diagnostics.cc:163] CUDA_VISIBLE_DEVICES is set to an empty string - this hides all GPUs from CUDA
+I0000 00:00:1782461748.499408 2737050 cuda_diagnostics.cc:171] verbose logging is disabled. Rerun with verbose logging (usually --v=1 or --vmodule=cuda_diagnostics=1) to get more diagnostic output from this module
+I0000 00:00:1782461748.499409 2737050 cuda_diagnostics.cc:176] retrieving CUDA diagnostic information for host: orion
+I0000 00:00:1782461748.499412 2737050 cuda_diagnostics.cc:183] hostname: orion
+I0000 00:00:1782461748.499484 2737050 cuda_diagnostics.cc:190] libcuda reported version is: 580.95.5
+I0000 00:00:1782461748.499496 2737050 cuda_diagnostics.cc:194] kernel reported version is: 580.95.5
+I0000 00:00:1782461748.499497 2737050 cuda_diagnostics.cc:284] kernel version seems to match DSO: 580.95.5
+------------------
+
+[31m---------------------------------------------------------------------------[39m
+[31mModuleNotFoundError[39m                       Traceback (most recent call last)
+[36mCell[39m[36m [39m[32mIn[3][39m[32m, line 18[39m
+[32m     14[39m [38;5;28;01mexcept[39;00m Exception:
+[32m     15[39m     [38;5;28;01mpass[39;00m
+[32m     16[39m os.environ[[33m"CUDA_VISIBLE_DEVICES"[39m] = _cuda
+[32m     17[39m 
+[32m---> [39m[32m18[39m [38;5;28;01mfrom[39;00m cosmocnc_jax [38;5;28;01mimport[39;00m cluster_number_counts
+[32m     19[39m from cosmocnc_jax.params import (
+[32m     20[39m     cnc_params_default,
+[32m     21[39m     cosmo_params_default,
+
+[31mModuleNotFoundError[39m: No module named 'cosmocnc_jax'
+
+SKIP autoresearch_empirical_profile_tsz_ps.ipynb (already ok)
+
+Done: 5 ok, 3 failed, 26 skipped (log: /scratch/scratch-lxu/flamingo_repo/logs/notebook_runs/summary.jsonl)

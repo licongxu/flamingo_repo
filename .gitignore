@@ -16,3 +16,8 @@ __pycache__/
 *.npy
 *.npz
 *.csv
+
+config/secret_key
+config/codex.sqlite3
+config/cache/
+config/logs/

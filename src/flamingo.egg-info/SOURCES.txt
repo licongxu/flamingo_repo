@@ -20,6 +20,7 @@ src/flamingo/masking/discs.py
 src/flamingo/powerspectra/__init__.py
 src/flamingo/powerspectra/namaster.py
 src/flamingo/profiles/__init__.py
+src/flamingo/profiles/custom_pressure.py
 src/flamingo/profiles/gnfw.py
 src/flamingo/profiles/projection.py
 src/flamingo/profiles/stacking.py

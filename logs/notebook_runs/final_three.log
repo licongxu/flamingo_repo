@@ -1,0 +1,281 @@
+[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
+[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1782461826.771478 2747457 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1782461826.771820 2747457 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+I0000 00:00:1782461826.798703 2747457 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI AVX512_BF16 AVX_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1782461827.913672 2747457 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1782461827.913889 2747457 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+E0000 00:00:1782461828.034854 2747457 cuda_platform.cc:52] failed call to cuInit: INTERNAL: CUDA error: Failed call to cuInit: CUDA_ERROR_NO_DEVICE: no CUDA-capable device is detected
+I0000 00:00:1782461828.034889 2747457 cuda_diagnostics.cc:160] env: CUDA_VISIBLE_DEVICES=""
+I0000 00:00:1782461828.034900 2747457 cuda_diagnostics.cc:163] CUDA_VISIBLE_DEVICES is set to an empty string - this hides all GPUs from CUDA
+I0000 00:00:1782461828.034911 2747457 cuda_diagnostics.cc:171] verbose logging is disabled. Rerun with verbose logging (usually --v=1 or --vmodule=cuda_diagnostics=1) to get more diagnostic output from this module
+I0000 00:00:1782461828.034912 2747457 cuda_diagnostics.cc:176] retrieving CUDA diagnostic information for host: orion
+I0000 00:00:1782461828.034915 2747457 cuda_diagnostics.cc:183] hostname: orion
+I0000 00:00:1782461828.035023 2747457 cuda_diagnostics.cc:190] libcuda reported version is: 580.95.5
+I0000 00:00:1782461828.035037 2747457 cuda_diagnostics.cc:194] kernel reported version is: 580.95.5
+I0000 00:00:1782461828.035038 2747457 cuda_diagnostics.cc:284] kernel version seems to match DSO: 580.95.5
+=== 28_cnc_yy_combined_contours.ipynb ===
+RESULT OK
+=== 32_cnc_qz_binned_counts_Y500c_vs_Y5R500c.ipynb ===
+RESULT FAIL An error occurred while executing the following cell:
+------------------
+from pathlib import Path
+
+import os
+
+# cosmocnc_jax / TF init (same pattern as cobaya/likelihood/cnc_likelihood.py)
+os.environ.setdefault("JAX_ENABLE_X64", "1")
+os.environ.setdefault("XLA_PYTHON_CLIENT_PREALLOCATE", "true")
+os.environ.setdefault("XLA_PYTHON_CLIENT_MEM_FRACTION", "0.30")
+_cuda = os.environ.get("CUDA_VISIBLE_DEVICES", "0")
+os.environ["CUDA_VISIBLE_DEVICES"] = ""
+import tensorflow as tf
+try:
+    tf.config.set_visible_devices([], "GPU")
+except Exception:
+    pass
+os.environ["CUDA_VISIBLE_DEVICES"] = _cuda
+
+from cosmocnc_jax import cluster_number_counts
+from cosmocnc_jax.params import (
+    cnc_params_default,
+    cosmo_params_default,
+    scaling_relation_params_default,
+)
+
+COSMOCNC_PKG = Path("/scratch/scratch-lxu/agent_dev/auto_research_agent/cosmocnc_jax/cosmocnc_jax")
+
+# FLAMINGO / D3A fiducials (nb27)
+OM_TRUTH, S8_TRUTH = 0.306, 0.808
+H_FID, OMB_FID = 0.681, 0.022539
+OMEGA_CDM = OM_TRUTH * H_FID**2 - OMB_FID - 0.000644
+FID_COSMO = {
+    "h": H_FID,
+    "Ob0h2": OMB_FID,
+    "Oc0h2": OMEGA_CDM,
+    "n_s": 0.967,
+    "tau_reio": 0.0544,
+    "m_nu": 0.06,
+    "sigma_8": S8_TRUTH,
+}
+FID_SCAL = {
+    "A_szifi": -4.3054,
+    "alpha_szifi": 1.12,
+    "sigma_lnq_szifi": 0.173,
+}
+
+_cnc_params = dict(cnc_params_default)
+_cnc_params.update(
+    {
+        "survey_sr": str(COSMOCNC_PKG / "surveys/survey_sr_planck_sim.py"),
+        "survey_cat": str(COSMOCNC_PKG / "surveys/survey_cat_planck_sim.py"),
+        "tszsbi_noise_dir": "/scratch/scratch-lxu/tszsbi/noise_files",
+        "tszsbi_filter_name": "immf6",
+        "load_catalogue": False,
+        "likelihood_type": "binned",
+        "binned_lik_type": "z_and_obs_select",
+        "data_lik_from_abundance": False,
+        "obs_select": "q_planck_sim",
+        "observables": [["q_planck_sim"]],
+        "obs_select_min": float(q_edges[0]),
+        "obs_select_max": float(q_edges[-1]),
+        "z_min": float(z_edges[0]),
+        "z_max": float(z_edges[-1]),
+        "bins_edges_z": z_edges,
+        "bins_edges_obs_select": q_edges,
+        "n_points": 2048,
+        "n_z": 50,
+        "M_min": 5.0e13,
+        "M_max": 1.0e16,
+        "planck_sim_M_pivot": 2.1e14,
+        "cosmology_tool": "hmfast",
+        "hmfast_path": "/scratch/scratch-lxu/agent_dev/auto_research_agent/hmfast/src",
+        "hmf_calc": "cnc",
+        "cosmo_param_density": "physical",
+        "cosmo_amplitude_parameter": "sigma_8",
+        "cosmocnc_verbose": "none",
+    }
+)
+
+_cnc = cluster_number_counts(cnc_params=_cnc_params)
+_cosmo = dict(cosmo_params_default)
+_cosmo.update(FID_COSMO)
+_cnc.cosmo_params = _cosmo
+_cnc.scal_rel_params = dict(scaling_relation_params_default)
+_cnc.initialise()
+print("cosmocnc_jax initialised")
+
+
+def theory_n2d(B):
+    """Single y0-based N(q,z) for hydrostatic bias B."""
+    scal = dict(scaling_relation_params_default)
+    scal.update(FID_SCAL)
+    scal["bias_sz"] = 1.0 / B
+    _cnc.update_params(_cosmo, scal)
+    _cnc.get_log_lik_binned()
+    return np.asarray(_cnc.n_binned, float)
+
+
+theory = {}
+for B in sorted(data):
+    N = theory_n2d(B)
+    theory[B] = {"N2d": N, "n_qgt5": float(N.sum())}
+    print(f"theory B={B:.2f}  y0  N={N.sum():.1f}")
+
+vmax_th = max(float(theory[B]["N2d"].max()) for B in theory)
+
+for B in sorted(theory):
+    plot_theory_y0(B, theory[B]["N2d"], theory[B]["n_qgt5"], vmax=vmax_th, as_int=False)
+    plt.show()
+
+------------------
+
+----- stderr -----
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1782461826.771478 2747457 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1782461826.771820 2747457 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+I0000 00:00:1782461826.798703 2747457 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI AVX512_BF16 AVX_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+----- stderr -----
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1782461827.913672 2747457 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1782461827.913889 2747457 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+E0000 00:00:1782461828.034854 2747457 cuda_platform.cc:52] failed call to cuInit: INTERNAL: CUDA error: Failed call to cuInit: CUDA_ERROR_NO_DEVICE: no CUDA-capable device is detected
+I0000 00:00:1782461828.034889 2747457 cuda_diagnostics.cc:160] env: CUDA_VISIBLE_DEVICES=""
+I0000 00:00:1782461828.034900 2747457 cuda_diagnostics.cc:163] CUDA_VISIBLE_DEVICES is set to an empty string - this hides all GPUs from CUDA
+I0000 00:00:1782461828.034911 2747457 cuda_diagnostics.cc:171] verbose logging is disabled. Rerun with verbose logging (usually --v=1 or --vmodule=cuda_diagnostics=1) to get more diagnostic output from this module
+I0000 00:00:1782461828.034912 2747457 cuda_diagnostics.cc:176] retrieving CUDA diagnostic information for host: orion
+I0000 00:00:1782461828.034915 2747457 cuda_diagnostics.cc:183] hostname: orion
+I0000 00:00:1782461828.035023 2747457 cuda_diagnostics.cc:190] libcuda reported version is: 580.95.5
+I0000 00:00:1782461828.035037 2747457 cuda_diagnostics.cc:194] kernel reported version is: 580.95.5
+I0000 00:00:1782461828.035038 2747457 cuda_diagnostics.cc:284] kernel version seems to match DSO: 580.95.5
+An NVIDIA GPU may be present on this machine, but a CUDA-enabled jaxlib is not installed. Falling back to cpu.
+----- stdout -----
+Warning: PATH_TO_COSMOPOWER_ORGANIZATION is not set.
+defaulting to  /rds-d4/user/iz221/hpc-work/cosmopower/
+Warning: PATH_TO_COSMOCNC is not set.
+defaulting to  /scratch/scratch-lxu/agent_dev/auto_research_agent/cosmocnc_jax/cosmocnc_jax/
+------------------
+
+[31m---------------------------------------------------------------------------[39m
+[31mModuleNotFoundError[39m                       Traceback (most recent call last)
+[36mCell[39m[36m [39m[32mIn[3][39m[32m, line 84[39m
+[32m     80[39m _cosmo = dict(cosmo_params_default)
+[32m     81[39m _cosmo.update(FID_COSMO)
+[32m     82[39m _cnc.cosmo_params = _cosmo
+[32m     83[39m _cnc.scal_rel_params = dict(scaling_relation_params_default)
+[32m---> [39m[32m84[39m _cnc.initialise()
+[32m     85[39m print([33m"cosmocnc_jax initialised"[39m)
+[32m     86[39m 
+[32m     87[39m 
+
+[36mFile [39m[32m/scratch/scratch-lxu/agent_dev/auto_research_agent/cosmocnc_jax/cosmocnc_jax/cnc.py:784[39m, in [36mcluster_number_counts.initialise[39m[34m(self)[39m
+[32m    780[39m [38;5;28mself[39m.scatter_survey = [38;5;28mself[39m.survey_module.scatter
+[32m    782[39m [38;5;66;03m#Set cosmology[39;00m
+[32m--> [39m[32m784[39m [38;5;28mself[39m.cosmology = [30;43mcosmology_model[39;49m[30;43m([39;49m[30;43mcosmo_params[39;49m[30;43m=[39;49m[30;43mself[39;49m[30;43m.[39;49m[30;43mcosmo_params[39;49m[30;43m,[39;49m
+[32m    785[39m [30;43m                                 [39;49m[30;43mcosmology_tool[39;49m[30;43m [39;49m[30;43m=[39;49m[30;43m [39;49m[30;43mself[39;49m[30;43m.[39;49m[30;43mcnc_params[39;49m[30;43m[[39;49m[30;43m"[39;49m[30;43mcosmology_tool[39;49m[30;43m"[39;49m[30;43m][39;49m[30;43m,[39;49m
+[32m    786[39m [30;43m                                 [39;49m[30;43mamplitude_parameter[39;49m[30;43m=[39;49m[30;43mself[39;49m[30;43m.[39;49m[30;43mcnc_params[39;49m[30;43m[[39;49m[30;43m"[39;49m[30;43mcosmo_amplitude_parameter[39;49m[30;43m"[39;49m[30;43m][39;49m[30;43m,[39;49m
+[32m    787[39m [30;43m                                 [39;49m[30;43mcnc_params[39;49m[30;43m [39;49m[30;43m=[39;49m[30;43m [39;49m[30;43mself[39;49m[30;43m.[39;49m[30;43mcnc_params[39;49m[30;43m,[39;49m
+[32m    788[39m [30;43m                                 [39;49m[30;43mlogger[39;49m[30;43m [39;49m[30;43m=[39;49m[30;43m [39;49m[30;43mself[39;49m[30;43m.[39;49m[30;43mlogger[39;49m
+[32m    789[39m [30;43m                                 [39;49m[30;43m)[39;49m
+[32m    791[39m [38;5;28;01mif[39;00m [38;5;28mself[39m.cnc_params[[33m"[39m[33mload_catalogue[39m[33m"[39m] == [38;5;28;01mTrue[39;00m:
+[32m    793[39m     [38;5;28mself[39m.logger.debug([33m"[39m[33mLoading catalogue[39m[33m"[39m)
+
+[36mFile [39m[32m/scratch/scratch-lxu/agent_dev/auto_research_agent/cosmocnc_jax/cosmocnc_jax/cosmo.py:274[39m, in [36mcosmology_model.__init__[39m[34m(self, cosmo_params, cosmology_tool, amplitude_parameter, cnc_params, logger)[39m
+[32m    271[39m         [38;5;28mself[39m.cosmo_params[[33m"[39m[33mOc0h2[39m[33m"[39m] = ([38;5;28mself[39m.cosmo_params[[33m"[39m[33mOm0[39m[33m"[39m] - [38;5;28mself[39m.cosmo_params[[33m"[39m[33mOb0[39m[33m"[39m]) * [38;5;28mself[39m.cosmo_params[[33m"[39m[33mh[39m[33m"[39m]**[32m2[39m
+[32m    273[39m     [38;5;28mself[39m._build_params_values_dict()
+[32m--> [39m[32m274[39m     [30;43mself[39;49m[30;43m.[39;49m[30;43m_init_hmfast_cosmology[39;49m[30;43m([39;49m[30;43m)[39;49m
+[32m    276[39m [38;5;28mprint[39m([33m"[39m[33mcosmo params[39m[33m"[39m,[38;5;28mself[39m.cosmo_params)
+
+[36mFile [39m[32m/scratch/scratch-lxu/agent_dev/auto_research_agent/cosmocnc_jax/cosmocnc_jax/cosmo.py:420[39m, in [36mcosmology_model._init_hmfast_cosmology[39m[34m(self)[39m
+[32m    414[39m Cosmology = [38;5;28mself[39m._hmfast.Cosmology
+[32m    416[39m [38;5;66;03m# Set up the cosmocnc_jax.emulators (same NN as classy_sz_jax) and[39;00m
+[32m    417[39m [38;5;66;03m# the sigma8->lnAs solver. The full _predict_* JIT functions are[39;00m
+[32m    418[39m [38;5;66;03m# built *after* A_s is resolved so pk_power_fac is extracted with[39;00m
+[32m    419[39m [38;5;66;03m# the resolved-A_s pvd -- matching classy_sz_jax's order exactly.[39;00m
+[32m--> [39m[32m420[39m [30;43mself[39;49m[30;43m.[39;49m[30;43m_init_classy_predict_fns_for_hmfast[39;49m[30;43m([39;49m[30;43m)[39;49m
+[32m    422[39m [38;5;66;03m# If sigma_8 is the amplitude parameter, solve for ln(10^10 A_s)[39;00m
+[32m    423[39m [38;5;66;03m# using the SAME NN as classy_sz_jax (via _find_lnAs).[39;00m
+[32m    424[39m [38;5;28;01mif[39;00m [38;5;28mself[39m.amplitude_parameter == [33m"[39m[33msigma_8[39m[33m"[39m:
+
+[36mFile [39m[32m/scratch/scratch-lxu/agent_dev/auto_research_agent/cosmocnc_jax/cosmocnc_jax/cosmo.py:483[39m, in [36mcosmology_model._init_classy_predict_fns_for_hmfast[39m[34m(self)[39m
+[32m    472[39m [38;5;250m[39m[33;03m"""Set up the cosmocnc_jax.emulators state used by the cnc.py fast[39;00m
+[32m    473[39m [33;03mpath. Loads classy_szfast's float32 cosmopower NN (same as the[39;00m
+[32m    474[39m [33;03mclassy_sz_jax branch) and builds the sigma8->lnAs solver. The[39;00m
+[32m   (...)[39m[32m    479[39m [33;03mclassy_sz_jax branch effectively does.[39;00m
+[32m    480[39m [33;03m"""[39;00m
+[32m    481[39m [38;5;28;01mfrom[39;00m[38;5;250m [39m[34;01mcosmocnc_jax[39;00m[34;01m.[39;00m[34;01memulators[39;00m[38;5;250m [39m[38;5;28;01mimport[39;00m init_emulators, make_sigma8_solver
+[32m--> [39m[32m483[39m [38;5;28mself[39m._emu, [38;5;28mself[39m._emu_param_orders, [38;5;28mself[39m._z_interp = [30;43minit_emulators[39;49m[30;43m([39;49m
+[32m    484[39m [30;43m    [39;49m[30;43mself[39;49m[30;43m.[39;49m[30;43mcnc_params[39;49m[30;43m[[39;49m[30;43m'[39;49m[30;43mcosmo_model[39;49m[30;43m'[39;49m[30;43m][39;49m[30;43m)[39;49m
+[32m    486[39m [38;5;66;03m# Build the sigma8 solver and a temporary predict_der right away --[39;00m
+[32m    487[39m [38;5;66;03m# both are needed before we resolve A_s.[39;00m
+[32m    488[39m [38;5;28;01mfrom[39;00m[38;5;250m [39m[34;01mcosmocnc_jax[39;00m[34;01m.[39;00m[34;01memulators[39;00m[38;5;250m [39m[38;5;28;01mimport[39;00m _call_emulator
+
+[36mFile [39m[32m/scratch/scratch-lxu/agent_dev/auto_research_agent/cosmocnc_jax/cosmocnc_jax/emulators.py:29[39m, in [36minit_emulators[39m[34m(cosmo_model)[39m
+[32m     21[39m [38;5;28;01mdef[39;00m[38;5;250m [39m[34minit_emulators[39m(cosmo_model=[33m'[39m[33mlcdm[39m[33m'[39m):
+[32m     22[39m [38;5;250m    [39m[33;03m"""Load emulator objects and extract metadata. Call once at init time.[39;00m
+[32m     23[39m 
+[32m     24[39m [33;03m    Returns:[39;00m
+[32m   (...)[39m[32m     27[39m [33;03m        z_interp: (5000,) z-grid for H/DA interpolation (0 to 20)[39;00m
+[32m     28[39m [33;03m    """[39;00m
+[32m---> [39m[32m29[39m     [38;5;28;01mfrom[39;00m[38;5;250m [39m[34;01mclassy_szfast[39;00m[34;01m.[39;00m[34;01mcosmopower_jax[39;00m[38;5;250m [39m[38;5;28;01mimport[39;00m (
+[32m     30[39m         cp_pkl_nn_jax, cp_h_nn_jax, cp_da_nn_jax, cp_der_nn_jax
+[32m     31[39m     )
+[32m     32[39m     emulators = {
+[32m     33[39m         [33m'[39m[33mpkl[39m[33m'[39m: cp_pkl_nn_jax[cosmo_model],
+[32m     34[39m         [33m'[39m[33mh[39m[33m'[39m: cp_h_nn_jax[cosmo_model],
+[32m     35[39m         [33m'[39m[33mda[39m[33m'[39m: cp_da_nn_jax[cosmo_model],
+[32m     36[39m         [33m'[39m[33mder[39m[33m'[39m: cp_der_nn_jax[cosmo_model],
+[32m     37[39m     }
+[32m     38[39m     param_orders = {k: [38;5;28mlist[39m(em.parameters) [38;5;28;01mfor[39;00m k, em [38;5;129;01min[39;00m emulators.items()}
+
+[31mModuleNotFoundError[39m: No module named 'classy_szfast'
+/home/lxu/miniconda3/envs/hmfast_py311/lib/python3.11/site-packages/nbformat/__init__.py:96: MissingIDFieldWarning: Cell is missing an id field, this will become a hard error in future nbformat versions. You may want to use `normalize()` on your notebooks before validations (available since nbformat 5.1.4). Previous versions of nbformat are fixing this issue transparently, and will stop doing so in the future.
+  validate(nb)
+[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
+
+=== 25_scatter_ellgt100_contours_bestfit.ipynb ===
+RESULT FAIL An error occurred while executing the following cell:
+------------------
+samples, labels, bestfit = [], [], {}
+for cut in CUTS:
+    s = loadMCSamples(os.path.join(CHAIN_DIR, cut["root"]), settings={"ignore_rows": 0.3})
+    s.root = cut["label"]
+    samples.append(s); labels.append(cut["label"])
+    p = s.getParams(); i = int(np.argmin(s.loglikes))
+    bestfit[cut["tag"]] = dict(B=float(p.B[i]), sigma_lnY=float(p.sigma_lnY[i]))
+    print(f"{cut['label']:8s}  B = {s.mean('B'):.4f} +/- {s.std('B'):.4f}   "
+          f"sigma_lnY = {s.mean('sigma_lnY'):.4f} +/- {s.std('sigma_lnY'):.4f}   "
+          f"(MAP: B={bestfit[cut['tag']]['B']:.4f}, s={bestfit[cut['tag']]['sigma_lnY']:.4f})")
+------------------
+
+
+[31m---------------------------------------------------------------------------[39m
+[31mFileNotFoundError[39m                         Traceback (most recent call last)
+[36mCell[39m[36m [39m[32mIn[3][39m[32m, line 3[39m
+[32m      1[39m samples, labels, bestfit = [], [], {}
+[32m      2[39m [38;5;28;01mfor[39;00m cut [38;5;28;01min[39;00m CUTS:
+[32m----> [39m[32m3[39m     s = loadMCSamples(os.path.join(CHAIN_DIR, cut[[33m"root"[39m]), settings={[33m"ignore_rows"[39m: [32m0.3[39m})
+[32m      4[39m     s.root = cut[[33m"label"[39m]
+[32m      5[39m     samples.append(s); labels.append(cut[[33m"label"[39m])
+[32m      6[39m     p = s.getParams(); i = int(np.argmin(s.loglikes))
+
+[36mFile [39m[32m~/miniconda3/envs/hmfast_py311/lib/python3.11/site-packages/getdist/mcsamples.py:76[39m, in [36mloadMCSamples[39m[34m(file_root, ini, jobItem, no_cache, settings, chain_exclude)[39m
+[32m     74[39m [38;5;28;01mif[39;00m chain_exclude:
+[32m     75[39m     no_cache = [38;5;28;01mTrue[39;00m
+[32m---> [39m[32m76[39m files = [30;43mchainFiles[39;49m[30;43m([39;49m[30;43mfile_root[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43mchain_exclude[39;49m[30;43m=[39;49m[30;43mchain_exclude[39;49m[30;43m)[39;49m
+[32m     77[39m [38;5;28;01mif[39;00m [38;5;129;01mnot[39;00m files:  [38;5;66;03m# try new Cobaya format[39;00m
+[32m     78[39m     files = chainFiles(file_root, separator=[33m"[39m[33m.[39m[33m"[39m, chain_exclude=chain_exclude)
+
+[36mFile [39m[32m~/miniconda3/envs/hmfast_py311/lib/python3.11/site-packages/getdist/chains.py:98[39m, in [36mchainFiles[39m[34m(root, chain_indices, ext, separator, first_chain, last_chain, chain_exclude)[39m
+[32m     96[39m     reg_exp = re.compile(re.escape(basename) + [33m"[39m[33m([39m[33m"[39m + re.escape(separator) + [33m"[39m[33m(?P<num>[0-9]+))?[39m[33m"[39m + re.escape(ext))
+[32m     97[39m files = []
+[32m---> [39m[32m98[39m [38;5;28;01mfor[39;00m f [38;5;129;01min[39;00m [38;5;28msorted[39m([30;43mos[39;49m[30;43m.[39;49m[30;43mlistdir[39;49m[30;43m([39;49m[30;43mfolder[39;49m[30;43m)[39;49m):
+[32m     99[39m     [38;5;28;01mif[39;00m match := reg_exp.fullmatch(f):
+[32m    100[39m         index = [38;5;28mint[39m(match.group([33m"[39m[33mnum[39m[33m"[39m) [38;5;129;01mor[39;00m [32m0[39m)
+
+[31mFileNotFoundError[39m: [Errno 2] No such file or directory: '/scratch/scratch-lxu/flamingo_repo/chains/mcmc_pureGNFW_fitB_scatter_ellgt100'
+
