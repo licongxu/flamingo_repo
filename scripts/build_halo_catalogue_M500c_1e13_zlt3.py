@@ -19,6 +19,7 @@ import numpy as np
 import pandas as pd
 
 from build_y_map import _angles_for
+from flamingo_snapshots import snap_range_zlt
 
 
 def _sim_base(parent: str | None, variant: str) -> str:
@@ -32,6 +33,11 @@ DEFAULT_OUT = Path(
     "/scratch/scratch-lxu/flamingo_repo/data/hydro_L2p8m9/catalogue/"
     "halo_catalogue_M500c_1e13_zlt3_soap_hdfstream_yang26rot.csv"
 )
+# FLAMINGO snapshot numbering (dataweb output-redshift tables):
+#   L1_m9 / m10: 78 outputs (snaps 0..77); snap 17 = z=3.00, snap 77 = z=0.00.
+#   L2p8 / L1_m8: 79 outputs (snaps 0..78); extra z=12.26 at snap 1, so snap 18 = z=3.00.
+# For 0 <= z < 3, start at the first output below z=3 (L1 snap 18 / L2p8 snap 19)
+# and skip all higher-redshift snapshots (17 or 18 fewer SOAP scans per model).
 MASS_MIN = 1.0e13
 Z_MIN = 0.0
 Z_MAX = 3.0
@@ -156,7 +162,7 @@ def append_lightcone_matches(
     for start in range(0, n, args.lightcone_chunk_size):
         stop = min(start + args.lightcone_chunk_size, n)
         z = np.asarray(lc["Lightcone/Redshift"][start:stop], dtype=np.float64)
-        zkeep = (z >= Z_MIN) & (z < Z_MAX)
+        zkeep = (z >= Z_MIN) & (z < args.z_max)
         if not zkeep.any():
             continue
         soap_index = np.asarray(lc["InputHalos/SOAPIndex"][start:stop], dtype=np.int64)[zkeep]
@@ -227,6 +233,12 @@ def build(args: argparse.Namespace) -> None:
     soap_tmpl = f"{base}/SOAP-HBT/halo_properties_{{snap:04d}}.hdf5"
     args.angles = _angles_for(args.parent)
 
+    print(
+        f"layout={args.parent or args.variant} snaps {args.snap_start}..{args.snap_stop} "
+        f"({args.snap_stop - args.snap_start + 1} snapshots, z < {args.z_max})",
+        flush=True,
+    )
+
     root = hdfstream.open("cosma", "/")
     progress_path = args.out.with_suffix(args.out.suffix + ".progress.json")
     completed = set()
@@ -279,12 +291,23 @@ def parse_args() -> argparse.Namespace:
     )
     p.add_argument("--observer", type=int, default=0)
     p.add_argument("--out", type=Path, default=DEFAULT_OUT)
-    p.add_argument("--snap-start", type=int, default=18)
+    p.add_argument(
+        "--snap-start",
+        type=int,
+        default=None,
+        help="First snapshot (default: first with z < z-max from FLAMINGO table).",
+    )
     p.add_argument(
         "--snap-stop",
         type=int,
         default=None,
-        help="Last snapshot inclusive (default 77 for L1_m9, 78 for L2p8).",
+        help="Last snapshot inclusive (default: last with z < z-max from FLAMINGO table).",
+    )
+    p.add_argument(
+        "--z-max",
+        type=float,
+        default=Z_MAX,
+        help="Exclusive upper redshift bound (default 3.0).",
     )
     p.add_argument("--soap-chunk-size", type=int, default=2_000_000)
     p.add_argument("--lightcone-chunk-size", type=int, default=1_000_000)
@@ -292,8 +315,13 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--max-rows", type=int, default=None)
     p.add_argument("--resume", action="store_true")
     args = p.parse_args()
+    default_start, default_stop = snap_range_zlt(
+        args.parent, args.variant, z_max=args.z_max, z_min=Z_MIN
+    )
+    if args.snap_start is None:
+        args.snap_start = default_start
     if args.snap_stop is None:
-        args.snap_stop = 77 if args.parent == "L1_m9" else 78
+        args.snap_stop = default_stop
     return args
 
 
