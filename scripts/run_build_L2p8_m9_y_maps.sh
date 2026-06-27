@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build yang26-rotated Compton-y maps (NSIDE=4096, z<3) for L2p8_m9 lightcones 0..7.
+# Build yang26-rotated Compton-y maps (NSIDE=4096, z<=3 shells) for L2p8_m9 lightcones 0..7.
 set -euo pipefail
 
 source /scratch/scratch-lxu/venv/cmbagent_env/bin/activate
@@ -10,6 +10,10 @@ CKPT=/scratch/scratch-lxu/flamingo_map_build
 LOGDIR="${REPO}/cobaya/logs"
 mkdir -p "$CKPT" "$LOGDIR"
 
+ymap_running() {
+  pgrep -f "build_y_map.py.*--out ${1}" >/dev/null 2>&1
+}
+
 for obs in $(seq 0 7); do
   outdir="${BASE}/lightcone${obs}/healpix_map"
   out="${outdir}/y_unlensed_L2p8_m9_lc${obs}.fits"
@@ -17,6 +21,10 @@ for obs in $(seq 0 7); do
   mkdir -p "$outdir"
   if [[ -f "$out" ]]; then
     echo "skip lc${obs}: already exists at ${out}"
+    continue
+  fi
+  if ymap_running "${out}"; then
+    echo "skip lc${obs}: y-map build already running"
     continue
   fi
   echo "=== building L2p8_m9 lc${obs} y-map -> ${out} ==="

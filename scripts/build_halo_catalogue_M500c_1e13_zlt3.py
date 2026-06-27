@@ -282,6 +282,19 @@ def build(args: argparse.Namespace) -> None:
     print(f"wrote {args._rows_written:,} rows -> {args.out}", flush=True)
 
 
+def catalogue_status(args: argparse.Namespace) -> str:
+    """Return ``complete``, ``partial``, or ``missing`` for ``args.out``."""
+    progress_path = args.out.with_suffix(args.out.suffix + ".progress.json")
+    if not progress_path.exists():
+        return "missing"
+    meta = json.loads(progress_path.read_text())
+    done = set(meta.get("completed_snapshots", []))
+    need = set(range(args.snap_start, args.snap_stop + 1))
+    if need <= done:
+        return "complete"
+    return "partial"
+
+
 def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--variant", default=DEFAULT_VARIANT)
@@ -315,6 +328,11 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--progress-every", type=int, default=100_000)
     p.add_argument("--max-rows", type=int, default=None)
     p.add_argument("--resume", action="store_true")
+    p.add_argument(
+        "--status",
+        action="store_true",
+        help="Print catalogue status (complete|partial|missing) and exit.",
+    )
     args = p.parse_args()
     default_start, default_stop = snap_range_zlt(
         args.parent, args.variant, z_max=args.z_max, z_min=Z_MIN
@@ -327,4 +345,8 @@ def parse_args() -> argparse.Namespace:
 
 
 if __name__ == "__main__":
-    build(parse_args())
+    args = parse_args()
+    if args.status:
+        print(catalogue_status(args))
+    else:
+        build(args)

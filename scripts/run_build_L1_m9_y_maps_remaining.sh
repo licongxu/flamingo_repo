@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Build yang26-rotated Compton-y maps (NSIDE=4096, lc0, z<=3 shells) for all L1_m9 variants.
+# Build remaining L1_m9 y-maps (all variants except fiducial L1_m9).
+# Safe to run in parallel with an in-flight fiducial y-map build.
 set -euo pipefail
 
 source /scratch/scratch-lxu/venv/cmbagent_env/bin/activate
@@ -11,7 +12,6 @@ LOGDIR="${REPO}/cobaya/logs"
 mkdir -p "$OUTDIR" "$CKPT" "$LOGDIR"
 
 VARIANTS=(
-  L1_m9
   fgas+2sigma
   fgas-2sigma
   fgas-4sigma
@@ -49,4 +49,4 @@ for variant in "${VARIANTS[@]}"; do
     2>&1 | tee "${log}"
 done
 
-echo "All L1_m9 y-maps done."
+echo "Remaining L1_m9 y-maps done."
