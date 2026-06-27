@@ -42,24 +42,26 @@ def redshifts_for(parent: str | None, variant: str) -> tuple[float, ...]:
     return REDSHIFTS_L1_M9 if layout_for(parent, variant) == "L1_m9" else REDSHIFTS_L2P8
 
 
-def snap_range_zlt(
+def snap_range_zle(
     parent: str | None,
     variant: str,
     z_max: float = 3.0,
     z_min: float = 0.0,
 ) -> tuple[int, int]:
-    """Inclusive snapshot index range for lightcone halos with z_min <= z < z_max.
+    """Inclusive snapshot index range for lightcone halos with z_min <= z <= z_max.
 
-    Uses output snapshot redshifts only to bracket the range: include the first
-    output at z_max (its lightcone file spans down from the previous output) and
-    every later output through z_min.
+    Uses output snapshot redshifts to bracket the range: include the first
+    output at z_max (z=3.00) and every later output through z_min.
     """
     table = redshifts_for(parent, variant)
     start = next(i for i, z in enumerate(table) if z <= z_max)
     stop = next(i for i in range(len(table) - 1, -1, -1) if table[i] >= z_min)
     if start > stop:
         raise ValueError(
-            f"No snapshots bracketing {z_min} <= z < {z_max} for layout "
+            f"No snapshots bracketing {z_min} <= z <= {z_max} for layout "
             f"{layout_for(parent, variant)}."
         )
     return start, stop
+
+
+snap_range_zlt = snap_range_zle  # backward-compatible alias

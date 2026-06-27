@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build M500c>=1e13, z<3 halo-lightcone catalogues for L2p8_m9 lightcones 0..7.
+# Build M500c>=1e13, z<=3 halo-lightcone catalogues for L2p8_m9 lightcones 0..7.
 set -euo pipefail
 
 source /scratch/scratch-lxu/venv/cmbagent_env/bin/activate

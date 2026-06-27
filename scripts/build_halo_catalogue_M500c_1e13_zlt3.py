@@ -1,4 +1,4 @@
-"""Build the requested FLAMINGO M500c>=1e13, z<3 halo-lightcone CSV.
+"""Build the requested FLAMINGO M500c>=1e13, z<=3 halo-lightcone CSV.
 
 This implementation avoids slow random hdfstream reads by processing one snapshot
 at a time:
@@ -36,7 +36,7 @@ DEFAULT_OUT = Path(
 # FLAMINGO snapshot numbering (dataweb output-redshift tables):
 #   L1_m9 / m10: 78 outputs (snaps 0..77); snap 17 = z=3.00, snap 77 = z=0.00.
 #   L2p8 / L1_m8: 79 outputs (snaps 0..78); extra z=12.26 at snap 1, so snap 18 = z=3.00.
-# For 0 <= z < 3, start at the first output below z=3 (L1 snap 18 / L2p8 snap 19)
+# For 0 <= z <= 3, start at the first output at z=3.00 (L1 snap 17 / L2p8 snap 18)
 # and skip all higher-redshift snapshots (17 or 18 fewer SOAP scans per model).
 MASS_MIN = 1.0e13
 Z_MIN = 0.0
@@ -140,7 +140,7 @@ def write_header(path: Path, args: argparse.Namespace) -> None:
     tag = f"{args.parent}/{args.variant}" if args.parent else args.variant
     with path.open("w") as f:
         f.write(f"# FLAMINGO {tag} halo lightcone{args.observer} catalogue from hdfstream.\n")
-        f.write("# Selection: M_500c >= 1e13 Msun and 0 <= z < 3.0.\n")
+        f.write("# Selection: M_500c >= 1e13 Msun and 0 <= z <= 3.0.\n")
         f.write("# Joined to SOAP-HBT by InputHalos/SOAPIndex.\n")
         f.write("# Masses are Msun; radii and positions are Mpc; Compton-Y aperture values are Mpc^2.\n")
         f.write("# Rotated coordinates use the yang26 per-shell frame from the FLAMINGO map products.\n")
@@ -162,7 +162,7 @@ def append_lightcone_matches(
     for start in range(0, n, args.lightcone_chunk_size):
         stop = min(start + args.lightcone_chunk_size, n)
         z = np.asarray(lc["Lightcone/Redshift"][start:stop], dtype=np.float64)
-        zkeep = (z >= Z_MIN) & (z < args.z_max)
+        zkeep = (z >= Z_MIN) & (z <= args.z_max)
         if not zkeep.any():
             continue
         soap_index = np.asarray(lc["InputHalos/SOAPIndex"][start:stop], dtype=np.int64)[zkeep]
@@ -189,7 +189,8 @@ def append_lightcone_matches(
                 loc = loc[:remaining]
 
         r, theta_nat, phi_nat = angles_from_xyz(xyz)
-        shell_idx = np.floor(z / 0.05).astype(np.int16)
+        shell_max = args.angles.shape[1] - 1
+        shell_idx = np.minimum(np.floor(z / 0.05).astype(np.int16), shell_max)
         theta_rot, phi_rot, xyz_rot = rotate_positions(
             r, theta_nat, phi_nat, shell_idx, args.angles
         )
@@ -235,7 +236,7 @@ def build(args: argparse.Namespace) -> None:
 
     print(
         f"layout={args.parent or args.variant} snaps {args.snap_start}..{args.snap_stop} "
-        f"({args.snap_stop - args.snap_start + 1} snapshots, z < {args.z_max})",
+        f"({args.snap_stop - args.snap_start + 1} snapshots, z <= {args.z_max})",
         flush=True,
     )
 
@@ -295,19 +296,19 @@ def parse_args() -> argparse.Namespace:
         "--snap-start",
         type=int,
         default=None,
-        help="First snapshot (default: first with z < z-max from FLAMINGO table).",
+        help="First snapshot (default: first with z <= z-max from FLAMINGO table).",
     )
     p.add_argument(
         "--snap-stop",
         type=int,
         default=None,
-        help="Last snapshot inclusive (default: last with z < z-max from FLAMINGO table).",
+        help="Last snapshot inclusive (default: last with z >= z-min from FLAMINGO table).",
     )
     p.add_argument(
         "--z-max",
         type=float,
         default=Z_MAX,
-        help="Exclusive upper redshift bound (default 3.0).",
+        help="Inclusive upper redshift bound (default 3.0).",
     )
     p.add_argument("--soap-chunk-size", type=int, default=2_000_000)
     p.add_argument("--lightcone-chunk-size", type=int, default=1_000_000)
