@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Build remaining L1_m9 catalogues (all variants except fiducial L1_m9).
-# Safe to run in parallel with an in-flight fiducial build.
+# Uses lightcone-first join via build_halo_lightcone_catalogue.py.
 set -euo pipefail
 
 source /scratch/scratch-lxu/venv/cmbagent_env/bin/activate
@@ -8,6 +8,7 @@ source /scratch/scratch-lxu/venv/cmbagent_env/bin/activate
 REPO=/scratch/scratch-lxu/flamingo_repo
 OUTDIR=/rds/rds-lxu/flamingo/L1_m9/catalogues
 LOGDIR="${REPO}/cobaya/logs"
+BUILD_SCRIPT="${REPO}/scripts/build_halo_lightcone_catalogue.py"
 mkdir -p "$OUTDIR" "$LOGDIR"
 
 VARIANTS=(
@@ -22,11 +23,11 @@ VARIANTS=(
 )
 
 catalogue_running() {
-  pgrep -f "build_halo_catalogue_M500c_1e13_zlt3.py.*--out ${1}" >/dev/null 2>&1
+  pgrep -f "build_halo_lightcone_catalogue.py.*--out ${1}" >/dev/null 2>&1
 }
 
 catalogue_status() {
-  python "${REPO}/scripts/build_halo_catalogue_M500c_1e13_zlt3.py" \
+  python "${BUILD_SCRIPT}" \
     --parent L1_m9 \
     --variant "$2" \
     --out "$1" \
@@ -48,10 +49,11 @@ for variant in "${VARIANTS[@]}"; do
   fi
 
   echo "=== building catalogue ${variant} -> ${out} (status=${status}) ==="
-  python "${REPO}/scripts/build_halo_catalogue_M500c_1e13_zlt3.py" \
+  python "${BUILD_SCRIPT}" \
     --parent L1_m9 \
     --variant "${variant}" \
     --out "${out}" \
+    --no-y-columns \
     --resume \
     2>&1 | tee "${log}"
 done

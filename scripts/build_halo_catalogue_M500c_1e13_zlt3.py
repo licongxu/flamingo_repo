@@ -1,10 +1,7 @@
-"""Build the requested FLAMINGO M500c>=1e13, z<=3 halo-lightcone CSV.
+"""Deprecated: use build_halo_lightcone_catalogue.py (lightcone-first, faster).
 
-This implementation avoids slow random hdfstream reads by processing one snapshot
-at a time:
-  1. scan the SOAP snapshot contiguously and cache only halos with M500c>=1e13;
-  2. scan that snapshot's halo lightcone and locally join on SOAPIndex;
-  3. append original and yang26-rotated positions plus SOAP Y_500c/Y_5R500c.
+This SOAP-first implementation scans every SOAP halo before joining the lightcone.
+Kept for reference; production builds should call build_halo_lightcone_catalogue.py.
 """
 from __future__ import annotations
 

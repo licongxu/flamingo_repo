@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 # Build yang26-rotated Compton-y maps (NSIDE=4096, z<=3 shells) for L2p8_m9 lightcones 0..7.
+#
+# Intended to run AFTER run_build_L1_m9_y_maps.sh (or via run_build_all_y_maps_L1_then_L2.sh).
+# Do not launch in parallel with L1 y-map builds.
 set -euo pipefail
 
 source /scratch/scratch-lxu/venv/cmbagent_env/bin/activate

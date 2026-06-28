@@ -72,12 +72,34 @@ def _angles_for(parent: str | None) -> np.ndarray:
     return ANGLES_L1 if parent == "L1_m9" else ANGLES_L2P8
 
 
-def rotate_map(hmap: np.ndarray, rot_theta: float, rot_phi: float) -> np.ndarray:
-    """Rotate in alm space (FLAMINGO yang26 convention)."""
+CKPT_METHOD = "alm_accum_v1"
+
+
+def _rotator_for(rot_theta: float, rot_phi: float) -> hp.Rotator:
+    """yang26 rotation, identical convention to the catalogue position rotation."""
     longitude = rot_phi * 180.0 / np.pi
     latitude = rot_theta * 180.0 / np.pi
-    rot = hp.Rotator(rot=[longitude, latitude], inv=True)
-    return rot.rotate_map_alms(hmap)
+    return hp.Rotator(rot=[longitude, latitude], inv=True)
+
+
+def rotate_map(hmap: np.ndarray, rot_theta: float, rot_phi: float) -> np.ndarray:
+    """Rotate a map in alm space (FLAMINGO yang26 convention).
+
+    Kept for reference / verification: equivalent to
+    ``alm2map(rotate_alm(map2alm(hmap)))``.
+    """
+    return _rotator_for(rot_theta, rot_phi).rotate_map_alms(hmap)
+
+
+def rotated_alm(hmap: np.ndarray, rot_theta: float, rot_phi: float, lmax: int) -> np.ndarray:
+    """map2alm + yang26 rotate_alm, the per-group term of the integrated map.
+
+    Summing these terms over all angle-groups and calling ``alm2map`` once is
+    exactly equal to summing ``rotate_map_alms`` per group (alm2map is linear),
+    but avoids one inverse transform per group.
+    """
+    alm = hp.map2alm(hmap, lmax=lmax, use_pixel_weights=True)
+    return _rotator_for(rot_theta, rot_phi).rotate_alm(alm, lmax=lmax)
 
 
 def group_consecutive_same_angles(angles: np.ndarray, shell_max: int):
@@ -127,39 +149,41 @@ def build_y_map(
         )
 
     npix = 12 * nside * nside
+    lmax = 3 * nside - 1  # matches healpy rotate_map_alms / map2alm default
     root = hdfstream.open("cosma", "/")
     base = _healpix_base(parent, variant, nside, observer)
     groups = list(group_consecutive_same_angles(angles, shell_max))
 
     tag = f"{parent}_{variant}" if parent else variant
     ckpt_dir.mkdir(parents=True, exist_ok=True)
-    ckpt_y = ckpt_dir / f"ckpt_y_{tag}_lc{observer}_nside{nside}.npy"
+    ckpt_alm = ckpt_dir / f"ckpt_alm_{tag}_lc{observer}_nside{nside}.npy"
+    ckpt_yident = ckpt_dir / f"ckpt_yident_{tag}_lc{observer}_nside{nside}.npy"
     ckpt_meta = ckpt_dir / f"ckpt_meta_{tag}_lc{observer}_nside{nside}.json"
 
+    n_alm = hp.Alm.getsize(lmax)
     done: set[int] = set()
-    if ckpt_y.exists() and ckpt_meta.exists():
+    alm_total = np.zeros(n_alm, dtype=np.complex128)
+    y_ident = np.zeros(npix, dtype=np.float64)
+    if ckpt_alm.exists() and ckpt_yident.exists() and ckpt_meta.exists():
         meta = json.loads(ckpt_meta.read_text())
         if (
-            meta.get("shell_max") == shell_max
+            meta.get("method") == CKPT_METHOD
+            and meta.get("shell_max") == shell_max
             and meta.get("nside") == nside
             and meta.get("variant") == variant
             and meta.get("parent") == parent
         ):
-            y = np.load(ckpt_y)
+            alm_total = np.load(ckpt_alm)
+            y_ident = np.load(ckpt_yident)
             done = set(meta.get("completed_groups", []))
-            print(
-                f"resuming: {len(done)} groups already folded in "
-                f"(mean so far {y.mean():.3e})",
-                flush=True,
-            )
+            print(f"resuming: {len(done)} groups already folded in", flush=True)
         else:
-            y = np.zeros(npix, dtype=np.float64)
-    else:
-        y = np.zeros(npix, dtype=np.float64)
+            print("existing checkpoint incompatible (method/params), starting fresh", flush=True)
 
     print(
         f"variant={variant} parent={parent} lc{observer} shell_max={shell_max} "
-        f"-> {len(groups)} angle-groups; NSIDE={nside}, NPIX={npix:,}",
+        f"-> {len(groups)} angle-groups; NSIDE={nside}, NPIX={npix:,}, lmax={lmax} "
+        f"(alm-accumulation: one alm2map at the end)",
         flush=True,
     )
 
@@ -185,34 +209,41 @@ def build_y_map(
             print(f"    shell_{i} folded in ({time.time() - t0:.0f}s)", flush=True)
 
         if theta == 0.0 and phi == 0.0:
-            y += group_sum
+            y_ident += group_sum
             print(f"  group {gi + 1}: no rotation (identity)", flush=True)
         else:
             t0 = time.time()
-            print(f"  group {gi + 1}: rotating summed map once (alm)…", flush=True)
-            y += rotate_map(group_sum, theta, phi)
-            print(f"  group {gi + 1}: rotated ({time.time() - t0:.0f}s)", flush=True)
+            print(f"  group {gi + 1}: map2alm + rotate_alm (accumulate)…", flush=True)
+            alm_total += rotated_alm(group_sum, theta, phi, lmax)
+            print(f"  group {gi + 1}: alm folded ({time.time() - t0:.0f}s)", flush=True)
         del group_sum
 
         done.add(gi)
-        np.save(ckpt_y, y)
+        np.save(ckpt_alm, alm_total)
+        np.save(ckpt_yident, y_ident)
         ckpt_meta.write_text(
             json.dumps(
                 {
+                    "method": CKPT_METHOD,
                     "variant": variant,
                     "parent": parent,
                     "observer": observer,
                     "nside": nside,
                     "shell_max": shell_max,
+                    "lmax": lmax,
                     "completed_groups": sorted(done),
                 }
             )
         )
         print(
-            f"  checkpoint saved after group {gi + 1} "
-            f"({time.time() - t_group:.0f}s, mean(y)={y.mean():.3e})",
+            f"  checkpoint saved after group {gi + 1} ({time.time() - t_group:.0f}s)",
             flush=True,
         )
+
+    print("synthesising final map (single alm2map)…", flush=True)
+    t0 = time.time()
+    y = y_ident + hp.alm2map(alm_total, nside=nside, lmax=lmax)
+    print(f"  alm2map done ({time.time() - t0:.0f}s)", flush=True)
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
     hp.write_map(str(out_path), y, nest=False, overwrite=True, dtype=np.float64)
@@ -220,7 +251,10 @@ def build_y_map(
         f"\nWrote {out_path}  mean(y)={y.mean():.3e}  NSIDE={nside} (RING)",
         flush=True,
     )
-    print("Build complete. Checkpoint files can be deleted:", ckpt_y, ckpt_meta, flush=True)
+    print(
+        "Build complete. Checkpoint files can be deleted:",
+        ckpt_alm, ckpt_yident, ckpt_meta, flush=True,
+    )
 
 
 def main() -> None:

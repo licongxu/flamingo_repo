@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Build M500c>=1e13, z<=3 halo-lightcone catalogues for all L1_m9 variants.
-# Snapshots 17..77 only (skips 17 high-z SOAP scans vs the full 78 outputs).
+# Lightcone-first join (build_halo_lightcone_catalogue.py); snaps 17..77.
 set -euo pipefail
 
 source /scratch/scratch-lxu/venv/cmbagent_env/bin/activate
@@ -22,12 +22,14 @@ VARIANTS=(
   Jet_fgas-4sigma
 )
 
+BUILD_SCRIPT="${REPO}/scripts/build_halo_lightcone_catalogue.py"
+
 catalogue_running() {
-  pgrep -f "build_halo_catalogue_M500c_1e13_zlt3.py.*--out ${1}" >/dev/null 2>&1
+  pgrep -f "build_halo_lightcone_catalogue.py.*--out ${1}" >/dev/null 2>&1
 }
 
 catalogue_status() {
-  python "${REPO}/scripts/build_halo_catalogue_M500c_1e13_zlt3.py" \
+  python "${BUILD_SCRIPT}" \
     --parent L1_m9 \
     --variant "$2" \
     --out "$1" \
@@ -38,6 +40,11 @@ build_variant() {
   local variant="$1"
   local out="${OUTDIR}/halo_catalogue_M500c_1e13_zlt3_${variant}_yang26rot.csv"
   local log="${LOGDIR}/build_catalogue_L1_m9_${variant}.log"
+  local yflag=(--no-y-columns)
+  # L1_m9 partial build already has Compton-Y columns; keep schema on resume.
+  if [[ "${variant}" == "L1_m9" && -f "${out}" ]]; then
+    yflag=()
+  fi
 
   if catalogue_running "${out}"; then
     echo "skip ${variant}: build already running"
@@ -51,10 +58,11 @@ build_variant() {
   fi
 
   echo "=== building catalogue ${variant} -> ${out} (status=${status}) ==="
-  python "${REPO}/scripts/build_halo_catalogue_M500c_1e13_zlt3.py" \
+  python "${BUILD_SCRIPT}" \
     --parent L1_m9 \
     --variant "${variant}" \
     --out "${out}" \
+    "${yflag[@]}" \
     --resume \
     2>&1 | tee "${log}"
 }
@@ -76,7 +84,7 @@ PY
   )"
   if [[ "${done17}" != "True" ]]; then
     echo "=== backfill L1_m9 snap 17 (z=3.00) -> ${fb_out} ==="
-    python "${REPO}/scripts/build_halo_catalogue_M500c_1e13_zlt3.py" \
+    python "${BUILD_SCRIPT}" \
       --parent L1_m9 \
       --variant L1_m9 \
       --snap-start 17 \

@@ -10,7 +10,7 @@ mkdir -p "$LOGDIR"
 {
   echo "$(date -Is) queued L1_m9 catalogue build: waiting for in-flight jobs"
   "${REPO}/scripts/wait_for_flamingo_builds.sh" \
-    'build_halo_catalogue_M500c_1e13_zlt3.py' \
+    'build_halo_lightcone_catalogue.py' \
     'run_build_L1_m9_catalogues.sh'
   echo "$(date -Is) starting L1_m9 catalogue build (current code)"
   QUEUED_RUN=1 "${REPO}/scripts/run_build_L1_m9_catalogues.sh"
