@@ -1,0 +1,6 @@
+map nside 4096 mean 1.5027717167444153e-06 median 1.049660217999099e-06 (19s)
+massive halos (M500c>1e14): 25294
+  ROTATED: mean y at halo pix = 4.527e-06  (vs global mean 1.503e-06)
+  NATIVE: mean y at halo pix = 1.493e-06  (vs global mean 1.503e-06)
+top200 5arcmin disc: ROT=2.874e-06  NAT=1.460e-06  ratio=2.0
+DONE (62s)

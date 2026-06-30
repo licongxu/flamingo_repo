@@ -1,0 +1,30 @@
+2026-06-27T17:14:13+01:00 starting sequential FLAMINGO build pipeline
+2026-06-27T17:14:13+01:00 === PHASE: L1_m9 catalogues ===
+=== building catalogue L1_m9 -> /rds/rds-lxu/flamingo/L1_m9/catalogues/halo_catalogue_M500c_1e13_zlt3_L1_m9_yang26rot.csv (status=partial) ===
+=== building catalogue L1_m9 -> /rds/rds-lxu/flamingo/L1_m9/catalogues/halo_catalogue_M500c_1e13_zlt3_L1_m9_yang26rot.csv (status=partial) ===
+layout=L1_m9 snaps 17..77 (61 snapshots, z <= 3.0)
+layout=L1_m9 snaps 17..77 (61 snapshots, z <= 3.0)
+resuming: 22 snapshots done, 3,269,010 rows written
+snap 0017: scanning SOAP for M500c>=1e13
+resuming: 22 snapshots done, 3,269,010 rows written
+snap 0017: scanning SOAP for M500c>=1e13
+snap 0017: kept 1,220 SOAP halos; joining lightcone
+snap 0017: kept 1,220 SOAP halos; joining lightcone
+Terminated
+Terminated
+2026-06-27T17:18:18+01:00 starting dual-pipeline FLAMINGO build (catalogues || y-maps, sequential within each)
+2026-06-27T17:18:18+01:00 starting dual-pipeline FLAMINGO build (catalogues || y-maps, sequential within each)
+2026-06-27T17:18:18+01:00 catalogues pipeline PID=577439 log=/scratch/scratch-lxu/flamingo_repo/cobaya/logs/run_build_flamingo_catalogues_pipeline.log
+2026-06-27T17:18:18+01:00 catalogues pipeline PID=577439 log=/scratch/scratch-lxu/flamingo_repo/cobaya/logs/run_build_flamingo_catalogues_pipeline.log
+2026-06-27T17:18:18+01:00 y-maps pipeline PID=577440 log=/scratch/scratch-lxu/flamingo_repo/cobaya/logs/run_build_flamingo_y_maps_pipeline.log
+2026-06-27T17:18:18+01:00 y-maps pipeline PID=577440 log=/scratch/scratch-lxu/flamingo_repo/cobaya/logs/run_build_flamingo_y_maps_pipeline.log
+2026-06-27T17:58:52+01:00 pipeline failed (catalogues exit=143, y-maps exit=143)
+2026-06-27T17:58:52+01:00 pipeline failed (catalogues exit=143, y-maps exit=143)
+2026-06-27T17:59:16+01:00 starting dual-pipeline FLAMINGO build (catalogues || y-maps, sequential within each)
+2026-06-27T17:59:16+01:00 starting dual-pipeline FLAMINGO build (catalogues || y-maps, sequential within each)
+2026-06-27T17:59:16+01:00 catalogues pipeline PID=749039 log=/scratch/scratch-lxu/flamingo_repo/cobaya/logs/run_build_flamingo_catalogues_pipeline.log
+2026-06-27T17:59:16+01:00 catalogues pipeline PID=749039 log=/scratch/scratch-lxu/flamingo_repo/cobaya/logs/run_build_flamingo_catalogues_pipeline.log
+2026-06-27T17:59:16+01:00 y-maps pipeline PID=749040 log=/scratch/scratch-lxu/flamingo_repo/cobaya/logs/run_build_flamingo_y_maps_pipeline.log
+2026-06-27T17:59:16+01:00 y-maps pipeline PID=749040 log=/scratch/scratch-lxu/flamingo_repo/cobaya/logs/run_build_flamingo_y_maps_pipeline.log
+2026-06-27T20:03:24+01:00 pipeline failed (catalogues exit=143, y-maps exit=143)
+2026-06-27T20:03:24+01:00 pipeline failed (catalogues exit=143, y-maps exit=143)

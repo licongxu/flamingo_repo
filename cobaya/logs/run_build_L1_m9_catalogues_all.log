@@ -1,0 +1,105 @@
+=== building catalogue L1_m9 -> /rds/rds-lxu/flamingo/L1_m9/catalogues/halo_catalogue_M500c_1e13_zlt3_L1_m9_yang26rot.csv ===
+snap 0018: scanning SOAP for M500c>=1e13
+snap 0018: kept 1,398 SOAP halos; joining lightcone
+snap 0018: wrote 35,460 rows (3.2 min total)
+snap 0019: scanning SOAP for M500c>=1e13
+snap 0019: kept 1,585 SOAP halos; joining lightcone
+snap 0019: wrote 41,201 rows (6.1 min total)
+snap 0020: scanning SOAP for M500c>=1e13
+snap 0020: kept 1,816 SOAP halos; joining lightcone
+    wrote 100,076 rows total
+snap 0020: wrote 47,025 rows (9.2 min total)
+snap 0021: scanning SOAP for M500c>=1e13
+snap 0021: kept 2,079 SOAP halos; joining lightcone
+snap 0021: wrote 53,858 rows (12.6 min total)
+snap 0022: scanning SOAP for M500c>=1e13
+snap 0022: kept 2,310 SOAP halos; joining lightcone
+    wrote 200,097 rows total
+snap 0022: wrote 60,295 rows (16.3 min total)
+snap 0023: scanning SOAP for M500c>=1e13
+snap 0023: kept 2,605 SOAP halos; joining lightcone
+    wrote 300,314 rows total
+snap 0023: wrote 67,998 rows (19.9 min total)
+snap 0024: scanning SOAP for M500c>=1e13
+snap 0024: kept 2,955 SOAP halos; joining lightcone
+snap 0024: wrote 77,400 rows (23.3 min total)
+snap 0025: scanning SOAP for M500c>=1e13
+snap 0025: kept 3,308 SOAP halos; joining lightcone
+    wrote 400,538 rows total
+snap 0025: wrote 86,671 rows (27.0 min total)
+snap 0026: scanning SOAP for M500c>=1e13
+snap 0026: kept 3,717 SOAP halos; joining lightcone
+    wrote 500,002 rows total
+snap 0026: wrote 97,386 rows (31.9 min total)
+snap 0027: scanning SOAP for M500c>=1e13
+snap 0027: kept 4,125 SOAP halos; joining lightcone
+    wrote 600,587 rows total
+snap 0027: wrote 108,220 rows (39.1 min total)
+snap 0028: scanning SOAP for M500c>=1e13
+snap 0028: kept 4,630 SOAP halos; joining lightcone
+    wrote 700,366 rows total
+snap 0028: wrote 121,905 rows (43.1 min total)
+snap 0029: scanning SOAP for M500c>=1e13
+snap 0029: kept 5,110 SOAP halos; joining lightcone
+    wrote 800,648 rows total
+    wrote 900,580 rows total
+snap 0029: wrote 134,274 rows (47.7 min total)
+snap 0030: scanning SOAP for M500c>=1e13
+snap 0030: kept 5,633 SOAP halos; joining lightcone
+    wrote 1,000,608 rows total
+snap 0030: wrote 147,743 rows (52.9 min total)
+snap 0031: scanning SOAP for M500c>=1e13
+snap 0031: kept 6,236 SOAP halos; joining lightcone
+    wrote 1,100,224 rows total
+    wrote 1,200,842 rows total
+snap 0031: wrote 163,687 rows (59.0 min total)
+snap 0032: scanning SOAP for M500c>=1e13
+snap 0032: kept 6,823 SOAP halos; joining lightcone
+    wrote 1,300,514 rows total
+    wrote 1,400,786 rows total
+snap 0032: wrote 177,976 rows (64.2 min total)
+snap 0033: scanning SOAP for M500c>=1e13
+snap 0033: kept 7,541 SOAP halos; joining lightcone
+    wrote 1,500,028 rows total
+    wrote 1,600,916 rows total
+snap 0033: wrote 196,309 rows (70.8 min total)
+snap 0034: scanning SOAP for M500c>=1e13
+snap 0034: kept 8,348 SOAP halos; joining lightcone
+    wrote 1,701,032 rows total
+    wrote 1,800,795 rows total
+snap 0034: wrote 217,407 rows (77.3 min total)
+snap 0035: scanning SOAP for M500c>=1e13
+snap 0035: kept 9,200 SOAP halos; joining lightcone
+    wrote 1,901,088 rows total
+    wrote 2,000,117 rows total
+snap 0035: wrote 238,306 rows (84.3 min total)
+snap 0036: scanning SOAP for M500c>=1e13
+snap 0036: kept 10,103 SOAP halos; joining lightcone
+    wrote 2,101,035 rows total
+    wrote 2,200,154 rows total
+    wrote 2,300,416 rows total
+snap 0036: wrote 261,198 rows (90.8 min total)
+snap 0037: scanning SOAP for M500c>=1e13
+snap 0037: kept 11,078 SOAP halos; joining lightcone
+    wrote 2,401,479 rows total
+    wrote 2,500,056 rows total
+    wrote 2,601,355 rows total
+snap 0037: wrote 286,991 rows (98.5 min total)
+snap 0038: scanning SOAP for M500c>=1e13
+snap 0038: kept 12,115 SOAP halos; joining lightcone
+    wrote 2,700,899 rows total
+    wrote 2,800,075 rows total
+    wrote 2,900,184 rows total
+snap 0038: wrote 311,067 rows (106.0 min total)
+snap 0039: scanning SOAP for M500c>=1e13
+snap 0039: kept 13,271 SOAP halos; joining lightcone
+    wrote 3,000,992 rows total
+    wrote 3,100,534 rows total
+    wrote 3,201,228 rows total
+snap 0039: wrote 336,633 rows (114.4 min total)
+snap 0040: scanning SOAP for M500c>=1e13
+snap 0040: kept 14,428 SOAP halos; joining lightcone
+    wrote 3,300,522 rows total
+    wrote 3,401,465 rows total
+    wrote 3,501,512 rows total
+Terminated

@@ -1,0 +1,20 @@
+2026-06-28T04:18:53+01:00 === catalogue build start (slab-read, max_parallel=4) ===
+launch L1 L1_m9 -> /rds/rds-lxu/flamingo/L1_m9/catalogues/halo_catalogue_M500c_1e13_zlt3_L1_m9_yang26rot.csv (status=partial)
+launch L1 fgas+2sigma -> /rds/rds-lxu/flamingo/L1_m9/catalogues/halo_catalogue_M500c_1e13_zlt3_fgas+2sigma_yang26rot.csv (status=partial)
+launch L1 fgas-2sigma -> /rds/rds-lxu/flamingo/L1_m9/catalogues/halo_catalogue_M500c_1e13_zlt3_fgas-2sigma_yang26rot.csv (status=missing)
+launch L1 fgas-4sigma -> /rds/rds-lxu/flamingo/L1_m9/catalogues/halo_catalogue_M500c_1e13_zlt3_fgas-4sigma_yang26rot.csv (status=missing)
+launch L1 fgas-8sigma -> /rds/rds-lxu/flamingo/L1_m9/catalogues/halo_catalogue_M500c_1e13_zlt3_fgas-8sigma_yang26rot.csv (status=missing)
+launch L1 Mstar-1sigma -> /rds/rds-lxu/flamingo/L1_m9/catalogues/halo_catalogue_M500c_1e13_zlt3_Mstar-1sigma_yang26rot.csv (status=missing)
+launch L1 Mstar-1sigma_fgas-4sigma -> /rds/rds-lxu/flamingo/L1_m9/catalogues/halo_catalogue_M500c_1e13_zlt3_Mstar-1sigma_fgas-4sigma_yang26rot.csv (status=missing)
+launch L1 Jet -> /rds/rds-lxu/flamingo/L1_m9/catalogues/halo_catalogue_M500c_1e13_zlt3_Jet_yang26rot.csv (status=missing)
+launch L1 Jet_fgas-4sigma -> /rds/rds-lxu/flamingo/L1_m9/catalogues/halo_catalogue_M500c_1e13_zlt3_Jet_fgas-4sigma_yang26rot.csv (status=missing)
+skip L2 lc0: complete
+launch L2 lc1 -> /rds/rds-lxu/flamingo/L2p8_m9/lightcone1/catalogues/halo_catalogue_M500c_1e13_zlt3_L2p8_m9_yang26rot.csv (status=partial)
+launch L2 lc2 -> /rds/rds-lxu/flamingo/L2p8_m9/lightcone2/catalogues/halo_catalogue_M500c_1e13_zlt3_L2p8_m9_yang26rot.csv (status=missing)
+launch L2 lc3 -> /rds/rds-lxu/flamingo/L2p8_m9/lightcone3/catalogues/halo_catalogue_M500c_1e13_zlt3_L2p8_m9_yang26rot.csv (status=missing)
+launch L2 lc4 -> /rds/rds-lxu/flamingo/L2p8_m9/lightcone4/catalogues/halo_catalogue_M500c_1e13_zlt3_L2p8_m9_yang26rot.csv (status=missing)
+launch L2 lc5 -> /rds/rds-lxu/flamingo/L2p8_m9/lightcone5/catalogues/halo_catalogue_M500c_1e13_zlt3_L2p8_m9_yang26rot.csv (status=missing)
+launch L2 lc6 -> /rds/rds-lxu/flamingo/L2p8_m9/lightcone6/catalogues/halo_catalogue_M500c_1e13_zlt3_L2p8_m9_yang26rot.csv (status=missing)
+launch L2 lc7 -> /rds/rds-lxu/flamingo/L2p8_m9/lightcone7/catalogues/halo_catalogue_M500c_1e13_zlt3_L2p8_m9_yang26rot.csv (status=missing)
+launched 16 job(s), waiting (max 4 concurrent)...
+2026-06-29T08:44:04+01:00 === catalogue build done ===

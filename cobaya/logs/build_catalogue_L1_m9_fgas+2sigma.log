@@ -1,0 +1,115 @@
+layout=L1_m9 snaps 17..77 (61 snapshots, z <= 3.0)
+snap 0017: scanning SOAP for M500c>=1e13
+snap 0017: kept 1,298 SOAP halos; joining lightcone
+snap 0017: wrote 16,784 rows (10.2 min total)
+snap 0018: scanning SOAP for M500c>=1e13
+snap 0018: kept 1,495 SOAP halos; joining lightcone
+snap 0018: wrote 37,855 rows (15.1 min total)
+snap 0019: scanning SOAP for M500c>=1e13
+snap 0019: kept 1,681 SOAP halos; joining lightcone
+snap 0019: wrote 43,528 rows (19.6 min total)
+snap 0020: scanning SOAP for M500c>=1e13
+snap 0020: kept 1,936 SOAP halos; joining lightcone
+    wrote 100,101 rows total
+snap 0020: wrote 49,985 rows (24.1 min total)
+snap 0021: scanning SOAP for M500c>=1e13
+snap 0021: kept 2,185 SOAP halos; joining lightcone
+    wrote 200,326 rows total
+snap 0021: wrote 56,394 rows (29.3 min total)
+snap 0022: scanning SOAP for M500c>=1e13
+snap 0022: kept 2,444 SOAP halos; joining lightcone
+snap 0022: wrote 63,758 rows (34.6 min total)
+snap 0023: scanning SOAP for M500c>=1e13
+snap 0023: kept 2,786 SOAP halos; joining lightcone
+    wrote 300,227 rows total
+snap 0023: wrote 72,495 rows (39.4 min total)
+snap 0024: scanning SOAP for M500c>=1e13
+snap 0024: kept 3,143 SOAP halos; joining lightcone
+    wrote 400,318 rows total
+snap 0024: wrote 82,002 rows (44.8 min total)
+snap 0025: scanning SOAP for M500c>=1e13
+snap 0025: kept 3,543 SOAP halos; joining lightcone
+    wrote 500,046 rows total
+snap 0025: wrote 92,598 rows (50.6 min total)
+snap 0026: scanning SOAP for M500c>=1e13
+snap 0026: kept 3,964 SOAP halos; joining lightcone
+layout=L1_m9 snaps 17..77 (61 snapshots, z <= 3.0)
+resuming: 9 snapshots done, 515,399 rows written
+snap 0017: already complete
+snap 0018: already complete
+snap 0019: already complete
+snap 0020: already complete
+snap 0021: already complete
+snap 0022: already complete
+snap 0023: already complete
+snap 0024: already complete
+snap 0025: already complete
+snap 0026: 159,319,983 lightcone rows
+    wrote 600,102 rows total
+layout=L1_m9 snaps 17..77 (61 snapshots, z <= 3.0)
+resuming: 9 snapshots done, 515,399 rows written
+snap 0017: already complete
+snap 0018: already complete
+snap 0019: already complete
+snap 0020: already complete
+snap 0021: already complete
+snap 0022: already complete
+snap 0023: already complete
+snap 0024: already complete
+snap 0025: already complete
+snap 0026: 159,319,983 lightcone rows
+resuming: 9 snapshots done, 515,399 rows written
+layout=L1_m9 snaps 17..77 (52 to process after prefilter, z <= 3.0)
+snap 0026: 103,631 rows (165.6s)
+snap 0027: 116,343 rows (153.9s)
+snap 0028: 129,501 rows (147.3s)
+snap 0029: 142,654 rows (114.6s)
+snap 0030: 157,994 rows (149.8s)
+snap 0031: 175,079 rows (180.8s)
+snap 0032: 191,676 rows (167.1s)
+snap 0033: 212,045 rows (139.7s)
+snap 0034: 232,686 rows (148.8s)
+snap 0035: 255,267 rows (167.5s)
+snap 0036: 279,960 rows (194.9s)
+snap 0037: 308,453 rows (156.3s)
+snap 0038: 334,347 rows (201.0s)
+snap 0039: 363,182 rows (194.8s)
+snap 0040: 395,196 rows (214.9s)
+snap 0041: 424,454 rows (171.7s)
+snap 0042: 454,812 rows (168.8s)
+snap 0043: 490,243 rows (190.4s)
+snap 0044: 524,977 rows (218.3s)
+snap 0045: 560,553 rows (173.6s)
+snap 0046: 592,396 rows (222.8s)
+snap 0047: 626,921 rows (208.5s)
+snap 0048: 668,445 rows (204.9s)
+snap 0049: 703,548 rows (185.5s)
+snap 0050: 736,828 rows (194.7s)
+snap 0051: 772,356 rows (171.9s)
+snap 0052: 798,845 rows (199.8s)
+snap 0053: 828,680 rows (191.1s)
+snap 0054: 856,306 rows (216.6s)
+snap 0055: 878,877 rows (177.2s)
+snap 0056: 894,461 rows (179.4s)
+snap 0057: 902,430 rows (185.4s)
+snap 0058: 908,442 rows (250.2s)
+snap 0059: 910,846 rows (218.0s)
+snap 0060: 902,014 rows (209.7s)
+snap 0061: 889,621 rows (206.1s)
+snap 0062: 866,357 rows (190.0s)
+snap 0063: 835,426 rows (177.9s)
+snap 0064: 794,599 rows (170.1s)
+snap 0065: 742,766 rows (185.8s)
+snap 0066: 687,367 rows (173.1s)
+snap 0067: 624,998 rows (148.8s)
+snap 0068: 551,248 rows (120.7s)
+snap 0069: 475,439 rows (95.2s)
+snap 0070: 394,410 rows (135.8s)
+snap 0071: 316,447 rows (132.9s)
+snap 0072: 234,434 rows (96.8s)
+snap 0073: 164,152 rows (53.5s)
+snap 0074: 99,888 rows (96.5s)
+snap 0075: 47,146 rows (24.6s)
+snap 0076: 13,341 rows (58.4s)
+snap 0077: 567 rows (48.0s)
+wrote 26,088,053 rows -> /rds/rds-lxu/flamingo/L1_m9/catalogues/halo_catalogue_M500c_1e13_zlt3_fgas+2sigma_yang26rot.csv (142.5 min)

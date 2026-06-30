@@ -1,0 +1,37 @@
+=== building catalogue fgas+2sigma -> /rds/rds-lxu/flamingo/L1_m9/catalogues/halo_catalogue_M500c_1e13_zlt3_fgas+2sigma_yang26rot.csv (status=missing) ===
+layout=L1_m9 snaps 17..77 (61 snapshots, z <= 3.0)
+snap 0017: scanning SOAP for M500c>=1e13
+snap 0017: kept 1,298 SOAP halos; joining lightcone
+snap 0017: wrote 16,784 rows (10.2 min total)
+snap 0018: scanning SOAP for M500c>=1e13
+snap 0018: kept 1,495 SOAP halos; joining lightcone
+snap 0018: wrote 37,855 rows (15.1 min total)
+snap 0019: scanning SOAP for M500c>=1e13
+snap 0019: kept 1,681 SOAP halos; joining lightcone
+snap 0019: wrote 43,528 rows (19.6 min total)
+snap 0020: scanning SOAP for M500c>=1e13
+snap 0020: kept 1,936 SOAP halos; joining lightcone
+    wrote 100,101 rows total
+snap 0020: wrote 49,985 rows (24.1 min total)
+snap 0021: scanning SOAP for M500c>=1e13
+snap 0021: kept 2,185 SOAP halos; joining lightcone
+    wrote 200,326 rows total
+snap 0021: wrote 56,394 rows (29.3 min total)
+snap 0022: scanning SOAP for M500c>=1e13
+snap 0022: kept 2,444 SOAP halos; joining lightcone
+snap 0022: wrote 63,758 rows (34.6 min total)
+snap 0023: scanning SOAP for M500c>=1e13
+snap 0023: kept 2,786 SOAP halos; joining lightcone
+    wrote 300,227 rows total
+snap 0023: wrote 72,495 rows (39.4 min total)
+snap 0024: scanning SOAP for M500c>=1e13
+snap 0024: kept 3,143 SOAP halos; joining lightcone
+    wrote 400,318 rows total
+snap 0024: wrote 82,002 rows (44.8 min total)
+snap 0025: scanning SOAP for M500c>=1e13
+snap 0025: kept 3,543 SOAP halos; joining lightcone
+    wrote 500,046 rows total
+snap 0025: wrote 92,598 rows (50.6 min total)
+snap 0026: scanning SOAP for M500c>=1e13
+snap 0026: kept 3,964 SOAP halos; joining lightcone
+Terminated

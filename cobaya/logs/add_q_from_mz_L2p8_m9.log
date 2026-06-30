@@ -1,0 +1,68 @@
+JAX backend: gpu  devices: [CudaDevice(id=0)]
+A_SZ=-4.051178  B=1.35  sigma_lnY=0.173  M_min=5e+13
+=== lightcone0 ===
+  lc0: scanned 5,000,000, kept 86,496 (16s)
+  lc0: scanned 10,000,000, kept 288,209 (33s)
+  lc0: scanned 15,000,000, kept 593,980 (50s)
+  lc0: scanned 20,000,000, kept 1,013,130 (70s)
+  lc0: scanned 24,779,072, kept 1,555,542 (91s)
+lc0: kept 1,555,542/24,779,072, N(q>5)=1,155 -> /rds/rds-lxu/flamingo/L2p8_m9/lightcone0/catalogues/halo_catalogue_M500c_5e13_zlt3_L2p8_m9_yang26rot_qfrommz.csv (91s)
+=== lightcone1 ===
+  lc1: scanned 5,000,000, kept 86,224 (25s)
+  lc1: scanned 10,000,000, kept 287,223 (54s)
+  lc1: scanned 15,000,000, kept 594,835 (87s)
+  lc1: scanned 20,000,000, kept 1,013,919 (121s)
+  lc1: scanned 24,778,602, kept 1,555,781 (157s)
+lc1: kept 1,555,781/24,778,602, N(q>5)=1,201 -> /rds/rds-lxu/flamingo/L2p8_m9/lightcone1/catalogues/halo_catalogue_M500c_5e13_zlt3_L2p8_m9_yang26rot_qfrommz.csv (157s)
+=== lightcone2 ===
+  lc2: scanned 5,000,000, kept 86,861 (25s)
+  lc2: scanned 10,000,000, kept 288,429 (54s)
+  lc2: scanned 15,000,000, kept 595,024 (83s)
+  lc2: scanned 20,000,000, kept 1,013,452 (112s)
+  lc2: scanned 24,779,467, kept 1,556,283 (145s)
+lc2: kept 1,556,283/24,779,467, N(q>5)=1,121 -> /rds/rds-lxu/flamingo/L2p8_m9/lightcone2/catalogues/halo_catalogue_M500c_5e13_zlt3_L2p8_m9_yang26rot_qfrommz.csv (145s)
+=== lightcone3 ===
+  lc3: scanned 5,000,000, kept 86,977 (26s)
+  lc3: scanned 10,000,000, kept 289,249 (55s)
+  lc3: scanned 15,000,000, kept 596,379 (87s)
+  lc3: scanned 20,000,000, kept 1,014,967 (120s)
+  lc3: scanned 24,780,648, kept 1,557,545 (153s)
+lc3: kept 1,557,545/24,780,648, N(q>5)=1,165 -> /rds/rds-lxu/flamingo/L2p8_m9/lightcone3/catalogues/halo_catalogue_M500c_5e13_zlt3_L2p8_m9_yang26rot_qfrommz.csv (153s)
+=== lightcone4 ===
+  lc4: scanned 5,000,000, kept 86,286 (27s)
+  lc4: scanned 10,000,000, kept 287,947 (57s)
+  lc4: scanned 15,000,000, kept 595,018 (89s)
+  lc4: scanned 20,000,000, kept 1,013,280 (121s)
+  lc4: scanned 24,781,880, kept 1,556,480 (156s)
+lc4: kept 1,556,480/24,781,880, N(q>5)=1,116 -> /rds/rds-lxu/flamingo/L2p8_m9/lightcone4/catalogues/halo_catalogue_M500c_5e13_zlt3_L2p8_m9_yang26rot_qfrommz.csv (156s)
+=== lightcone5 ===
+  lc5: scanned 5,000,000, kept 86,282 (26s)
+  lc5: scanned 10,000,000, kept 287,277 (56s)
+  lc5: scanned 15,000,000, kept 594,896 (87s)
+  lc5: scanned 20,000,000, kept 1,013,483 (120s)
+  lc5: scanned 24,785,348, kept 1,556,479 (153s)
+lc5: kept 1,556,479/24,785,348, N(q>5)=1,155 -> /rds/rds-lxu/flamingo/L2p8_m9/lightcone5/catalogues/halo_catalogue_M500c_5e13_zlt3_L2p8_m9_yang26rot_qfrommz.csv (153s)
+=== lightcone6 ===
+  lc6: scanned 5,000,000, kept 86,907 (26s)
+  lc6: scanned 10,000,000, kept 287,585 (54s)
+  lc6: scanned 15,000,000, kept 594,731 (85s)
+  lc6: scanned 20,000,000, kept 1,013,212 (118s)
+  lc6: scanned 24,782,616, kept 1,556,492 (153s)
+lc6: kept 1,556,492/24,782,616, N(q>5)=1,135 -> /rds/rds-lxu/flamingo/L2p8_m9/lightcone6/catalogues/halo_catalogue_M500c_5e13_zlt3_L2p8_m9_yang26rot_qfrommz.csv (153s)
+=== lightcone7 ===
+  lc7: scanned 5,000,000, kept 86,365 (28s)
+  lc7: scanned 10,000,000, kept 288,065 (57s)
+  lc7: scanned 15,000,000, kept 594,873 (89s)
+  lc7: scanned 20,000,000, kept 1,013,402 (121s)
+  lc7: scanned 24,781,457, kept 1,556,158 (155s)
+lc7: kept 1,556,158/24,781,457, N(q>5)=1,097 -> /rds/rds-lxu/flamingo/L2p8_m9/lightcone7/catalogues/halo_catalogue_M500c_5e13_zlt3_L2p8_m9_yang26rot_qfrommz.csv (155s)
+
+=== summary: M_500c > 5e+13, N(q>5) ===
+  lc0                           kept=1,555,542  N(q>5)= 1,155
+  lc1                           kept=1,555,781  N(q>5)= 1,201
+  lc2                           kept=1,556,283  N(q>5)= 1,121
+  lc3                           kept=1,557,545  N(q>5)= 1,165
+  lc4                           kept=1,556,480  N(q>5)= 1,116
+  lc5                           kept=1,556,479  N(q>5)= 1,155
+  lc6                           kept=1,556,492  N(q>5)= 1,135
+  lc7                           kept=1,556,158  N(q>5)= 1,097

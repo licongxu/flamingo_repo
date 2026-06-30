@@ -1,0 +1,46 @@
+skip lc0: already exists at /rds/rds-lxu/flamingo/L2p8_m9/lightcone0/catalogues/halo_catalogue_M500c_1e13_zlt3_L2p8_m9_yang26rot.csv
+=== building L2p8_m9 lc1 catalogue -> /rds/rds-lxu/flamingo/L2p8_m9/lightcone1/catalogues/halo_catalogue_M500c_1e13_zlt3_L2p8_m9_yang26rot.csv ===
+layout=L2p8_m9 snaps 18..78 (61 snapshots, z <= 3.0)
+snap 0018: scanning SOAP for M500c>=1e13
+    SOAP scan 20,000,000/394,472,715; kept 1,572; 1.1 min
+    SOAP scan 40,000,000/394,472,715; kept 3,083; 2.1 min
+    SOAP scan 60,000,000/394,472,715; kept 4,552; 3.5 min
+    SOAP scan 80,000,000/394,472,715; kept 5,940; 4.9 min
+    SOAP scan 100,000,000/394,472,715; kept 7,365; 5.9 min
+    SOAP scan 120,000,000/394,472,715; kept 8,773; 7.0 min
+    SOAP scan 140,000,000/394,472,715; kept 10,226; 8.1 min
+    SOAP scan 160,000,000/394,472,715; kept 11,669; 9.2 min
+    SOAP scan 180,000,000/394,472,715; kept 13,130; 10.3 min
+    SOAP scan 200,000,000/394,472,715; kept 14,564; 11.4 min
+    SOAP scan 220,000,000/394,472,715; kept 15,975; 12.5 min
+    SOAP scan 240,000,000/394,472,715; kept 17,524; 13.6 min
+    SOAP scan 260,000,000/394,472,715; kept 18,932; 14.7 min
+    SOAP scan 280,000,000/394,472,715; kept 20,414; 15.8 min
+    SOAP scan 300,000,000/394,472,715; kept 21,888; 17.2 min
+    SOAP scan 320,000,000/394,472,715; kept 23,341; 18.3 min
+    SOAP scan 340,000,000/394,472,715; kept 24,768; 19.4 min
+    SOAP scan 360,000,000/394,472,715; kept 26,294; 20.4 min
+    SOAP scan 380,000,000/394,472,715; kept 27,736; 21.5 min
+snap 0018: kept 28,617 SOAP halos; joining lightcone
+snap 0018: wrote 17,040 rows (31.4 min total)
+snap 0019: scanning SOAP for M500c>=1e13
+    SOAP scan 20,000,000/404,579,184; kept 1,730; 1.3 min
+    SOAP scan 40,000,000/404,579,184; kept 3,431; 2.4 min
+    SOAP scan 60,000,000/404,579,184; kept 5,025; 3.9 min
+    SOAP scan 80,000,000/404,579,184; kept 6,550; 5.0 min
+    SOAP scan 100,000,000/404,579,184; kept 8,138; 6.2 min
+    SOAP scan 120,000,000/404,579,184; kept 9,671; 7.4 min
+    SOAP scan 140,000,000/404,579,184; kept 11,276; 8.5 min
+    SOAP scan 160,000,000/404,579,184; kept 12,894; 9.7 min
+    SOAP scan 180,000,000/404,579,184; kept 14,540; 11.0 min
+    SOAP scan 200,000,000/404,579,184; kept 16,085; 12.1 min
+    SOAP scan 220,000,000/404,579,184; kept 17,663; 13.3 min
+    SOAP scan 240,000,000/404,579,184; kept 19,328; 14.5 min
+    SOAP scan 260,000,000/404,579,184; kept 20,907; 15.7 min
+    SOAP scan 280,000,000/404,579,184; kept 22,493; 17.1 min
+    SOAP scan 300,000,000/404,579,184; kept 24,139; 18.5 min
+    SOAP scan 320,000,000/404,579,184; kept 25,769; 19.6 min
+    SOAP scan 340,000,000/404,579,184; kept 27,340; 20.8 min
+    SOAP scan 360,000,000/404,579,184; kept 29,010; 21.9 min
+    SOAP scan 380,000,000/404,579,184; kept 30,655; 23.1 min
+Terminated
