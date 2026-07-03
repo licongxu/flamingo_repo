@@ -1,0 +1,452 @@
+\documentclass[aps,prd,twocolumn,superscriptaddress,nofootinbib,floatfix]{revtex4-2}
+
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{dcolumn}
+\usepackage{bm}
+\usepackage{hyperref}
+\usepackage{xcolor}
+
+% upright differentials
+\newcommand{\dd}{\mathrm{d}}
+
+\hypersetup{colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue}
+
+\begin{document}
+
+\title{Cosmological Constraints from a Joint Analysis of the tSZ Power Spectrum and Cluster Number Counts with Massive-Cluster Masking}
+
+\author{Licong Xu}
+\email{lx256@cam.ac.uk}
+\affiliation{Institute of Astronomy, University of Cambridge, Madingley Road, Cambridge CB3 0HA, UK}
+\affiliation{Kavli Institute for Cosmology, University of Cambridge, Madingley Road, Cambridge CB3 0HA, UK}
+
+\author{I\~nigo Zubeldia}
+\affiliation{Institute of Astronomy, University of Cambridge, Madingley Road, Cambridge CB3 0HA, UK}
+\affiliation{Kavli Institute for Cosmology, University of Cambridge, Madingley Road, Cambridge CB3 0HA, UK}
+\affiliation{DAMTP, Centre for Mathematical Sciences, Wilberforce Road, Cambridge CB3 0WA, UK}
+
+\author{Boris Bolliet}
+\affiliation{Cavendish Astrophysics, University of Cambridge, Madingley Road, Cambridge CB3 0HA, UK}
+\affiliation{Kavli Institute for Cosmology, University of Cambridge, Madingley Road, Cambridge CB3 0HA, UK}
+
+\author{Anthony Challinor}
+\affiliation{Institute of Astronomy, University of Cambridge, Madingley Road, Cambridge CB3 0HA, UK}
+\affiliation{Kavli Institute for Cosmology, University of Cambridge, Madingley Road, Cambridge CB3 0HA, UK}
+\affiliation{DAMTP, Centre for Mathematical Sciences, Wilberforce Road, Cambridge CB3 0WA, UK}
+
+\date{\today}
+
+\begin{abstract}
+We present a self-consistent joint analysis of the thermal Sunyaev-Zel'dovich (tSZ) angular power spectrum and cluster number counts (CNC).
+Clusters detected above a significance threshold $q_{\mathrm{cat}}$ are masked from the power spectrum and counted in CNC, so the two probes act on non-overlapping halo populations.
+We develop the forward model and likelihood, validate the pipeline on synthetic mock catalogues and painted Compton-$y$ maps (with and without astrophysical foregrounds), and apply the same method to FLAMINGO hydrodynamical simulations.
+% [Abstract results to be filled in.]
+\end{abstract}
+
+\maketitle
+
+%==============================================================================
+\section{Introduction}
+\label{sec:intro}
+%==============================================================================
+
+Galaxy clusters probe cosmology through their abundance and through the integrated pressure field traced by the thermal Sunyaev-Zel'dovich (tSZ) effect.
+Two standard observables are cluster number counts (CNC) and the tSZ angular power spectrum.
+These probes are complementary but share a practical complication: the most massive, best-detected clusters contribute both to the catalogue and to the low-multipole power spectrum.
+A naive combination would double-count the same halos.
+
+A natural resolution is to mask detected clusters from the map before measuring the power spectrum, while using the masked objects as the CNC sample.
+The unresolved tSZ background and the resolved catalogue then probe disjoint halo populations, provided the same selection criterion is used in both legs of the analysis.
+
+This paper is a theory study that develops and demonstrates such a joint pipeline.
+We proceed in two stages:
+\begin{enumerate}
+    \item \textbf{Synthetic mocks.} Mock catalogues and painted full-sky Compton-$y$ maps generated under the same forward model as the likelihood. We consider a signal-only case and a foreground-contaminated case.
+    \item \textbf{FLAMINGO simulations.} The same analysis applied to hydrodynamical lightcones, testing the parametric forward model against realistic intracluster-medium physics.
+\end{enumerate}
+
+%==============================================================================
+\section{Method}
+\label{sec:method}
+%==============================================================================
+
+\subsection{Observables and split halo population}
+\label{sec:observables}
+
+Let $q_{\mathrm{obs}}$ denote the detection significance of a cluster.
+We adopt a catalogue threshold $q_{\mathrm{cat}}$ and define
+\begin{align}
+    \mathcal{S}_{\mathrm{CNC}} &= \{ \text{halos with } q_{\mathrm{obs}} \ge q_{\mathrm{cat}} \}, \\
+    \mathcal{S}_{\mathrm{PS}}  &= \{ \text{halos with } q_{\mathrm{obs}} < q_{\mathrm{cat}} \}.
+\end{align}
+Clusters in $\mathcal{S}_{\mathrm{CNC}}$ are removed from the Compton-$y$ map (masked) and binned in redshift and significance for CNC.
+Clusters in $\mathcal{S}_{\mathrm{PS}}$ source the masked tSZ power spectrum.
+When the map mask and catalogue selection are matched, the two probes are self-consistent and no explicit cross-covariance term is required in the joint likelihood.
+
+\subsection{Compton-$y$ and the tSZ power spectrum}
+\label{sec:tsz_ps}
+
+The Compton-$y$ parameter is the line-of-sight integral of the electron pressure,
+\begin{equation}
+    y(\bm{\hat n}) = \frac{\sigma_T}{m_e c^2}
+    \int \frac{P_e\, \dd l}{l^2 + d_A^2 \mu^2},
+    \label{eq:compton_y}
+\end{equation}
+where $\sigma_T$ is the Thomson cross section, $m_e$ the electron mass, $P_e$ the electron pressure, $d_A$ the angular diameter distance, and $\mu$ the angular separation from the cluster centre.
+
+Within the halo model, the one-halo tSZ power spectrum is
+\begin{equation}
+    C_\ell^{\mathrm{tSZ,1h}}
+    = \int \dd z \,\frac{\dd V}{\dd z \,\dd \Omega}
+    \int \dd \ln M \,\frac{\dd n}{\dd \ln M}
+    \,\bigl|\tilde y_\ell(M,z)\bigr|^2,
+    \label{eq:one_halo}
+\end{equation}
+where $\dd n / \dd \ln M$ is the halo mass function and $\tilde y_\ell$ the two-dimensional Fourier transform of the projected Compton-$y$ profile.
+We report the dimensionless spectrum
+\begin{equation}
+    D_\ell \equiv \frac{\ell(\ell+1)}{2\pi}\, C_\ell.
+    \label{eq:Dl_def}
+\end{equation}
+
+For a generalised NFW (GNFW) pressure profile~\cite{Arnaud2010},
+\begin{equation}
+    P_e(x) = C(M,z)\, P_0 \,
+    \frac{(c_{500}x)^{-\gamma}}
+    {\left[1 + (c_{500}x)^\alpha\right]^{(\gamma-\beta)/\alpha}},
+    \qquad x \equiv r/r_s,
+    \label{eq:gnfw}
+\end{equation}
+with $r_s = r_{500c}/c_{500}$ and a mass--redshift-dependent normalisation $C(M,z)$.
+The central Compton-$y$ amplitude is
+\begin{equation}
+    y_0(M,z) = \frac{2\sigma_T}{m_e c^2}\,
+    P_{500}(M,z)\, r_{500c}(M,z)\, \mathcal{I}_{\mathrm{GNFW}},
+    \label{eq:y0}
+\end{equation}
+where $\mathcal{I}_{\mathrm{GNFW}}$ is the dimensionless integral of the GNFW shape out to the adopted outer radius.
+We allow a parametric scaling relation
+\begin{equation}
+    y_0^{\mathrm{param}}(M,z)
+    = 10^{A_{\mathrm{SZ}}}
+    \left(\frac{\tilde M_{500c}}{3\times 10^{14}\,M_\odot}\right)^{\alpha_{\mathrm{SZ}}}
+    E(z)^2 h^{-1/2},
+    \label{eq:param_y0}
+\end{equation}
+with biased mass $\tilde M_{500c} = M_{500c}/B$ and hydrostatic bias $B \equiv 1/(1-b)$.
+
+\subsection{Cluster SNR and detection probability}
+\label{sec:snr}
+
+Following matched-filter cluster detection, the mean signal-to-noise ratio of a halo of mass $M$ at redshift $z$ is
+\begin{equation}
+    q(M,z) = \frac{y_0(M,z)}{\bar\sigma_{\mathrm{noise}}(\theta_{500})},
+    \label{eq:snr_mean}
+\end{equation}
+where $\theta_{500} = r_{500c}/d_A$ and $\bar\sigma_{\mathrm{noise}}$ is the survey noise at the cluster angular scale.
+
+At fixed $(M,z)$ the tSZ amplitude has intrinsic scatter.
+We model a log-normal multiplicative factor,
+\begin{equation}
+    \ln A \sim \mathcal{N}(0,\, \sigma_{\ln Y}^2),
+    \qquad
+    y_0 \to A\, y_0(M,z),
+    \label{eq:scatter}
+\end{equation}
+so the pre-noise SNR is $q_m = A\, \bar q(M,z)$.
+The observed significance includes Gaussian measurement noise,
+\begin{equation}
+    q_{\mathrm{obs}} = q_m + n,
+    \qquad
+    n \sim \mathcal{N}(0,1).
+    \label{eq:qobs}
+\end{equation}
+
+Marginalising over intrinsic scatter and measurement noise, the detection probability is
+\begin{equation}
+    P_{\mathrm{det}}(M,z)
+    = \frac{1}{\sqrt{2\pi}}
+    \int_{-\infty}^{\infty} \dd u\, e^{-u^2/2}\,
+    \Phi\!\left(\frac{q_m(u) - q_{\mathrm{cat}}}{\sqrt{2}}\right),
+    \label{eq:Pdet}
+\end{equation}
+where $u = \ln A / \sigma_{\ln Y}$, $q_m(u) = \bar q(M,z)\, e^{\sigma_{\ln Y} u}$, and $\Phi$ is the standard normal cumulative distribution function.
+
+\subsection{Conditional-moment masking}
+\label{sec:conditional_moment}
+
+The masked (unresolved) power spectrum receives contributions only from halos with $q_{\mathrm{obs}} < q_{\mathrm{cat}}$.
+A halo with scatter factor $A$ contributes $A^2 |\tilde y_{\ell,0}|^2$ to the spectrum, so one must average over the \emph{undetected} subpopulation using the conditional second moment, not the factorised form $\langle A^2 \rangle (1 - P_{\mathrm{det}})$.
+
+We define the conditional $n$th-moment weight
+\begin{equation}
+    W_n(M,z)
+    = \frac{1}{\sqrt{2\pi}}
+    \int_{-\infty}^{\infty} \dd u\, e^{-u^2/2}\,
+    e^{n \sigma_{\ln Y} u}\,
+    \Phi\!\left(\frac{q_{\mathrm{cat}} - q_m(u)}{\sqrt{2}}\right).
+    \label{eq:Wn}
+\end{equation}
+The masked one-halo spectrum is then
+\begin{equation}
+    C_\ell^{\mathrm{tSZ,unres}}
+    = \int \dd z \,\frac{\dd V}{\dd z \,\dd \Omega}
+    \int \dd \ln M \,\frac{\dd n}{\dd \ln M}\,
+    \bigl|\tilde y_{\ell,0}(M,z)\bigr|^2\,
+    W_2(M,z).
+    \label{eq:masked_ps}
+\end{equation}
+In the absence of masking, intrinsic scatter boosts the full-sky spectrum by $\langle A^2 \rangle = e^{2\sigma_{\ln Y}^2}$; for the masked case, the mass- and redshift-dependent factor $W_2$ replaces this uniform boost.
+
+The trispectrum term involves $| \tilde y_\ell |^2 | \tilde y_{\ell'} |^2 \propto A^4$ and therefore requires $W_4$:
+\begin{equation}
+    T_{\ell\ell'}^{\mathrm{unres}}
+    = \int \dd z \,\frac{\dd V}{\dd z \,\dd \Omega}
+    \int \dd \ln M \,\frac{\dd n}{\dd \ln M}\,
+    \bigl|\tilde y_{\ell,0}\bigr|^2
+    \bigl|\tilde y_{\ell',0}\bigr|^2
+    W_4(M,z).
+    \label{eq:masked_trispec}
+\end{equation}
+Bin-averaged bandpowers use
+\begin{equation}
+    \bar T_{bb'}^{\mathrm{unres}}
+    = \frac{1}{|\mathcal{B}_b|\,|\mathcal{B}_{b'}|}
+    \sum_{\ell \in \mathcal{B}_b} \sum_{\ell' \in \mathcal{B}_{b'}}
+    T_{\ell\ell'}^{\mathrm{unres}},
+    \label{eq:bin_trispec}
+\end{equation}
+where $\mathcal{B}_b$ is the set of integer multipoles in bin $b$.
+The masked bandpower covariance is
+\begin{equation}
+    M_{bb'}^{\mathrm{unres}}
+    = \frac{2\left(C_{\ell_b}^{\mathrm{unres}} + N_{\ell_b}\right)^2}
+    {(2\ell_b + 1)\, f_{\mathrm{sky}}\, \Delta\ell_b}
+    \,\bar T_{bb'}^{\mathrm{unres}}
+    + \frac{4\pi}{f_{\mathrm{sky}}}\, \delta_{bb'}.
+    \label{eq:covariance}
+\end{equation}
+
+\subsection{Cluster number counts}
+\label{sec:cnc}
+
+The resolved clusters in $\mathcal{S}_{\mathrm{CNC}}$ are binned in redshift and observed significance.
+The expected count in bin $(i,j)$ is
+\begin{equation}
+    \lambda_{ij}
+    = 4\pi f_{\mathrm{sky}}
+    \int_{z_i}^{z_{i+1}} \dd z \,\frac{\dd V}{\dd z \,\dd \Omega}
+    \int \dd \ln M \,\frac{\dd n}{\dd \ln M}\,
+    \mathcal{P}_{\mathrm{bin}}(q_j, q_{j+1} \mid M, z),
+    \label{eq:lambda}
+\end{equation}
+with
+\begin{equation}
+    \mathcal{P}_{\mathrm{bin}}(q_j, q_{j+1} \mid M, z)
+    = P_{\mathrm{det}}(q_j; M, z) - P_{\mathrm{det}}(q_{j+1}; M, z).
+    \label{eq:Pbin}
+\end{equation}
+The CNC log-likelihood is a product of independent Poisson terms,
+\begin{equation}
+    \ln \mathcal{L}_{\mathrm{CNC}}
+    = \sum_{i,j}
+    \left[
+        N_{ij}^{\mathrm{obs}} \ln \lambda_{ij} - \lambda_{ij}
+    \right].
+    \label{eq:lnLCNC}
+\end{equation}
+
+\subsection{Power spectrum likelihood and foreground model}
+\label{sec:ps_likelihood}
+
+When foregrounds are included (synthetic validation with FG), the model for the observed masked spectrum is
+\begin{equation}
+    C_\ell^{yy} \simeq
+    C_\ell^{\mathrm{tSZ,unres}}
+    + A_{\mathrm{CIB}}\, C_\ell^{\mathrm{CIB}}
+    + A_{\mathrm{IR}}\, C_\ell^{\mathrm{IR}}
+    + A_{\mathrm{RS}}\, C_\ell^{\mathrm{RS}}
+    + A_{\mathrm{CN}}\, C_\ell^{\mathrm{CN}}.
+    \label{eq:fg_model}
+\end{equation}
+The power spectrum log-likelihood is Gaussian,
+\begin{equation}
+    -2 \ln \mathcal{L}_{\mathrm{PS}}
+    = (\hat{\bm{D}} - \bm{D})^{\mathsf T}
+    \bm{M}^{-1}
+    (\hat{\bm{D}} - \bm{D})
+    + \ln |\bm{M}| + \mathrm{const.},
+    \label{eq:lnLPS}
+\end{equation}
+where $\hat{\bm{D}}$ and $\bm{D}$ are vectors of observed and theoretical bandpowers $D_\ell$, and $\bm{M}$ is the masked covariance~\eqref{eq:covariance} evaluated at the model parameters (with any Hartlap correction applied as needed).
+
+\subsection{Joint likelihood}
+\label{sec:joint}
+
+The joint log-likelihood is
+\begin{equation}
+    \ln \mathcal{L}_{\mathrm{joint}}
+    = \ln \mathcal{L}_{\mathrm{PS}} + \ln \mathcal{L}_{\mathrm{CNC}}.
+    \label{eq:joint}
+\end{equation}
+Cosmological parameters, tSZ scaling parameters ($A_{\mathrm{SZ}}$, $\alpha_{\mathrm{SZ}}$, $\sigma_{\ln Y}$, $B$), and (when relevant) foreground amplitudes are shared between the two probes.
+Inference is performed with Markov-chain Monte Carlo sampling (e.g.\ Cobaya).
+
+%==============================================================================
+\section{Synthetic data}
+\label{sec:synthetic_data}
+%==============================================================================
+
+We generate synthetic Planck-like data with a halo-painting pipeline consistent with the likelihood model:
+\begin{enumerate}
+    \item Poisson-sample halos from the halo mass function at a fiducial cosmology.
+    \item Assign intrinsic log-normal scatter factors [Eq.~\eqref{eq:scatter}].
+    \item Paint GNFW profiles on a HEALPix Compton-$y$ map at the scattered amplitudes.
+    \item Draw observed significances [Eq.~\eqref{eq:qobs}].
+    \item Populate the CNC catalogue above $q_{\mathrm{cat}}$ and mask those clusters from the map.
+    \item Extract full-sky and masked bandpowers $\hat D_\ell$ on a fixed binning.
+    \item Optionally add fixed foreground templates [Eq.~\eqref{eq:fg_model}] for the FG case.
+\end{enumerate}
+
+\begin{figure}[t]
+    \centering
+    \fbox{\parbox{0.95\linewidth}{\centering\vspace{2.2cm}
+    \textbf{[Figure placeholder]}\\
+    Method schematic: detected clusters $\to$ CNC;\\
+    undetected background $\to$ masked tSZ PS\vspace{2.2cm}}}
+    \caption{\label{fig:schematic}
+    Cartoon of the joint analysis.
+    Clusters above $q_{\mathrm{cat}}$ are counted in CNC and masked from the Compton-$y$ map before the power spectrum is measured.}
+\end{figure}
+
+%==============================================================================
+\section{Results: synthetic mocks without foregrounds}
+\label{sec:results_syn_nofg}
+%==============================================================================
+
+% [Text to be filled in.]
+
+In the signal-only case we compare:
+\begin{itemize}
+    \item CNC-only inference,
+    \item masked tSZ PS-only inference,
+    \item full-sky tSZ PS-only inference (optional control),
+    \item joint CNC~+~masked tSZ PS,
+    \item joint CNC~+~full-sky tSZ PS (optional control).
+\end{itemize}
+
+We show agreement between painted maps, mock catalogues, and the forward model for $N(q,z)$ and masked $D_\ell$, and compare posterior constraints from the single-probe and joint chains.
+
+\begin{figure}[t]
+    \centering
+    \fbox{\parbox{0.95\linewidth}{\centering\vspace{2.2cm}
+    \textbf{[Figure placeholder]}\\
+    Synthetic: $N(q,z)$ and masked $D_\ell$ vs theory;\\
+    MCMC contours (no FG)\vspace{2.2cm}}}
+    \caption{\label{fig:syn_nofg}%
+    Synthetic validation without foregrounds.
+    [Caption to be completed.]}
+\end{figure}
+
+%==============================================================================
+\section{Results: synthetic mocks with foregrounds}
+\label{sec:results_syn_fg}
+%==============================================================================
+
+% [Text to be filled in.]
+
+We repeat the analysis with foreground templates added to the painted maps.
+Without free foreground amplitudes, the PS leg is contaminated and the joint fit is unreliable.
+With foreground nuisance parameters and informative priors in Eq.~\eqref{eq:fg_model}, the joint analysis can marginalise over FG while CNC anchors the cluster sector.
+
+\begin{figure}[t]
+    \centering
+    \fbox{\parbox{0.95\linewidth}{\centering\vspace{2.2cm}
+    \textbf{[Figure placeholder]}\\
+    Synthetic: joint contours with/without FG marginalisation;\\
+    PS residuals or $\chi^2$ panel\vspace{2.2cm}}}
+    \caption{\label{fig:syn_fg}%
+    Synthetic validation with foreground contamination.
+    [Caption to be completed.]}
+\end{figure}
+
+%==============================================================================
+\section{FLAMINGO simulations}
+\label{sec:flamingo_data}
+%==============================================================================
+
+We apply the same pipeline to FLAMINGO hydrodynamical lightcones.
+Compton-$y$ maps and SOAP cluster catalogues are built from the L2p8\_m9 run (with optional L1\_m9 feedback variants for systematics).
+Cluster significances are assigned with the same GNFW-based forward model and survey noise curve as in the synthetic stage.
+Detected clusters are masked with apodised discs before bandpowers are estimated (e.g.\ with NaMaster).
+
+% [Describe map NSIDE, mask radius, binning, and catalogue cuts.]
+
+%==============================================================================
+\section{Results: FLAMINGO}
+\label{sec:results_flamingo}
+%==============================================================================
+
+% [Text to be filled in.]
+
+We present:
+\begin{enumerate}
+    \item Comparison of FLAMINGO $N(q,z)$ and masked $D_\ell$ to the hmfast / cosmocnc forward model.
+    \item The same set of single-probe and joint inference runs as in Secs.~\ref{sec:results_syn_nofg}--\ref{sec:results_syn_fg}, but on FLAMINGO data (signal-only; no astrophysical foregrounds in the simulation maps).
+    \item Optional: response of CNC and masked PS to L1\_m9 feedback prescriptions (jet, $f_{\mathrm{gas}}$, stellar mass threshold variants).
+\end{enumerate}
+
+\begin{figure}[t]
+    \centering
+    \fbox{\parbox{0.95\linewidth}{\centering\vspace{2.2cm}
+    \textbf{[Figure placeholder]}\\
+    FLAMINGO: theory comparison and joint MCMC contours\vspace{2.2cm}}}
+    \caption{\label{fig:flamingo}%
+    FLAMINGO application.
+    [Caption to be completed.]}
+\end{figure}
+
+%==============================================================================
+\section{Discussion}
+\label{sec:discussion}
+%==============================================================================
+
+% [Text to be filled in.]
+
+Summarise:
+\begin{itemize}
+    \item Validation on synthetic mocks: method works without FG; FG must be constrained when present.
+    \item Application to FLAMINGO: where the parametric model agrees or disagrees with hydrodynamical reality.
+    \item Role of masking for self-consistency and for making the PS likelihood approximately Gaussian.
+    \item Outlook: real survey data (Planck, Simons Observatory, CMB-S4).
+\end{itemize}
+
+%==============================================================================
+\section{Conclusions}
+\label{sec:conclusions}
+%==============================================================================
+
+% [Conclusions to be filled in.]
+
+We have presented a self-consistent framework for joint cluster number counts and masked tSZ power spectrum analysis, validated it on synthetic painted maps, and applied it to FLAMINGO simulations.
+
+%==============================================================================
+\begin{acknowledgments}
+% [Acknowledgments to be filled in.]
+We thank [TBD].
+\end{acknowledgments}
+%==============================================================================
+
+\begin{thebibliography}{99}
+
+\bibitem{Arnaud2010}
+M.~Arnaud et al.,
+A\&A \textbf{517}, A92 (2010).
+
+% [Additional references to be added.]
+
+\end{thebibliography}
+
+\end{document}
