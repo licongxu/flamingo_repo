@@ -61,3 +61,10 @@ the yang26-rotated frame.
 ```bash
 pytest -q
 ```
+
+## Autonomous research traces
+
+The `autoresearch/` branch hosts autonomous research runs. The full Fable 5
+session trace (main session + per-subagent traces) is published on HuggingFace:
+<https://huggingface.co/datasets/licongxu/fable5-flamingo-research-trace>. See
+`autoresearch/fable_5_plan/README.md` for the file layout.

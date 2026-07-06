@@ -16,3 +16,13 @@ Planning area for the Fable 5 autonomous research run (execution goes in a fresh
 
 Reproduce: `source /scratch/scratch-lxu/venv/cmbagent_env/bin/activate &&
 python autoresearch/fable_5_plan/seed01_cnc_ps_cross_correlation.py`
+
+## Session traces
+
+The full Fable 5 autonomous research trace is published on HuggingFace:
+<https://huggingface.co/datasets/licongxu/fable5-flamingo-research-trace>.
+
+- `fable5_session_trace.jsonl`, `fable5_session_timeline.jsonl`: the main-session
+  message and event trace.
+- `trace_subagents/`: per-subagent traces (e.g. `explore_repo_subagent.jsonl`) with
+  their `.meta.json` sidecars.
