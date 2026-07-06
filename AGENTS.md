@@ -1,68 +1,69 @@
 # AGENTS.md
 
-**Rule of reply:** Always say "HONEY" to me before you reply
+This file provides guidance to coding agents operating in this repository. It mirrors `CLAUDE.md`.
 
-always use `source /scratch/scratch-lxu/venv/cmbagent_env/bin/activate` to activate your Python environment before running any code or commands.
+**Rule of reply:** Always say "HONEY" to me before you reply.
 
+Always `source /scratch/scratch-lxu/venv/cmbagent_env/bin/activate` before running any code or commands.
 
-**Tradeoff:** These guidelines bias toward caution over speed. For trivial tasks, use judgment.
+## Branch: `autoresearch`
 
-## 1. Think Before Coding
+This branch hosts autonomous research work, not core `flamingo` library development.
 
-**Don't assume. Don't hide confusion. Surface tradeoffs.**
+- **Put all research work under `autoresearch/`.** Do not scatter run outputs, fit scripts, diagnostics, logbooks, or draft papers across the repo root. The top-level `src/`, `notebooks/`, `scripts/`, `tests/`, and `figures/` belong to the shared `flamingo` pipeline; treat them as read-mostly here.
+- **One subfolder per model/run.** Each research run lives in its own dated, model-named subfolder so results are never overwritten:
+  - `autoresearch/opus_4.8_v1/`: completed Opus 4.8 run (fits, diagnostics, `paper.tex`, `logbook.md`, `REPORT.md`, `figures/`).
+  - `autoresearch/fable_5_plan/`: planning area for the upcoming Fable 5 run (not started yet).
+  - Start each new run in a fresh `autoresearch/<model>_<version>/` folder; do not edit a previous run's folder.
+- Follow `.claude/rules/autonomous-operation.md` for the session contract, logbook, and mandatory stop conditions.
 
-Before implementing:
-- State your assumptions explicitly. If uncertain, ask.
-- If multiple interpretations exist, present them - don't pick silently.
-- If a simpler approach exists, say so. Push back when warranted.
-- If something is unclear, stop. Name what's confusing. Ask.
+## Installed skill packs
 
-## 2. Simplicity First
+Two skill marketplaces are installed; prefer them over ad-hoc process:
 
-**Minimum code that solves the problem. Nothing speculative.**
+- **`superpowers`**: engineering workflow skills. Use `superpowers:brainstorming` before any creative/design work, `superpowers:writing-plans` / `superpowers:executing-plans` for multi-step tasks, `superpowers:test-driven-development` and `superpowers:systematic-debugging` while coding, and `superpowers:verification-before-completion` before claiming anything is done.
+- **`academic-research-skills`** (ARS): paper research/writing/review. Use `academic-research-skills:academic-pipeline` for research-to-publication, `academic-paper` for drafting, `academic-paper-reviewer` for simulated peer review, and `deep-research` for literature work. These drive the `paper.tex` deliverables inside each `autoresearch/<run>/` folder.
 
-- No features beyond what was asked.
-- No abstractions for single-use code.
-- No "flexibility" or "configurability" that wasn't requested.
-- No error handling for impossible scenarios.
-- If you write 200 lines and it could be 50, rewrite it.
+## Environment and commands
 
-Ask yourself: "Would a senior engineer say this is overcomplicated?" If yes, simplify.
-
-## 3. Surgical Changes
-
-**Touch only what you must. Clean up only your own mess.**
-
-When editing existing code:
-- Don't "improve" adjacent code, comments, or formatting.
-- Don't refactor things that aren't broken.
-- Match existing style, even if you'd do it differently.
-- If you notice unrelated dead code, mention it - don't delete it.
-
-When your changes create orphans:
-- Remove imports/variables/functions that YOUR changes made unused.
-- Don't remove pre-existing dead code unless asked.
-
-The test: Every changed line should trace directly to the user's request.
-
-## 4. Goal-Driven Execution
-
-**Define success criteria. Loop until verified.**
-
-Transform tasks into verifiable goals:
-- "Add validation" → "Write tests for invalid inputs, then make them pass"
-- "Fix the bug" → "Write a test that reproduces it, then make it pass"
-- "Refactor X" → "Ensure tests pass before and after"
-
-For multi-step tasks, state a brief plan:
-```
-1. [Step] → verify: [check]
-2. [Step] → verify: [check]
-3. [Step] → verify: [check]
+```bash
+source /scratch/scratch-lxu/venv/cmbagent_env/bin/activate
+pip install -e ".[powerspectra,plot,dev]"   # editable install with NaMaster + matplotlib + pytest
+pytest -q                                    # fast test suite
+pytest tests/test_<mod>.py::test_name -v     # single test
 ```
 
-Strong success criteria let you loop independently. Weak criteria ("make it work") require constant clarification.
+## Architecture (the shared `flamingo` package)
 
----
+`flamingo` (in `src/flamingo/`) is a thin, backend-split toolkit for FLAMINGO lightcone products. The split matters: physics kernels are JAX/GPU, HEALPix-bound code is NumPy because `healpy` pixel queries are CPU-only.
 
-**These guidelines are working if:** fewer unnecessary changes in diffs, fewer rewrites due to overcomplication, and clarifying questions come before implementation rather than after mistakes.
+- `profiles/`: **JAX/GPU**, float64. GNFW pressure profile (Arnaud A10 default) and line-of-sight `projected_shape`; jittable and `vmap`-able. This is the only differentiable path.
+- `maps/`: NumPy/healpy: map I/O, sampling at positions, neighbour-max sampling.
+- `masking/`: NumPy/healpy: binary N×R500 disc masks and sky fraction.
+- `catalogue/`: NumPy/hmfast: SOAP CSV loading, `theta_500`, `E(z)`, `D_A(z)`, rotation checks. **Use the rotated columns** (`theta_rot_rad`, `phi_rot_rad`); the L2p8 map is in the yang26-rotated frame.
+- `powerspectra/`: pymaster (optional): apodization + mask-decoupled `D_ell`.
+- `paths.py`: canonical data paths; override the tree with `export FLAMINGO_ROOT=/path`.
+
+`hmfast` is an external dependency supplying the differentiable halo model, cosmology emulators, tracers, and profiles; the detailed `.claude/rules/` files (api-layering, halo-model, jax-and-numerics, emulators-and-data) describe its conventions and apply when touching halo-model code.
+
+The `notebooks/` (nb05–nb40) and `scripts/` at the repo root carry the masked-tSZ / CNC pipeline (L1_m9 feedback, L2p8 multi-lightcone, shell/rotation-group tSZ power spectra). Read them for method context; new research work still goes under `autoresearch/`.
+
+Detailed conventions live in `.claude/rules/`: `python-style`, `jax-and-numerics`, `paper-writing`, `cluster-usage`, `testing`, `api-layering`, `emulators-and-data`, `autonomous-operation`. Read the relevant one before editing that area.
+
+## Working guidelines
+
+**Tradeoff:** These bias toward caution over speed. For trivial tasks, use judgment.
+
+### 1. Think before coding
+Don't assume. Don't hide confusion. State assumptions explicitly and ask if uncertain. If multiple interpretations exist, present them; don't pick silently. If a simpler approach exists, say so.
+
+### 2. Simplicity first
+Minimum code that solves the problem, nothing speculative. No features beyond what was asked, no abstractions for single-use code, no unrequested "flexibility". If you write 200 lines and it could be 50, rewrite it.
+
+### 3. Surgical changes
+Touch only what you must. Don't "improve" adjacent code, don't refactor what isn't broken, match existing style. Remove only the orphans your own changes created; mention pre-existing dead code, don't delete it. Every changed line should trace directly to the request.
+
+### 4. Goal-driven execution
+Turn tasks into verifiable goals ("fix the bug" -> "write a test that reproduces it, then make it pass"). For multi-step work, state a brief plan with a `verify:` check per step, then loop until verified.
+
+**These guidelines are working if:** fewer unnecessary changes in diffs, fewer rewrites from overcomplication, and clarifying questions come before implementation rather than after mistakes.
