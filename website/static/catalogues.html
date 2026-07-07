@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Catalogues · FLAMINGO Data Portal</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/app.js"></script>
+</head>
+<body>
+  <header>
+    <h1><span class="flame">FLAMINGO</span> Data Portal</h1>
+    <nav>
+      <a href="index.html">Overview</a>
+      <a href="catalogues.html">Catalogues</a>
+      <a href="maps.html">Maps</a>
+    </nav>
+    <div class="right"><a href="/api/v1/docs">API docs</a></div>
+  </header>
+  <main>
+    <h2>Query a halo catalogue</h2>
+    <p>
+      Filter clusters by mass, redshift, and detection significance
+      (<code>q_from_mz</code>, where available), preview rows here, or export
+      the selection as CSV. The same queries are available programmatically,
+      e.g. <code>GET /api/v1/catalogues/{id}/query?min_M500c=1e14&amp;max_z=0.5</code>.
+    </p>
+
+    <form class="query" id="qform">
+      <label>Catalogue
+        <select id="q-cat" style="max-width: 34rem"></select>
+      </label>
+      <label>min M<sub>500c</sub> [M<sub>&#9737;</sub>]
+        <input id="q-minm" type="text" placeholder="e.g. 1e14">
+      </label>
+      <label>max z <input id="q-maxz" type="text" placeholder="e.g. 0.5"></label>
+      <label>min z <input id="q-minz" type="text" placeholder="0"></label>
+      <label>min q <input id="q-minq" type="text" placeholder="e.g. 5"></label>
+      <label>Columns
+        <input id="q-cols" type="text" placeholder="all (comma-separated to restrict)" style="min-width: 16rem">
+      </label>
+      <label>Sort by
+        <select id="q-sort"><option value="">none</option></select>
+      </label>
+      <label>Order
+        <select id="q-desc"><option value="">ascending</option><option value="1">descending</option></select>
+      </label>
+      <label>Limit <input id="q-limit" type="number" value="100" min="1" max="100000"></label>
+      <button type="submit">Run query</button>
+      <button type="button" class="secondary" id="q-csv">Download CSV</button>
+    </form>
+
+    <p class="status" id="q-stats"></p>
+    <p class="status" id="q-status"></p>
+    <div class="scroll">
+      <table id="q-table"><thead></thead><tbody></tbody></table>
+    </div>
+  </main>
+  <script>
+    let cats = [];
+
+    function currentParams() {
+      return {
+        min_M500c: document.getElementById("q-minm").value,
+        max_z: document.getElementById("q-maxz").value,
+        min_z: document.getElementById("q-minz").value,
+        min_q: document.getElementById("q-minq").value,
+        columns: document.getElementById("q-cols").value.replace(/\s+/g, ""),
+        sort: document.getElementById("q-sort").value,
+        desc: document.getElementById("q-desc").value ? "true" : "",
+        limit: document.getElementById("q-limit").value,
+      };
+    }
+
+    async function loadCats() {
+      cats = await apiGet("/catalogues");
+      const sel = document.getElementById("q-cat");
+      for (const c of cats) {
+        sel.appendChild(el("option", {
+          value: c.id,
+          text: `${c.simulation}${c.lightcone !== null ? " lc" + c.lightcone : ""} · ${c.variant} · M500c>${c.mass_cut} (${fmtBytes(c.size_bytes)})`,
+        }));
+      }
+      if (cats.length) await loadStats();
+    }
+
+    async function loadStats() {
+      const id = document.getElementById("q-cat").value;
+      const statsBox = document.getElementById("q-stats");
+      statsBox.textContent = "loading catalogue stats…";
+      try {
+        const s = await apiGet(`/catalogues/${id}/stats`);
+        const parts = [`${Number(s.n).toLocaleString()} clusters`];
+        if (s.min_z !== undefined) parts.push(`z ∈ [${fmtNum(s.min_z)}, ${fmtNum(s.max_z)}]`);
+        if (s.min_M500c !== undefined) parts.push(`M500c ∈ [${fmtNum(s.min_M500c)}, ${fmtNum(s.max_M500c)}] M☉`);
+        if (s.min_q !== undefined) parts.push(`q ∈ [${fmtNum(s.min_q)}, ${fmtNum(s.max_q)}]`);
+        statsBox.textContent = parts.join(" · ");
+        const sortSel = document.getElementById("q-sort");
+        sortSel.innerHTML = "<option value=''>none</option>";
+        s.columns.forEach((c) => sortSel.appendChild(el("option", { value: c, text: c })));
+      } catch (err) {
+        statsBox.textContent = "stats unavailable: " + err.message;
+      }
+    }
+
+    async function runQuery() {
+      const id = document.getElementById("q-cat").value;
+      const status = document.getElementById("q-status");
+      status.className = "status";
+      status.textContent = "querying…";
+      const t0 = performance.now();
+      try {
+        const r = await apiGet(`/catalogues/${id}/query`, currentParams());
+        const dt = ((performance.now() - t0) / 1000).toFixed(2);
+        status.textContent = `${r.n_rows} rows in ${dt}s`;
+        const thead = document.querySelector("#q-table thead");
+        const tbody = document.querySelector("#q-table tbody");
+        thead.innerHTML = "";
+        tbody.innerHTML = "";
+        thead.appendChild(el("tr", {}, r.columns.map((c) => el("th", { class: "num", text: c }))));
+        for (const row of r.rows) {
+          tbody.appendChild(el("tr", {}, row.map((v) => el("td", { class: "num", text: fmtNum(v) }))));
+        }
+      } catch (err) {
+        status.className = "status error";
+        status.textContent = err.message;
+      }
+    }
+
+    document.getElementById("qform").addEventListener("submit", (e) => { e.preventDefault(); runQuery(); });
+    document.getElementById("q-cat").addEventListener("change", loadStats);
+    document.getElementById("q-csv").addEventListener("click", () => {
+      const id = document.getElementById("q-cat").value;
+      const url = new URL(`${API}/catalogues/${id}/query`, window.location.origin);
+      for (const [k, v] of Object.entries(currentParams())) if (v) url.searchParams.set(k, v);
+      url.searchParams.set("format", "csv");
+      window.location = url;
+    });
+
+    loadCats().catch((err) => {
+      const status = document.getElementById("q-status");
+      status.className = "status error";
+      status.textContent = err.message;
+    });
+  </script>
+</body>
+</html>

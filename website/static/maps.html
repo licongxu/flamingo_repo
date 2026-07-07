@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Maps · FLAMINGO Data Portal</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/app.js"></script>
+</head>
+<body>
+  <header>
+    <h1><span class="flame">FLAMINGO</span> Data Portal</h1>
+    <nav>
+      <a href="index.html">Overview</a>
+      <a href="catalogues.html">Catalogues</a>
+      <a href="maps.html">Maps</a>
+    </nav>
+    <div class="right"><a href="/api/v1/docs">API docs</a></div>
+  </header>
+  <main>
+    <h2>Compton-y HEALPix maps</h2>
+    <p>
+      Previews are Mollweide projections of log<sub>10</sub> y, degraded to
+      nside 512. Downloads return the full-resolution FITS files.
+    </p>
+    <form class="query" id="mform">
+      <label>Simulation
+        <select id="m-sim"><option value="">all</option></select>
+      </label>
+      <label>Show
+        <select id="m-full">
+          <option value="full">full lightcone maps</option>
+          <option value="">all (incl. shells / rotation groups)</option>
+        </select>
+      </label>
+      <button type="submit">Filter</button>
+    </form>
+    <div class="gallery" id="gallery"><p class="status">loading…</p></div>
+  </main>
+  <script>
+    let allMaps = [];
+
+    function render() {
+      const sim = document.getElementById("m-sim").value;
+      const fullOnly = document.getElementById("m-full").value === "full";
+      const box = document.getElementById("gallery");
+      box.innerHTML = "";
+      let maps = allMaps;
+      if (sim) maps = maps.filter((m) => m.simulation === sim);
+      if (fullOnly) maps = maps.filter((m) => m.shell === null && m.rotation_group === null);
+      for (const m of maps) {
+        const img = m.preview_url
+          ? el("img", { src: m.preview_url, alt: m.filename, loading: "lazy" })
+          : el("div", { class: "noimg", text: "no preview rendered" });
+        box.appendChild(el("div", { class: "map-card" }, [
+          img,
+          el("div", { class: "body" }, [
+            el("div", { class: "name", text: m.filename }),
+            el("div", {
+              class: "meta",
+              text: `${m.simulation} · ${m.variant}`
+                + (m.lightcone !== null ? ` · lc${m.lightcone}` : "")
+                + (m.nside ? ` · nside ${m.nside}` : "")
+                + (m.shell !== null ? ` · shell ${m.shell}` : "")
+                + (m.shell_range ? ` · shells ${m.shell_range}` : "")
+                + ` · ${fmtBytes(m.size_bytes)}`,
+            }),
+            el("a", { class: "dl", href: `${API}/files/${m.id}/download`, text: "download FITS" }),
+          ]),
+        ]));
+      }
+      if (!maps.length) box.innerHTML = "<p class='status'>no maps match</p>";
+    }
+
+    document.getElementById("mform").addEventListener("submit", (e) => { e.preventDefault(); render(); });
+
+    (async () => {
+      try {
+        allMaps = await apiGet("/maps");
+        const sims = [...new Set(allMaps.map((m) => m.simulation))].sort();
+        const sel = document.getElementById("m-sim");
+        sims.forEach((s) => sel.appendChild(el("option", { value: s, text: s })));
+        render();
+      } catch (err) {
+        const box = document.getElementById("gallery");
+        box.innerHTML = "";
+        box.appendChild(el("p", { class: "status error", text: err.message }));
+      }
+    })();
+  </script>
+</body>
+</html>

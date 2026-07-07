@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FLAMINGO Data Portal</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/app.js"></script>
+</head>
+<body>
+  <header>
+    <h1><span class="flame">FLAMINGO</span> Data Portal</h1>
+    <nav>
+      <a href="index.html">Overview</a>
+      <a href="catalogues.html">Catalogues</a>
+      <a href="maps.html">Maps</a>
+    </nav>
+    <div class="right"><a href="/api/v1/docs">API docs</a></div>
+  </header>
+  <main>
+    <p>
+      Internal portal for FLAMINGO lightcone data products: halo catalogues
+      (SOAP, yang26-rotated frame) and Compton-y HEALPix maps, across box
+      sizes, feedback prescriptions, and lightcone realizations. Interact
+      programmatically via the <a class="dl" href="/api/v1/docs">REST API</a>.
+    </p>
+
+    <h2>Summary</h2>
+    <div class="cards" id="summary-cards"><p class="status">loading…</p></div>
+
+    <h2>Simulations</h2>
+    <div id="sims"><p class="status">loading…</p></div>
+
+    <h2>All files</h2>
+    <form class="query" id="filter-form">
+      <label>Kind
+        <select id="f-kind">
+          <option value="">all</option>
+          <option value="catalogue">catalogue</option>
+          <option value="map">map</option>
+          <option value="aux">aux</option>
+        </select>
+      </label>
+      <label>Simulation
+        <select id="f-sim"><option value="">all</option></select>
+      </label>
+      <label>Variant
+        <select id="f-variant"><option value="">all</option></select>
+      </label>
+      <button type="submit">Filter</button>
+    </form>
+    <div class="scroll">
+      <table id="files-table">
+        <thead>
+          <tr><th>File</th><th>Kind</th><th>Simulation</th><th>Variant</th>
+              <th>Lightcone</th><th class="num">Size</th><th></th></tr>
+        </thead>
+        <tbody><tr><td colspan="7" class="status">loading…</td></tr></tbody>
+      </table>
+    </div>
+  </main>
+  <script>
+    async function loadSummary() {
+      const s = await apiGet("/summary");
+      const cards = document.getElementById("summary-cards");
+      cards.innerHTML = "";
+      const items = [
+        [s.n_files, "files indexed"],
+        [fmtBytes(s.total_size_bytes), "total data"],
+        [(s.by_kind.catalogue || {}).count || 0, "catalogues"],
+        [(s.by_kind.map || {}).count || 0, "maps"],
+        [s.variants.length, "feedback variants"],
+      ];
+      for (const [big, label] of items) {
+        cards.appendChild(el("div", { class: "card" }, [
+          el("div", { class: "big", text: String(big) }),
+          el("div", { class: "label", text: label }),
+        ]));
+      }
+      const simSel = document.getElementById("f-sim");
+      s.simulations.forEach((x) => simSel.appendChild(el("option", { value: x, text: x })));
+      const varSel = document.getElementById("f-variant");
+      s.variants.forEach((x) => varSel.appendChild(el("option", { value: x, text: x })));
+    }
+
+    async function loadSims() {
+      const tree = await apiGet("/simulations");
+      const box = document.getElementById("sims");
+      box.innerHTML = "";
+      for (const sim of tree) {
+        const rows = sim.variants.map((v) =>
+          el("tr", {}, [
+            el("td", {}, [el("span", { class: "pill " + (v.variant === "fiducial" ? "fiducial" : ""), text: v.variant })]),
+            el("td", { class: "num", text: String(v.count) }),
+            el("td", { class: "num", text: fmtBytes(v.size_bytes) }),
+          ]));
+        box.appendChild(el("h2", { text: sim.simulation + (sim.lightcones.length ? ` (lightcones ${sim.lightcones.join(", ")})` : "") }));
+        box.appendChild(el("table", {}, [
+          el("thead", {}, [el("tr", {}, [
+            el("th", { text: "Variant" }), el("th", { class: "num", text: "Files" }), el("th", { class: "num", text: "Size" }),
+          ])]),
+          el("tbody", {}, rows),
+        ]));
+      }
+    }
+
+    async function loadFiles() {
+      const tbody = document.querySelector("#files-table tbody");
+      tbody.innerHTML = "<tr><td colspan='7' class='status'>loading…</td></tr>";
+      const files = await apiGet("/files", {
+        kind: document.getElementById("f-kind").value,
+        simulation: document.getElementById("f-sim").value,
+        variant: document.getElementById("f-variant").value,
+      });
+      tbody.innerHTML = "";
+      for (const f of files) {
+        tbody.appendChild(el("tr", {}, [
+          el("td", { text: f.relpath }),
+          el("td", { text: f.kind }),
+          el("td", { text: f.simulation }),
+          el("td", {}, [el("span", { class: "pill", text: f.variant })]),
+          el("td", { text: f.lightcone === null ? "" : String(f.lightcone) }),
+          el("td", { class: "num", text: fmtBytes(f.size_bytes) }),
+          el("td", { html: `<a class="dl" href="${API}/files/${f.id}/download">download</a>` }),
+        ]));
+      }
+      if (!files.length) tbody.innerHTML = "<tr><td colspan='7' class='status'>no files match</td></tr>";
+    }
+
+    document.getElementById("filter-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      loadFiles().catch((err) => alert(err.message));
+    });
+
+    (async () => {
+      try {
+        await loadSummary();
+        await Promise.all([loadSims(), loadFiles()]);
+      } catch (err) {
+        const cards = document.getElementById("summary-cards");
+        cards.innerHTML = "";
+        cards.appendChild(el("p", { class: "status error", text: err.message }));
+      }
+    })();
+  </script>
+</body>
+</html>
