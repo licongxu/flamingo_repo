@@ -110,3 +110,24 @@
   stacked_profiles_per_group,massbin_contributions_D3000}.{pdf,png} (VLM-reviewed).
 - Conclusion: stacked-profile theory reproduces the group spectra at 1-halo scales
   (5-18% for ell>=1000, groups 0-3) and hugely improves on A10 at high z. Stop.
+
+## 2026-07-08 07:35 UTC — nb43 CNC x tSZ-PS covariance, L1_m9 patch resampling (done)
+
+- Commands: `python scripts/export_L1_m9_patch_cnc_ps.py` (bg b2pk0e5mk, 910 s, 192/192
+  patches, log logs/nb43_patch_ensemble.log clean: 0 NaN/error/OOM);
+  `python scripts/make_nb43.py` + nbconvert --execute (clean).
+- Artifacts: data/nb43_L1_m9_patch_cov/patch_ensemble.npz (+.json manifest, git 350d024),
+  notebooks/43_cnc_tsz_ps_covariance.ipynb (executed),
+  figures/nb43_cnc_tsz_ps_covariance/{corrmat_L1m9_fullsky,corrmat_L1m9_masked,
+  cross_corr_vs_ell,corrmat_painted_mc}.{pdf,png} (all through VLM review loop;
+  stale cnc_tsz_ps_correlation.* from the superseded painted-only version removed).
+- Anchors: sum_p N_z == nb40 Nz(L1_m9) exactly ([270 349 229 141 72 18], N(q>5)=1088);
+  patch-mean D_ell / stored NaMaster bandpowers = 0.999-1.032 (full sky) and
+  0.982-1.009 (masked q>5) over the 9 bins ell_eff 117-959.5.
+- Findings: L1_m9 q>5 counts end at z~0.6, so 4 empty nb40 z bins dropped (NaN fix).
+  Full-sky joint corr: cross block mean r=+0.135, max 0.377; corr[N_tot,C_ell]
+  mean +0.38 rising with ell. Masked q>5: cross block mean +0.057;
+  corr[N_tot,C_ell] mean +0.16 - residual patch-level LSS coupling (2-halo),
+  absent (+0.016) in the 1000-realization unclustered painted MC cross-check.
+- Conclusion: Hurier & Lacasa Fig 7 structure reproduced on L1_m9 fiducial (masking
+  q>5 strongly decorrelates counts from the PS); done, stop.

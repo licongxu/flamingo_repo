@@ -41,7 +41,7 @@ REF_ELL = _REPO / "data/bandpowers_L1_m9_feedback/masked_tsz_ps.npz"
 
 LMAX = 6000
 DELL = 30
-Q_CUTS = [50.0, 20.0, 10.0, 5.0]
+Q_CUTS = [50.0, 20.0, 10.0, 5.0, 3.0, 1.0]
 SIGMA_LNY = 0.173
 ALPHA_A10 = 2.0 / 3.0 + 0.12 + 1.0 / 3.0
 

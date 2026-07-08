@@ -45,8 +45,8 @@ LMAX = 6000
 DELL = 30
 R_MASK = 5.0
 APOD_DEG = 0.5
-Q_CUTS = [50.0, 20.0, 10.0, 5.0]
-CUT_TAGS = ["qgt50", "qgt20", "qgt10", "qgt5"]
+Q_CUTS = [50.0, 20.0, 10.0, 5.0, 3.0, 1.0]
+CUT_TAGS = ["qgt50", "qgt20", "qgt10", "qgt5", "qgt3", "qgt1"]
 
 A_S_D3A = 2.099e-9
 D3A = dict(
