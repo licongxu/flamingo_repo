@@ -1,0 +1,35 @@
+{
+  "dataset_repo": "licongxu/fable5-flamingo-research-trace",
+  "archive_purpose": "Raw Claude Code trace for the Fable 5 L1_m9 rotation-group task session that committed and pushed the nb40 pipeline.",
+  "task": {
+    "task_id": "2026-07-08_fable5_L1_m9_rotation_group_commit_push",
+    "title": "Create, commit, and push L1_m9 rotation-group tSZ power-spectrum pipeline",
+    "domain": "FLAMINGO cosmology simulation analysis",
+    "repo_path": "/scratch/scratch-lxu/flamingo_repo",
+    "branch_in_trace": "masking_clusters",
+    "model": "claude-fable-5",
+    "primary_session_id": "4ca1f3fa-a631-40f2-bf52-c325b5e84b47"
+  },
+  "files": [
+    {
+      "path": "raw_trace_4ca1f3fa.jsonl",
+      "role": "primary_raw_trace",
+      "source_path": "/home/lxu/.claude/projects/-scratch-scratch-lxu-flamingo-repo/4ca1f3fa-a631-40f2-bf52-c325b5e84b47.jsonl",
+      "records": 398,
+      "bytes": 1415875,
+      "sha256": "63c967bcf25d2d7ab72d0c3dcaef28d7ee7c85eb0ddb57531e92dbc3a5dc9605"
+    },
+    {
+      "path": "session_pointer_1436610.json",
+      "role": "session_pointer",
+      "source_path": "/home/lxu/.claude/sessions/1436610.json",
+      "bytes": 379,
+      "sha256": "e9f3463537bc6d9d489c9f4397a53d23d649bc861816f4abec60d5256b317957"
+    }
+  ],
+  "publication_notes": [
+    "This is a distinct Claude Code session from the earlier 99efbdc7 trace, even though it operates on the same L1_m9 rotation-group prompt.",
+    "The trace includes the commit and GitHub push to masking_clusters at commit fc69fa6.",
+    "The primary JSONL is intentionally raw and may include local paths, tool outputs, and Claude Code metadata."
+  ]
+}
