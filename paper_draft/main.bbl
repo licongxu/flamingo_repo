@@ -1,0 +1,148 @@
+%apsrev4-2.bst 2019-01-14 (MD) hand-edited version of apsrev4-1.bst
+%Control: key (0)
+%Control: author (8) initials jnrlst
+%Control: editor formatted (1) identically to author
+%Control: production of article title (0) allowed
+%Control: page (0) single
+%Control: year (1) truncated
+%Control: production of eprint (0) enabled
+\begin{thebibliography}{32}%
+\makeatletter
+\providecommand \@ifxundefined [1]{%
+ \@ifx{#1\undefined}
+}%
+\providecommand \@ifnum [1]{%
+ \ifnum #1\expandafter \@firstoftwo
+ \else \expandafter \@secondoftwo
+ \fi
+}%
+\providecommand \@ifx [1]{%
+ \ifx #1\expandafter \@firstoftwo
+ \else \expandafter \@secondoftwo
+ \fi
+}%
+\providecommand \natexlab [1]{#1}%
+\providecommand \enquote  [1]{``#1''}%
+\providecommand \bibnamefont  [1]{#1}%
+\providecommand \bibfnamefont [1]{#1}%
+\providecommand \citenamefont [1]{#1}%
+\providecommand \href@noop [0]{\@secondoftwo}%
+\providecommand \href [0]{\begingroup \@sanitize@url \@href}%
+\providecommand \@href[1]{\@@startlink{#1}\@@href}%
+\providecommand \@@href[1]{\endgroup#1\@@endlink}%
+\providecommand \@sanitize@url [0]{\catcode `\\12\catcode `\$12\catcode `\&12\catcode `\#12\catcode `\^12\catcode `\_12\catcode `\%12\relax}%
+\providecommand \@@startlink[1]{}%
+\providecommand \@@endlink[0]{}%
+\providecommand \url  [0]{\begingroup\@sanitize@url \@url }%
+\providecommand \@url [1]{\endgroup\@href {#1}{\urlprefix }}%
+\providecommand \urlprefix  [0]{URL }%
+\providecommand \Eprint [0]{\href }%
+\providecommand \doibase [0]{https://doi.org/}%
+\providecommand \selectlanguage [0]{\@gobble}%
+\providecommand \bibinfo  [0]{\@secondoftwo}%
+\providecommand \bibfield  [0]{\@secondoftwo}%
+\providecommand \translation [1]{[#1]}%
+\providecommand \BibitemOpen [0]{}%
+\providecommand \bibitemStop [0]{}%
+\providecommand \bibitemNoStop [0]{.\EOS\space}%
+\providecommand \EOS [0]{\spacefactor3000\relax}%
+\providecommand \BibitemShut  [1]{\csname bibitem#1\endcsname}%
+\let\auto@bib@innerbib\@empty
+%</preamble>
+\bibitem [{\citenamefont {{Sunyaev}}\ and\ \citenamefont {{Zeldovich}}(1972)}]{1972CoASP...4..173S}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {R.~A.}\ \bibnamefont {{Sunyaev}}}\ and\ \bibinfo {author} {\bibfnamefont {Y.~B.}\ \bibnamefont {{Zeldovich}}},\ }\bibfield  {title} {\bibinfo {title} {{The Observations of Relic Radiation as a Test of the Nature of X-Ray Radiation from the Clusters of Galaxies}},\ }\href@noop {} {\bibfield  {journal} {\bibinfo  {journal} {Comments on Astrophysics and Space Physics}\ }\textbf {\bibinfo {volume} {4}},\ \bibinfo {pages} {173} (\bibinfo {year} {1972})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Allen}\ \emph {et~al.}(2011)\citenamefont {Allen}, \citenamefont {Evrard},\ and\ \citenamefont {Mantz}}]{Allen:2011zs}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {S.~W.}\ \bibnamefont {Allen}}, \bibinfo {author} {\bibfnamefont {A.~E.}\ \bibnamefont {Evrard}},\ and\ \bibinfo {author} {\bibfnamefont {A.~B.}\ \bibnamefont {Mantz}},\ }\bibfield  {title} {\bibinfo {title} {{Cosmological Parameters from Observations of Galaxy Clusters}},\ }\href {https://doi.org/10.1146/annurev-astro-081811-125519} {\bibfield  {journal} {\bibinfo  {journal} {Ann. Rev. Astron. Astrophys.}\ }\textbf {\bibinfo {volume} {49}},\ \bibinfo {pages} {409} (\bibinfo {year} {2011})},\ \Eprint {https://arxiv.org/abs/1103.4829} {arXiv:1103.4829} \BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Pratt}\ \emph {et~al.}(2019)\citenamefont {Pratt}, \citenamefont {Arnaud}, \citenamefont {Biviano} \emph {et~al.}}]{Pratt:2019cnc}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {G.~W.}\ \bibnamefont {Pratt}}, \bibinfo {author} {\bibfnamefont {M.}~\bibnamefont {Arnaud}}, \bibinfo {author} {\bibfnamefont {A.}~\bibnamefont {Biviano}}, \emph {et~al.},\ }\bibfield  {title} {\bibinfo {title} {{The galaxy cluster mass scale and its impact on cosmological constraints from the cluster population}},\ }\href {https://doi.org/10.1007/s11214-019-0591-0} {\bibfield  {journal} {\bibinfo  {journal} {Space Sci. Rev.}\ }\textbf {\bibinfo {volume} {215}},\ \bibinfo {pages} {25} (\bibinfo {year} {2019})},\ \Eprint {https://arxiv.org/abs/1902.10837} {arXiv:1902.10837} \BibitemShut {NoStop}%
+\bibitem [{\citenamefont {{Planck Collaboration}}(2016{\natexlab{a}})}]{Planck:2015lwi}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibnamefont {{Planck Collaboration}}},\ }\bibfield  {title} {\bibinfo {title} {{Planck 2015 results. XXVII. The second Planck catalogue of Sunyaev-Zeldovich sources}},\ }\href {https://doi.org/10.1051/0004-6361/201525823} {\bibfield  {journal} {\bibinfo  {journal} {Astron. Astrophys.}\ }\textbf {\bibinfo {volume} {594}},\ \bibinfo {pages} {A27} (\bibinfo {year} {2016}{\natexlab{a}})},\ \Eprint {https://arxiv.org/abs/1502.01598} {arXiv:1502.01598} \BibitemShut {NoStop}%
+\bibitem [{\citenamefont {{Bocquet}}\ \emph {et~al.}(2024)\citenamefont {{Bocquet}} \emph {et~al.}}]{Bocquet2024b}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {S.}~\bibnamefont {{Bocquet}}} \emph {et~al.},\ }\bibfield  {title} {\bibinfo {title} {{SPT clusters with DES and HST weak lensing. II. Cosmological constraints from the abundance of massive halos}},\ }\href {https://doi.org/10.1103/PhysRevD.110.083510} {\bibfield  {journal} {\bibinfo  {journal} {Phys. Rev. D}\ }\textbf {\bibinfo {volume} {110}},\ \bibinfo {pages} {083510} (\bibinfo {year} {2024})},\ \Eprint {https://arxiv.org/abs/2401.02075} {2401.02075} \BibitemShut {NoStop}%
+\bibitem [{\citenamefont {{Zubeldia}}\ and\ \citenamefont {{Challinor}}(2019)}]{Zubeldia2019}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {{\'I}.}~\bibnamefont {{Zubeldia}}}\ and\ \bibinfo {author} {\bibfnamefont {A.}~\bibnamefont {{Challinor}}},\ }\bibfield  {title} {\bibinfo {title} {{Cosmological constraints from Planck galaxy clusters with CMB lensing mass bias calibration}},\ }\href {https://doi.org/10.1093/mnras/stz2153} {\bibfield  {journal} {\bibinfo  {journal} {Mon. Not. R. Astron. Soc.}\ }\textbf {\bibinfo {volume} {489}},\ \bibinfo {pages} {401} (\bibinfo {year} {2019})},\ \Eprint {https://arxiv.org/abs/1904.07887} {1904.07887} \BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Komatsu}\ and\ \citenamefont {Kitayama}(1999)}]{Komatsu_1999}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {E.}~\bibnamefont {Komatsu}}\ and\ \bibinfo {author} {\bibfnamefont {T.}~\bibnamefont {Kitayama}},\ }\bibfield  {title} {\bibinfo {title} {{Sunyaev-Zel'dovich fluctuations from spatial correlations between clusters of galaxies}},\ }\href {https://doi.org/10.1086/312207} {\bibfield  {journal} {\bibinfo  {journal} {Astrophys. J. Lett.}\ }\textbf {\bibinfo {volume} {526}},\ \bibinfo {pages} {L1} (\bibinfo {year} {1999})},\ \Eprint {https://arxiv.org/abs/astro-ph/9812404} {arXiv:astro-ph/9812404} \BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Komatsu}\ and\ \citenamefont {Seljak}(2002)}]{Komatsu:2002wc}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {E.}~\bibnamefont {Komatsu}}\ and\ \bibinfo {author} {\bibfnamefont {U.}~\bibnamefont {Seljak}},\ }\bibfield  {title} {\bibinfo {title} {{The Sunyaev-Zel'dovich angular power spectrum as a probe of cosmological parameters}},\ }\href {https://doi.org/10.1046/j.1365-8711.2002.05889.x} {\bibfield  {journal} {\bibinfo  {journal} {Mon. Not. Roy. Astron. Soc.}\ }\textbf {\bibinfo {volume} {336}},\ \bibinfo {pages} {1256} (\bibinfo {year} {2002})},\ \Eprint {https://arxiv.org/abs/astro-ph/0205468} {arXiv:astro-ph/0205468} \BibitemShut {NoStop}%
+\bibitem [{\citenamefont {{Planck Collaboration}}(2016{\natexlab{b}})}]{Planck:2015vgm}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibnamefont {{Planck Collaboration}}},\ }\bibfield  {title} {\bibinfo {title} {{Planck 2015 results. XXII. A map of the thermal Sunyaev-Zeldovich effect}},\ }\href {https://doi.org/10.1051/0004-6361/201525826} {\bibfield  {journal} {\bibinfo  {journal} {Astron. Astrophys.}\ }\textbf {\bibinfo {volume} {594}},\ \bibinfo {pages} {A22} (\bibinfo {year} {2016}{\natexlab{b}})},\ \Eprint {https://arxiv.org/abs/1502.01596} {arXiv:1502.01596} \BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Bolliet}\ \emph {et~al.}(2018)\citenamefont {Bolliet}, \citenamefont {Comis}, \citenamefont {Komatsu},\ and\ \citenamefont {Mac\'\i{}as-P\'erez}}]{Bolliet:2017lha}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {B.}~\bibnamefont {Bolliet}}, \bibinfo {author} {\bibfnamefont {B.}~\bibnamefont {Comis}}, \bibinfo {author} {\bibfnamefont {E.}~\bibnamefont {Komatsu}},\ and\ \bibinfo {author} {\bibfnamefont {J.~F.}\ \bibnamefont {Mac\'\i{}as-P\'erez}},\ }\bibfield  {title} {\bibinfo {title} {{Dark energy constraints from the thermal Sunyaev-Zeldovich power spectrum}},\ }\href {https://doi.org/10.1093/mnras/sty823} {\bibfield  {journal} {\bibinfo  {journal} {Mon. Not. Roy. Astron. Soc.}\ }\textbf {\bibinfo {volume} {477}},\ \bibinfo {pages} {4957} (\bibinfo {year} {2018})},\ \Eprint {https://arxiv.org/abs/1712.00788} {arXiv:1712.00788} \BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Hurier}\ and\ \citenamefont {Lacasa}(2017)}]{Hurier2017}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {G.}~\bibnamefont {Hurier}}\ and\ \bibinfo {author} {\bibfnamefont {F.}~\bibnamefont {Lacasa}},\ }\bibfield  {title} {\bibinfo {title} {{Combined analysis of galaxy cluster number count, thermal Sunyaev-Zel'dovich power spectrum, and bispectrum}},\ }\href {https://doi.org/10.1051/0004-6361/201630041} {\bibfield  {journal} {\bibinfo  {journal} {Astron. Astrophys.}\ }\textbf {\bibinfo {volume} {604}},\ \bibinfo {pages} {A71} (\bibinfo {year} {2017})},\ \Eprint {https://arxiv.org/abs/1701.09067} {arXiv:1701.09067 [astro-ph.CO]} \BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Rotti}\ \emph {et~al.}(2021)\citenamefont {Rotti}, \citenamefont {Bolliet}, \citenamefont {Chluba},\ and\ \citenamefont {Remazeilles}}]{Rotti:2020rdl}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {A.}~\bibnamefont {Rotti}}, \bibinfo {author} {\bibfnamefont {B.}~\bibnamefont {Bolliet}}, \bibinfo {author} {\bibfnamefont {J.}~\bibnamefont {Chluba}},\ and\ \bibinfo {author} {\bibfnamefont {M.}~\bibnamefont {Remazeilles}},\ }\bibfield  {title} {\bibinfo {title} {{Removing the giants and learning from the crowd: a new SZ power spectrum method and revised Compton $y$-map analysis}},\ }\href {https://doi.org/10.1093/mnras/stab469} {\bibfield  {journal} {\bibinfo  {journal} {Mon. Not. Roy. Astron. Soc.}\ }\textbf {\bibinfo {volume} {503}},\ \bibinfo {pages} {5310} (\bibinfo {year} {2021})},\ \Eprint {https://arxiv.org/abs/2010.07797} {arXiv:2010.07797} \BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Zhang}\ and\ \citenamefont {Sheth}(2007)}]{Zhang:2007psa}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {P.}~\bibnamefont {Zhang}}\ and\ \bibinfo {author} {\bibfnamefont {R.~K.}\ \bibnamefont {Sheth}},\ }\bibfield  {title} {\bibinfo {title} {{Analytical model for the non-Gaussian tSZ PDF}},\ }\href {https://doi.org/10.1086/521578} {\bibfield  {journal} {\bibinfo  {journal} {Astrophys. J.}\ }\textbf {\bibinfo {volume} {671}},\ \bibinfo {pages} {14} (\bibinfo {year} {2007})},\ \Eprint {https://arxiv.org/abs/astro-ph/0701879} {arXiv:astro-ph/0701879} \BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Horowitz}\ and\ \citenamefont {Seljak}(2017)}]{Horowitz:2017dsh}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {B.}~\bibnamefont {Horowitz}}\ and\ \bibinfo {author} {\bibfnamefont {U.}~\bibnamefont {Seljak}},\ }\bibfield  {title} {\bibinfo {title} {{Cosmological constraints from thermal Sunyaev-Zeldovich power spectrum revisited}},\ }\href {https://doi.org/10.1093/mnras/stx3184} {\bibfield  {journal} {\bibinfo  {journal} {Mon. Not. Roy. Astron. Soc.}\ }\textbf {\bibinfo {volume} {469}},\ \bibinfo {pages} {394} (\bibinfo {year} {2017})},\ \Eprint {https://arxiv.org/abs/1706.03763} {arXiv:1706.03763} \BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Schaye}\ \emph {et~al.}(2023)\citenamefont {Schaye} \emph {et~al.}}]{Schaye2023}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {J.}~\bibnamefont {Schaye}} \emph {et~al.},\ }\bibfield  {title} {\bibinfo {title} {{The FLAMINGO project: cosmological hydrodynamical simulations for large-scale structure and galaxy cluster surveys}},\ }\href {https://doi.org/10.1093/mnras/stad2419} {\bibfield  {journal} {\bibinfo  {journal} {Mon. Not. Roy. Astron. Soc.}\ }\textbf {\bibinfo {volume} {526}},\ \bibinfo {pages} {4978} (\bibinfo {year} {2023})},\ \Eprint {https://arxiv.org/abs/2306.04024} {arXiv:2306.04024 [astro-ph.CO]} \BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Kugel}\ \emph {et~al.}(2023)\citenamefont {Kugel} \emph {et~al.}}]{Kugel2023}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {R.}~\bibnamefont {Kugel}} \emph {et~al.},\ }\bibfield  {title} {\bibinfo {title} {{FLAMINGO: calibrating large cosmological hydrodynamical simulations with machine learning}},\ }\href {https://doi.org/10.1093/mnras/stad2540} {\bibfield  {journal} {\bibinfo  {journal} {Mon. Not. Roy. Astron. Soc.}\ }\textbf {\bibinfo {volume} {526}},\ \bibinfo {pages} {6103} (\bibinfo {year} {2023})},\ \Eprint {https://arxiv.org/abs/2306.05492} {arXiv:2306.05492 [astro-ph.CO]} \BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Melin}\ \emph {et~al.}(2006)\citenamefont {Melin}, \citenamefont {Bartlett},\ and\ \citenamefont {Delabrouille}}]{Melin:2005yz}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {J.-B.}\ \bibnamefont {Melin}}, \bibinfo {author} {\bibfnamefont {J.~G.}\ \bibnamefont {Bartlett}},\ and\ \bibinfo {author} {\bibfnamefont {J.}~\bibnamefont {Delabrouille}},\ }\bibfield  {title} {\bibinfo {title} {{Catalog Extraction in SZ Cluster Surveys: A Matched Filter Approach}},\ }\href {https://doi.org/10.1051/0004-6361:20052888} {\bibfield  {journal} {\bibinfo  {journal} {Astron. Astrophys.}\ }\textbf {\bibinfo {volume} {459}},\ \bibinfo {pages} {341} (\bibinfo {year} {2006})},\ \Eprint {https://arxiv.org/abs/astro-ph/0503700} {arXiv:astro-ph/0503700} \BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Cooray}\ and\ \citenamefont {Sheth}(2002)}]{Cooray:2002dia}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {A.}~\bibnamefont {Cooray}}\ and\ \bibinfo {author} {\bibfnamefont {R.~K.}\ \bibnamefont {Sheth}},\ }\bibfield  {title} {\bibinfo {title} {{Halo Models of Large Scale Structure}},\ }\href {https://doi.org/10.1016/S0370-1573(02)00276-4} {\bibfield  {journal} {\bibinfo  {journal} {Phys. Rept.}\ }\textbf {\bibinfo {volume} {372}},\ \bibinfo {pages} {1} (\bibinfo {year} {2002})},\ \Eprint {https://arxiv.org/abs/astro-ph/0206508} {arXiv:astro-ph/0206508} \BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Tinker}\ \emph {et~al.}(2008)\citenamefont {Tinker}, \citenamefont {Kravtsov}, \citenamefont {Klypin}, \citenamefont {Abazajian}, \citenamefont {Warren}, \citenamefont {Yepes}, \citenamefont {Gottlober},\ and\ \citenamefont {Holz}}]{Tinker:2008ff}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {J.~L.}\ \bibnamefont {Tinker}}, \bibinfo {author} {\bibfnamefont {A.~V.}\ \bibnamefont {Kravtsov}}, \bibinfo {author} {\bibfnamefont {A.}~\bibnamefont {Klypin}}, \bibinfo {author} {\bibfnamefont {K.}~\bibnamefont {Abazajian}}, \bibinfo {author} {\bibfnamefont {M.~S.}\ \bibnamefont {Warren}}, \bibinfo {author} {\bibfnamefont {G.}~\bibnamefont {Yepes}}, \bibinfo {author} {\bibfnamefont {S.}~\bibnamefont {Gottlober}},\ and\ \bibinfo {author} {\bibfnamefont {D.~E.}\ \bibnamefont {Holz}},\ }\bibfield  {title} {\bibinfo {title} {{Toward a halo mass function for precision cosmology: The Limits of universality}},\ }\href {https://doi.org/10.1086/591439} {\bibfield  {journal} {\bibinfo  {journal} {Astrophys. J.}\ }\textbf {\bibinfo {volume} {688}},\ \bibinfo {pages} {709} (\bibinfo {year} {2008})},\ \Eprint {https://arxiv.org/abs/0803.2706} {arXiv:0803.2706} \BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Arnaud}\ \emph {et~al.}(2010)\citenamefont {Arnaud}, \citenamefont {Pratt}, \citenamefont {Piffaretti}, \citenamefont {B\"ohringer}, \citenamefont {Croston},\ and\ \citenamefont {Pointecouteau}}]{Arnaud_2010}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {M.}~\bibnamefont {Arnaud}}, \bibinfo {author} {\bibfnamefont {G.~W.}\ \bibnamefont {Pratt}}, \bibinfo {author} {\bibfnamefont {R.}~\bibnamefont {Piffaretti}}, \bibinfo {author} {\bibfnamefont {H.}~\bibnamefont {B\"ohringer}}, \bibinfo {author} {\bibfnamefont {J.~H.}\ \bibnamefont {Croston}},\ and\ \bibinfo {author} {\bibfnamefont {E.}~\bibnamefont {Pointecouteau}},\ }\bibfield  {title} {\bibinfo {title} {The universal galaxy cluster pressure profile from a representative sample of nearby systems (rexcess) and the $y_{\rm sz}$--$m_{500}$ relation},\ }\href {https://doi.org/10.1051/0004-6361/200913416} {\bibfield  {journal} {\bibinfo  {journal} {Astronomy and Astrophysics}\ }\textbf {\bibinfo {volume} {517}},\ \bibinfo {pages} {A92} (\bibinfo {year} {2010})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Cash}(1979)}]{Cash:1979}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {W.}~\bibnamefont {Cash}},\ }\bibfield  {title} {\bibinfo {title} {{Parameter estimation in astronomy through application of the likelihood ratio}},\ }\href {https://doi.org/10.1086/157199} {\bibfield  {journal} {\bibinfo  {journal} {Astrophys. J.}\ }\textbf {\bibinfo {volume} {228}},\ \bibinfo {pages} {939} (\bibinfo {year} {1979})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Zubeldia}\ and\ \citenamefont {Bolliet}(2024)}]{Zubeldia:2024lke}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {I.~n.}\ \bibnamefont {Zubeldia}}\ and\ \bibinfo {author} {\bibfnamefont {B.}~\bibnamefont {Bolliet}},\ }\bibfield  {title} {\bibinfo {title} {{cosmocnc: A fast, flexible, and accurate framework for galaxy cluster number count likelihood computation}},\ }\href {https://doi.org/10.1088/1475-7516/2024/11/018} {\bibfield  {journal} {\bibinfo  {journal} {JCAP}\ }\textbf {\bibinfo {volume} {11}},\ \bibinfo {pages} {018}},\ \Eprint {https://arxiv.org/abs/2403.09589} {arXiv:2403.09589} \BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Torrado}\ and\ \citenamefont {Lewis}(2021)}]{Torrado:2020dgo}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {J.}~\bibnamefont {Torrado}}\ and\ \bibinfo {author} {\bibfnamefont {A.}~\bibnamefont {Lewis}},\ }\bibfield  {title} {\bibinfo {title} {{Cobaya: Code for Bayesian Analysis of hierarchical physical models}},\ }\href {https://doi.org/10.1088/1475-7516/2021/05/057} {\bibfield  {journal} {\bibinfo  {journal} {JCAP}\ }\textbf {\bibinfo {volume} {05}},\ \bibinfo {pages} {057}},\ \Eprint {https://arxiv.org/abs/2005.05290} {arXiv:2005.05290} \BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Bradbury}\ \emph {et~al.}(2018)\citenamefont {Bradbury}, \citenamefont {Frostig}, \citenamefont {Hawkins}, \citenamefont {Johnson}, \citenamefont {Leary}, \citenamefont {Maclaurin}, \citenamefont {Necula}, \citenamefont {Paszke}, \citenamefont {VanderPlas}, \citenamefont {Wanderman-Milne},\ and\ \citenamefont {Zhang}}]{jax2018github}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {J.}~\bibnamefont {Bradbury}}, \bibinfo {author} {\bibfnamefont {R.}~\bibnamefont {Frostig}}, \bibinfo {author} {\bibfnamefont {P.}~\bibnamefont {Hawkins}}, \bibinfo {author} {\bibfnamefont {M.~J.}\ \bibnamefont {Johnson}}, \bibinfo {author} {\bibfnamefont {C.}~\bibnamefont {Leary}}, \bibinfo {author} {\bibfnamefont {D.}~\bibnamefont {Maclaurin}}, \bibinfo {author} {\bibfnamefont {G.}~\bibnamefont {Necula}}, \bibinfo {author} {\bibfnamefont {A.}~\bibnamefont {Paszke}}, \bibinfo {author} {\bibfnamefont {J.}~\bibnamefont {VanderPlas}}, \bibinfo {author} {\bibfnamefont {S.}~\bibnamefont {Wanderman-Milne}},\ and\ \bibinfo {author} {\bibfnamefont {Q.}~\bibnamefont {Zhang}},\ }\bibfield  {title} {\bibinfo {title} {{JAX}: composable transformations of {P}ython+{N}um{P}y programs},\ }\href {http://github.com/google/jax} {\  (\bibinfo {year} {2018})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Spurio~Mancini}\ \emph {et~al.}(2022)\citenamefont {Spurio~Mancini}, \citenamefont {Piras}, \citenamefont {Alsing}, \citenamefont {Joachimi},\ and\ \citenamefont {Hobson}}]{Spurio_Mancini_2022}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {A.}~\bibnamefont {Spurio~Mancini}}, \bibinfo {author} {\bibfnamefont {D.}~\bibnamefont {Piras}}, \bibinfo {author} {\bibfnamefont {J.}~\bibnamefont {Alsing}}, \bibinfo {author} {\bibfnamefont {B.}~\bibnamefont {Joachimi}},\ and\ \bibinfo {author} {\bibfnamefont {M.~P.}\ \bibnamefont {Hobson}},\ }\bibfield  {title} {\bibinfo {title} {Cosmopower: emulating cosmological power spectra for accelerated bayesian inference from next-generation surveys},\ }\href {https://doi.org/10.1093/mnras/stac064} {\bibfield  {journal} {\bibinfo  {journal} {Mon. Not. R. Astron. Soc.}\ }\textbf {\bibinfo {volume} {511}},\ \bibinfo {pages} {1771} (\bibinfo {year} {2022})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Bolliet}\ \emph {et~al.}(2024)\citenamefont {Bolliet} \emph {et~al.}}]{Bolliet:2025oqo}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {B.}~\bibnamefont {Bolliet}} \emph {et~al.},\ }\bibfield  {title} {\bibinfo {title} {{class\_sz I: Overview}},\ }\href {https://doi.org/10.1051/epjconf/202429300008} {\bibfield  {journal} {\bibinfo  {journal} {EPJ Web Conf.}\ }\textbf {\bibinfo {volume} {293}},\ \bibinfo {pages} {00008} (\bibinfo {year} {2024})},\ \Eprint {https://arxiv.org/abs/2310.18482} {arXiv:2310.18482} \BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Gorski}\ \emph {et~al.}(2005)\citenamefont {Gorski}, \citenamefont {Hivon}, \citenamefont {Banday}, \citenamefont {Wandelt}, \citenamefont {Hansen}, \citenamefont {Reinecke},\ and\ \citenamefont {Bartelman}}]{Gorski2005}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {K.~M.}\ \bibnamefont {Gorski}}, \bibinfo {author} {\bibfnamefont {E.}~\bibnamefont {Hivon}}, \bibinfo {author} {\bibfnamefont {A.~J.}\ \bibnamefont {Banday}}, \bibinfo {author} {\bibfnamefont {B.~D.}\ \bibnamefont {Wandelt}}, \bibinfo {author} {\bibfnamefont {F.~K.}\ \bibnamefont {Hansen}}, \bibinfo {author} {\bibfnamefont {M.}~\bibnamefont {Reinecke}},\ and\ \bibinfo {author} {\bibfnamefont {M.}~\bibnamefont {Bartelman}},\ }\bibfield  {title} {\bibinfo {title} {{HEALPix: A Framework for high resolution discretization, and fast analysis of data distributed on the sphere}},\ }\href {https://doi.org/10.1086/427976} {\bibfield  {journal} {\bibinfo  {journal} {Astrophys. J.}\ }\textbf {\bibinfo {volume} {622}},\ \bibinfo {pages} {759} (\bibinfo {year} {2005})},\ \Eprint {https://arxiv.org/abs/astro-ph/0409513} {arXiv:astro-ph/0409513} \BibitemShut {NoStop}%
+\bibitem [{\citenamefont {{Zubeldia}}\ \emph {et~al.}(2024)\citenamefont {{Zubeldia}}, \citenamefont {{Melin}}, \citenamefont {{Chluba}},\ and\ \citenamefont {{Battye}}}]{Zubeldia2024b}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {{\'I}.}~\bibnamefont {{Zubeldia}}}, \bibinfo {author} {\bibfnamefont {J.-B.}\ \bibnamefont {{Melin}}}, \bibinfo {author} {\bibfnamefont {J.}~\bibnamefont {{Chluba}}},\ and\ \bibinfo {author} {\bibfnamefont {R.}~\bibnamefont {{Battye}}},\ }\bibfield  {title} {\bibinfo {title} {{The Planck SZiFi catalogues: a new set of Planck catalogues of Sunyaev-Zeldovich-detected galaxy clusters}},\ }\href@noop {} {\  (\bibinfo {year} {2024})},\ \Eprint {https://arxiv.org/abs/2408.06189} {arXiv:2408.06189} \BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Alonso}\ \emph {et~al.}(2019)\citenamefont {Alonso}, \citenamefont {Sanchez},\ and\ \citenamefont {Slosar}}]{Alonso2019}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {D.}~\bibnamefont {Alonso}}, \bibinfo {author} {\bibfnamefont {J.}~\bibnamefont {Sanchez}},\ and\ \bibinfo {author} {\bibfnamefont {A.}~\bibnamefont {Slosar}},\ }\bibfield  {title} {\bibinfo {title} {{A unified pseudo-C$_\ell$ framework}},\ }\href {https://doi.org/10.1093/mnras/stz093} {\bibfield  {journal} {\bibinfo  {journal} {Mon. Not. Roy. Astron. Soc.}\ }\textbf {\bibinfo {volume} {484}},\ \bibinfo {pages} {4127} (\bibinfo {year} {2019})},\ \Eprint {https://arxiv.org/abs/1809.09603} {arXiv:1809.09603 [astro-ph.CO]} \BibitemShut {NoStop}%
+\bibitem [{\citenamefont {McCarthy}\ \emph {et~al.}(2023)\citenamefont {McCarthy} \emph {et~al.}}]{McCarthy2023}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {I.~G.}\ \bibnamefont {McCarthy}} \emph {et~al.},\ }\bibfield  {title} {\bibinfo {title} {{The FLAMINGO project: revisiting the S8 tension and the role of baryonic physics}},\ }\href {https://doi.org/10.1093/mnras/stad3107} {\bibfield  {journal} {\bibinfo  {journal} {Mon. Not. Roy. Astron. Soc.}\ }\textbf {\bibinfo {volume} {526}},\ \bibinfo {pages} {5494} (\bibinfo {year} {2023})},\ \Eprint {https://arxiv.org/abs/2309.07959} {arXiv:2309.07959 [astro-ph.CO]} \BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Ade}\ \emph {et~al.}(2019)\citenamefont {Ade} \emph {et~al.}}]{SimonsObservatory:2018koc}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {P.}~\bibnamefont {Ade}} \emph {et~al.} (\bibinfo {collaboration} {Simons Observatory}),\ }\bibfield  {title} {\bibinfo {title} {{The Simons Observatory: Science goals and forecasts}},\ }\href {https://doi.org/10.1088/1475-7516/2019/02/056} {\bibfield  {journal} {\bibinfo  {journal} {JCAP}\ }\textbf {\bibinfo {volume} {02}},\ \bibinfo {pages} {056}},\ \Eprint {https://arxiv.org/abs/1808.07445} {arXiv:1808.07445} \BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Abazajian}\ \emph {et~al.}(2022)\citenamefont {Abazajian} \emph {et~al.}}]{CMB-S4:2022ght}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {K.}~\bibnamefont {Abazajian}} \emph {et~al.} (\bibinfo {collaboration} {CMB-S4}),\ }\bibfield  {title} {\bibinfo {title} {{Snowmass 2021 CMB-S4 White Paper}},\ }\href@noop {} {\  (\bibinfo {year} {2022})},\ \Eprint {https://arxiv.org/abs/2203.08024} {arXiv:2203.08024} \BibitemShut {NoStop}%
+\end{thebibliography}%

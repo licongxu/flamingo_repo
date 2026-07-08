@@ -1,0 +1,25 @@
+loading y_unlensed_L1_m9_lc0_nside4096.fits ...
+  monopole = 1.5028e-06
+building q>5 binary mask for random-centre rejection ...
+  mask f_sky = 0.9229
+ensemble: 12 theta nodes x 300 randoms
+stamps: 3600 (q_from_mz > 5)
+  200/3600  (0.17 s/stamp)
+  400/3600  (0.17 s/stamp)
+  600/3600  (0.17 s/stamp)
+  800/3600  (0.17 s/stamp)
+  1000/3600  (0.17 s/stamp)
+  1200/3600  (0.17 s/stamp)
+  1400/3600  (0.17 s/stamp)
+  1600/3600  (0.17 s/stamp)
+  1800/3600  (0.17 s/stamp)
+  2000/3600  (0.17 s/stamp)
+  2200/3600  (0.17 s/stamp)
+  2400/3600  (0.17 s/stamp)
+  2600/3600  (0.17 s/stamp)
+  2800/3600  (0.17 s/stamp)
+  3000/3600  (0.17 s/stamp)
+  3200/3600  (0.18 s/stamp)
+  3400/3600  (0.18 s/stamp)
+  3600/3600  (0.19 s/stamp)
+wrote /scratch/scratch-lxu/flamingo_repo/data/nb44_resolved_stack_yell_apod/L1_m9_qgt5_order0_ensemble300.npz  (690.9 s total)

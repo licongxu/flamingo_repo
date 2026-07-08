@@ -131,3 +131,54 @@
   absent (+0.016) in the 1000-realization unclustered painted MC cross-check.
 - Conclusion: Hurier & Lacasa Fig 7 structure reproduced on L1_m9 fiducial (masking
   q>5 strongly decorrelates counts from the PS); done, stop.
+
+## 2026-07-08T08:55Z - nb44 final: calibrated analytic background validated at <=1%
+- git: worktree on paper_draft@c76bafd (external branch switch mid-session); all nb44
+  artifacts untracked here; note make_nb44.py was externally reverted once to its v1
+  (restored from context and rebuilt).
+- Commands: export --ensemble 300 (3600 stamps, 690.9 s, logs/nb44_export_ensemble300.log);
+  scripts/make_nb44.py + jupyter nbconvert --execute (0 errors).
+- Artifacts: data/nb44_resolved_stack_yell_apod/L1_m9_qgt5_order0_ensemble300.npz (+json),
+  notebooks/44_resolved_tsz_ps_analytic_bg.ipynb (executed),
+  figures/nb44_resolved_tsz_ps_analytic_bg/{ensemble_vs_analytic_bg,
+  resolved_ps_analytic_bg}.{pdf,png} (VLM-reviewed, per-node lines labelled).
+- Findings: T-hat(ell) fit on 1800 stamps (log-ell savgol), validated on the disjoint
+  1800: pooled mean 0.991, median 1.003 over 100<ell<6000 (uncalibrated 1.046 with
+  strong ell trend). Estimator vs resolved reference (median): 1.06/0.96/0.89 in
+  ell 300-1e3/1e3-3e3/3e3-6e3 vs nb41 1.04/0.98/0.90; parity in accuracy with the
+  per-cluster random-aperture noise eliminated (background now deterministic per
+  cluster: T-hat*B_i + delta^2 w2_i). High-ell limited by bg/total=0.85 leverage.
+- Conclusion: goal met (step-1 analytic background on apodized small patches, separate
+  notebook, nb41/nb42 preserved). Next step (separate task): port to nb42 faint strata
+  where per-cluster determinism matters most; optionally cross-split squaring.
+
+## 2026-07-08 19:40 UTC — paper_draft: full manuscript written (goal session)
+
+- git: paper_draft branch (merged masking_clusters at 1306fec); intent: write the
+  joint CNC + masked tSZ PS paper (synthetic validation + FLAMINGO application).
+- Result selection (publishability review): INCLUDED nb14 (SNR-masked PS, L2p8 B=1),
+  nb15 ((M,z)-masked PS), nb35 (L1_m9 feedback x 6 q-cuts, B=1.35), nb43 (192-patch
+  CNC x PS decorrelation), plus painted-sky results carried from
+  /scratch/scratch-lxu/ai_paper/combine_tsz_clusters (Gaussianity, MCMC table,
+  foreground-residual limit). EXCLUDED as not publication-ready: FLAMINGO joint MCMC
+  (cnc_yy_combined_arnaudB1_Y500c chain never run), nb27/28 CNC chains (Tinker08 vs
+  FLAMINGO HMF biases S8; stated as caveat in Sec. Discussion), nb40-42 stacked
+  profiles and nb44 analytic background (preliminary; nb44 export still running).
+- Commands: scripts/make_paper_masking_figures.py (new; regenerates 4 paper figures
+  from data/bandpowers_L1_m9_feedback/masked_tsz_ps.npz and
+  data/nb43_L1_m9_patch_cov/patch_ensemble.npz with sidecar JSON + git hash);
+  pdflatex + bibtex in paper_draft/ (12 pages, 0 undefined refs).
+- Artifacts: paper_draft/main.tex (full draft, all sections), paper_draft/refs.bib
+  (reference paper.bib + FLAMINGO/NaMaster/HEALPix/Hurier-Lacasa entries),
+  paper_draft/figures/ (16 files incl. 4 regenerated + VLM-reviewed), main.pdf.
+- Figure VLM loop: l1m9_feedback_ratio legend overlap fixed (fig-level legend, Wong
+  palette without pure yellow); l1m9_cnc_ps_corrmat switched jet -> RdBu_r and to
+  two-column figure* after print-size check. nb14/nb15 figures reused as-is; their
+  in-figure suptitles should be stripped before journal submission (needs catalogue
+  csv re-read; flagged, not blocking the draft).
+- Checks: no em/en dashes or " -- " in main.tex; every quantitative claim traced to
+  nb14/nb15 manifest JSONs, masked_tsz_ps.npz, patch_ensemble.json, or the reference
+  paper's quoted numbers.
+- Conclusion: complete compilable draft on paper_draft branch; open items are the
+  FLAMINGO joint chain (future work per Discussion), suptitle strip on nb14/nb15
+  figures, and acknowledgments/funding text. Stop.

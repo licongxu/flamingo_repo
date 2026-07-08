@@ -1,0 +1,7 @@
+{
+  "data": "data/nb43_L1_m9_patch_cov/patch_ensemble.npz",
+  "mean_r_full": 0.37990060577174156,
+  "mean_r_mask": 0.16408048759202856,
+  "git_hash": "1306fec",
+  "script": "scripts/make_paper_masking_figures.py"
+}

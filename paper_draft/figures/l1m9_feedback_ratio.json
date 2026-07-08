@@ -1,0 +1,11 @@
+{
+  "data": "data/bandpowers_L1_m9_feedback/masked_tsz_ps.npz",
+  "panels": [
+    "full sky",
+    "mask $q>10$",
+    "mask $q>5$",
+    "mask $q>1$"
+  ],
+  "git_hash": "1306fec",
+  "script": "scripts/make_paper_masking_figures.py"
+}

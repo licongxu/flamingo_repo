@@ -1,0 +1,7 @@
+{
+  "data": "data/nb43_L1_m9_patch_cov/patch_ensemble.npz",
+  "n_patch": 192,
+  "n_z_bins": 6,
+  "git_hash": "1306fec",
+  "script": "scripts/make_paper_masking_figures.py"
+}

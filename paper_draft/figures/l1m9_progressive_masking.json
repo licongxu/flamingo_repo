@@ -1,0 +1,14 @@
+{
+  "data": "data/bandpowers_L1_m9_feedback/masked_tsz_ps.npz",
+  "variant": "L1_m9 fiducial",
+  "q_cuts": [
+    50,
+    20,
+    10,
+    5,
+    3,
+    1
+  ],
+  "git_hash": "1306fec",
+  "script": "scripts/make_paper_masking_figures.py"
+}
