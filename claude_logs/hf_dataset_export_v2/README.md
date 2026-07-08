@@ -49,8 +49,9 @@ real FLAMINGO cosmology-analysis work. It is organized by explicit research task
 so the Dataset Viewer makes clear what was being operated on and how the agent
 took actions.
 
-Start with the `task_index` config. It lists each task, what the user asked, what
-Claude did, the raw trace file, and the corresponding viewer configs.
+Start with the `task_index` config. It lists each task, the exact original user
+prompt when available, the model setup, what Claude did, the raw trace file, and
+the corresponding viewer configs.
 
 Then use `fable5_actions_by_task` for a compact action stream. It keeps every
 record keyed by task and labels records as `tool_use`, `tool_result`,
@@ -82,6 +83,9 @@ All task trace tables use the same browsable schema:
 - `task_id`, `task_title`, `source`.
 - `action_type`, `tool_name`, `summary`, `paths_mentioned`.
 - `record_json` for the lossless original record.
+
+For Task 2, the exact L1_m9 prompt is in `task_index.original_user_prompt` and
+also appears in the raw trace at `idx=14`.
 
 ## Canonical Raw Artifacts
 
