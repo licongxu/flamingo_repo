@@ -40,6 +40,14 @@ configs:
     data_files:
       - split: train
         path: viewer/task2_l1m9_rotation_group_power_spectrum_timeline.parquet
+  - config_name: task3_l1m9_rotation_group_commit_push_trace
+    data_files:
+      - split: train
+        path: viewer/task3_l1m9_rotation_group_commit_push_trace.parquet
+  - config_name: task3_l1m9_rotation_group_commit_push_timeline
+    data_files:
+      - split: train
+        path: viewer/task3_l1m9_rotation_group_commit_push_timeline.parquet
 ---
 
 # Fable 5 FLAMINGO Research Task Traces
@@ -66,6 +74,7 @@ still preserved in `record_json`.
 | `2026-07-06_fable5_joint_cnc_masked_tsz_plan` | `task1_joint_cnc_masked_tsz_project_plan_trace` | `fable5_session_trace.jsonl` | Repository survey and publication-oriented project plan for joint cluster number counts plus masked tSZ power-spectrum analysis on FLAMINGO. |
 | `2026-07-06_fable5_joint_cnc_masked_tsz_plan` subagent | `task1_repository_exploration_subagent_trace` | `trace_subagents/explore_repo_subagent.jsonl` | Subagent sweep of notebooks and repository context for Task 1. |
 | `2026-07-08_fable5_L1_m9_rotation_group_ps` | `task2_l1m9_rotation_group_power_spectrum_trace` | `fable5_L1_m9_rotation_group_trace.jsonl` | Implementation/run trace for creating the L1_m9 rotation-group tSZ power-spectrum analysis. |
+| `2026-07-08_fable5_L1_m9_rotation_group_commit_push` | `task3_l1m9_rotation_group_commit_push_trace` | `fable5_L1_m9_rotation_group_commit_push_trace.jsonl` | Separate Fable 5 session for the same L1_m9 prompt, including the nb40 pipeline commit `fc69fa6` and push to GitHub. |
 
 ## Viewer Tables
 
@@ -85,7 +94,8 @@ All task trace tables use the same browsable schema:
 - `record_json` for the lossless original record.
 
 For Task 2, the exact L1_m9 prompt is in `task_index.original_user_prompt` and
-also appears in the raw trace at `idx=14`.
+also appears in the raw trace at `idx=14`. For Task 3, the repeated L1_m9
+prompt appears at raw trace `idx=17`, followed by commit and push actions.
 
 ## Canonical Raw Artifacts
 
