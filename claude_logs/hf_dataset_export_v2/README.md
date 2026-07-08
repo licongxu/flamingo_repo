@@ -10,7 +10,7 @@ tags:
   - llm-agent
 pretty_name: Fable 5 FLAMINGO Research Task Traces
 size_categories:
-  - n<1K
+  - 1K<n<10K
 configs:
   - config_name: task_index
     data_files:
@@ -48,6 +48,18 @@ configs:
     data_files:
       - split: train
         path: viewer/task3_l1m9_rotation_group_commit_push_timeline.parquet
+  - config_name: task4_2d_kernel_analysis_plots_trace
+    data_files:
+      - split: train
+        path: viewer/task4_2d_kernel_analysis_plots_trace.parquet
+  - config_name: task4_2d_kernel_analysis_plots_subagents_trace
+    data_files:
+      - split: train
+        path: viewer/task4_2d_kernel_analysis_plots_subagents_trace.parquet
+  - config_name: task4_2d_kernel_analysis_plots_timeline
+    data_files:
+      - split: train
+        path: viewer/task4_2d_kernel_analysis_plots_timeline.parquet
 ---
 
 # Fable 5 FLAMINGO Research Task Traces
@@ -75,6 +87,7 @@ still preserved in `record_json`.
 | `2026-07-06_fable5_joint_cnc_masked_tsz_plan` subagent | `task1_repository_exploration_subagent_trace` | `trace_subagents/explore_repo_subagent.jsonl` | Subagent sweep of notebooks and repository context for Task 1. |
 | `2026-07-08_fable5_L1_m9_rotation_group_ps` | `task2_l1m9_rotation_group_power_spectrum_trace` | `fable5_L1_m9_rotation_group_trace.jsonl` | Implementation/run trace for creating the L1_m9 rotation-group tSZ power-spectrum analysis. |
 | `2026-07-08_fable5_L1_m9_rotation_group_commit_push` | `task3_l1m9_rotation_group_commit_push_trace` | `fable5_L1_m9_rotation_group_commit_push_trace.jsonl` | Separate Fable 5 session for the same L1_m9 prompt, including the nb40 pipeline commit `fc69fa6` and push to GitHub. |
+| `2026-07-08_fable5_2d_kernel_analysis_plots` | `task4_2d_kernel_analysis_plots_trace` | `fable5_2d_kernel_analysis_plots_trace.jsonl` | Fable 5 session implementing hmfast GPU 2D kernel-analysis plots for tSZ, masked tSZ, and CNC, with Explore/code-reviewer subagents archived in `task4_2d_kernel_analysis_plots_subagents_trace`. |
 
 ## Viewer Tables
 
@@ -96,6 +109,8 @@ All task trace tables use the same browsable schema:
 For Task 2, the exact L1_m9 prompt is in `task_index.original_user_prompt` and
 also appears in the raw trace at `idx=14`. For Task 3, the repeated L1_m9
 prompt appears at raw trace `idx=17`, followed by commit and push actions.
+For Task 4, the exact 2D kernel-analysis prompt appears at raw trace `idx=9`;
+its Explore and code-reviewer subagent traces are in the Task 4 subagent config.
 
 ## Canonical Raw Artifacts
 
