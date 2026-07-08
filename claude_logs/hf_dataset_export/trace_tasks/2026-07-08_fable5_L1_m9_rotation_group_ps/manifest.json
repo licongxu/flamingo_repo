@@ -1,0 +1,48 @@
+{
+  "dataset_repo": "licongxu/fable5-flamingo-research-trace",
+  "archive_purpose": "Raw Claude Code trace for a FLAMINGO L1_m9 rotation-group tSZ power-spectrum task.",
+  "task": {
+    "task_id": "2026-07-08_fable5_L1_m9_rotation_group_ps",
+    "title": "Create L1_m9 rotation group power spectrum analysis",
+    "domain": "FLAMINGO cosmology simulation analysis",
+    "repo_path": "/scratch/scratch-lxu/flamingo_repo",
+    "branch_in_trace": "masking_clusters",
+    "model": "claude-fable-5",
+    "primary_session_id": "99efbdc7-f715-4a4d-af2d-e44296023db0"
+  },
+  "recommended_dataset_layout": {
+    "raw_layer": "Store exact original JSONL traces byte-for-byte.",
+    "normalized_layer": "Optionally add Parquet tables with stable columns such as task_id, idx, type, timestamp, role, text, record_json, model, session_id, source_file, and sha256.",
+    "task_grouping": "Use one subfolder or config per FLAMINGO task so future traces can live in the same Hugging Face dataset."
+  },
+  "files": [
+    {
+      "path": "create_L1_m9_rotation_group_power_spectrum__claude_fable5__99efbdc7.jsonl",
+      "role": "primary_raw_trace",
+      "source_path": "/home/lxu/.claude/projects/-scratch-scratch-lxu-flamingo-repo/99efbdc7-f715-4a4d-af2d-e44296023db0.jsonl",
+      "records": 553,
+      "bytes": 1433216,
+      "sha256": "dcb5159fb3e234ae521658b88760d7823a944e987aea16c9aa54667a0c363a0f"
+    },
+    {
+      "path": "create_L1_m9_rotation_group_power_spectrum__title_stub__4ca1f3fa.jsonl",
+      "role": "title_stub",
+      "source_path": "/home/lxu/.claude/projects/-scratch-scratch-lxu-flamingo-repo/4ca1f3fa-a631-40f2-bf52-c325b5e84b47.jsonl",
+      "records": 2,
+      "bytes": 274,
+      "sha256": "af4fee32440c4194e61216903e060aab0a18e2ca6f02e135b037bca83696205e"
+    },
+    {
+      "path": "create_L1_m9_rotation_group_power_spectrum__session_pointer__1436610.json",
+      "role": "session_pointer",
+      "source_path": "/home/lxu/.claude/sessions/1436610.json",
+      "bytes": 379,
+      "sha256": "4a9849a424e550e6e445b370356077613035ce1077bcd09bbf558e1cbe9c63f1"
+    }
+  ],
+  "publication_notes": [
+    "The primary JSONL is intentionally raw and may include local paths, tool outputs, and Claude Code metadata.",
+    "Before public upload, scan for secrets or private credentials.",
+    "Keep checksums stable so downstream users can verify provenance."
+  ]
+}

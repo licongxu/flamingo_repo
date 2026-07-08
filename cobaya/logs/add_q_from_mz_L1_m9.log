@@ -1,0 +1,70 @@
+JAX backend: gpu  devices: [CudaDevice(id=0)]
+A_SZ=-4.051178  B=1.35  sigma_lnY=0.173  M_min=5e+13
+=== L1_m9 ===
+  L1_m9: scanned 5,000,000, kept 79,930 (19s)
+  L1_m9: scanned 10,000,000, kept 277,677 (40s)
+  L1_m9: scanned 15,000,000, kept 592,350 (64s)
+  L1_m9: scanned 20,000,000, kept 1,023,093 (95s)
+  L1_m9: scanned 24,414,876, kept 1,530,770 (134s)
+L1_m9: kept 1,530,770/24,414,876, N(q>5)=1,088 -> halo_catalogue_M500c_5e13_zlt3_L1_m9_yang26rot_qfrommz.csv (134s)
+=== fgas+2sigma ===
+  fgas+2sigma: scanned 5,000,000, kept 75,580 (30s)
+  fgas+2sigma: scanned 10,000,000, kept 261,792 (60s)
+  fgas+2sigma: scanned 15,000,000, kept 551,209 (90s)
+  fgas+2sigma: scanned 20,000,000, kept 950,592 (124s)
+  fgas+2sigma: scanned 25,000,000, kept 1,476,143 (163s)
+fgas+2sigma: kept 1,620,947/26,088,053, N(q>5)=1,151 -> halo_catalogue_M500c_5e13_zlt3_fgas+2sigma_yang26rot_qfrommz.csv (173s)
+=== fgas-2sigma ===
+  fgas-2sigma: scanned 5,000,000, kept 84,791 (26s)
+  fgas-2sigma: scanned 10,000,000, kept 290,546 (52s)
+  fgas-2sigma: scanned 15,000,000, kept 611,307 (88s)
+  fgas-2sigma: scanned 20,000,000, kept 1,048,051 (123s)
+fgas-2sigma: kept 1,468,895/23,655,236, N(q>5)=1,067 -> halo_catalogue_M500c_5e13_zlt3_fgas-2sigma_yang26rot_qfrommz.csv (150s)
+=== fgas-4sigma ===
+  fgas-4sigma: scanned 5,000,000, kept 84,847 (22s)
+  fgas-4sigma: scanned 10,000,000, kept 290,826 (51s)
+  fgas-4sigma: scanned 15,000,000, kept 610,423 (80s)
+  fgas-4sigma: scanned 20,000,000, kept 1,047,871 (113s)
+fgas-4sigma: kept 1,408,414/23,144,434, N(q>5)=1,042 -> halo_catalogue_M500c_5e13_zlt3_fgas-4sigma_yang26rot_qfrommz.csv (133s)
+=== fgas-8sigma ===
+  fgas-8sigma: scanned 5,000,000, kept 84,289 (25s)
+  fgas-8sigma: scanned 10,000,000, kept 288,616 (55s)
+  fgas-8sigma: scanned 15,000,000, kept 606,589 (87s)
+  fgas-8sigma: scanned 20,000,000, kept 1,044,140 (116s)
+fgas-8sigma: kept 1,334,015/22,545,218, N(q>5)=1,002 -> halo_catalogue_M500c_5e13_zlt3_fgas-8sigma_yang26rot_qfrommz.csv (132s)
+=== Mstar-1sigma ===
+  Mstar-1sigma: scanned 5,000,000, kept 85,576 (21s)
+  Mstar-1sigma: scanned 10,000,000, kept 294,474 (42s)
+  Mstar-1sigma: scanned 15,000,000, kept 619,594 (69s)
+  Mstar-1sigma: scanned 20,000,000, kept 1,064,298 (103s)
+Mstar-1sigma: kept 1,479,333/23,549,405, N(q>5)=1,057 -> halo_catalogue_M500c_5e13_zlt3_Mstar-1sigma_yang26rot_qfrommz.csv (129s)
+=== Mstar-1sigma_fgas-4sigma ===
+  Mstar-1sigma_fgas-4sigma: scanned 5,000,000, kept 86,638 (25s)
+  Mstar-1sigma_fgas-4sigma: scanned 10,000,000, kept 297,185 (49s)
+  Mstar-1sigma_fgas-4sigma: scanned 15,000,000, kept 623,247 (75s)
+  Mstar-1sigma_fgas-4sigma: scanned 20,000,000, kept 1,069,837 (104s)
+Mstar-1sigma_fgas-4sigma: kept 1,375,041/22,619,206, N(q>5)=985 -> halo_catalogue_M500c_5e13_zlt3_Mstar-1sigma_fgas-4sigma_yang26rot_qfrommz.csv (121s)
+=== Jet ===
+  Jet: scanned 5,000,000, kept 63,481 (22s)
+  Jet: scanned 10,000,000, kept 225,666 (45s)
+  Jet: scanned 15,000,000, kept 478,593 (74s)
+  Jet: scanned 20,000,000, kept 828,015 (104s)
+  Jet: scanned 25,000,000, kept 1,281,777 (137s)
+Jet: kept 1,558,242/27,373,102, N(q>5)=1,011 -> halo_catalogue_M500c_5e13_zlt3_Jet_yang26rot_qfrommz.csv (155s)
+=== Jet_fgas-4sigma ===
+  Jet_fgas-4sigma: scanned 5,000,000, kept 91,942 (23s)
+  Jet_fgas-4sigma: scanned 10,000,000, kept 312,496 (47s)
+  Jet_fgas-4sigma: scanned 15,000,000, kept 650,093 (73s)
+  Jet_fgas-4sigma: scanned 20,000,000, kept 1,109,110 (101s)
+Jet_fgas-4sigma: kept 1,331,629/21,890,977, N(q>5)=978 -> halo_catalogue_M500c_5e13_zlt3_Jet_fgas-4sigma_yang26rot_qfrommz.csv (112s)
+
+=== summary: M_500c > 5e+13, N(q>5) ===
+  L1_m9                         kept=1,530,770  N(q>5)= 1,088
+  fgas+2sigma                   kept=1,620,947  N(q>5)= 1,151
+  fgas-2sigma                   kept=1,468,895  N(q>5)= 1,067
+  fgas-4sigma                   kept=1,408,414  N(q>5)= 1,042
+  fgas-8sigma                   kept=1,334,015  N(q>5)= 1,002
+  Mstar-1sigma                  kept=1,479,333  N(q>5)= 1,057
+  Mstar-1sigma_fgas-4sigma      kept=1,375,041  N(q>5)=   985
+  Jet                           kept=1,558,242  N(q>5)= 1,011
+  Jet_fgas-4sigma               kept=1,331,629  N(q>5)=   978

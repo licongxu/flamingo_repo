@@ -1,0 +1,195 @@
+2026-06-27T17:18:18+01:00 === catalogues pipeline start ===
+2026-06-27T17:18:18+01:00 === PHASE: L1_m9 catalogues ===
+=== building catalogue L1_m9 -> /rds/rds-lxu/flamingo/L1_m9/catalogues/halo_catalogue_M500c_1e13_zlt3_L1_m9_yang26rot.csv (status=partial) ===
+layout=L1_m9 snaps 17..77 (61 snapshots, z <= 3.0)
+resuming: 22 snapshots done, 3,269,010 rows written
+snap 0017: scanning SOAP for M500c>=1e13
+snap 0017: kept 1,220 SOAP halos; joining lightcone
+snap 0017: wrote 15,716 rows (6.4 min total)
+snap 0018: already complete
+snap 0019: already complete
+snap 0020: already complete
+snap 0021: already complete
+snap 0022: already complete
+snap 0023: already complete
+snap 0024: already complete
+snap 0025: already complete
+snap 0026: already complete
+snap 0027: already complete
+snap 0028: already complete
+snap 0029: already complete
+snap 0030: already complete
+snap 0031: already complete
+snap 0032: already complete
+snap 0033: already complete
+snap 0034: already complete
+snap 0035: already complete
+snap 0036: already complete
+snap 0037: already complete
+snap 0038: already complete
+snap 0039: already complete
+snap 0040: scanning SOAP for M500c>=1e13
+snap 0040: kept 14,428 SOAP halos; joining lightcone
+    wrote 3,300,638 rows total
+    wrote 3,401,380 rows total
+    wrote 3,501,350 rows total
+    wrote 3,601,413 rows total
+snap 0040: wrote 365,239 rows (11.9 min total)
+snap 0041: scanning SOAP for M500c>=1e13
+snap 0041: kept 15,710 SOAP halos; joining lightcone
+    wrote 3,700,299 rows total
+    wrote 3,801,209 rows total
+    wrote 3,901,023 rows total
+    wrote 4,000,849 rows total
+snap 0041: wrote 394,893 rows (17.8 min total)
+snap 0042: scanning SOAP for M500c>=1e13
+snap 0042: kept 17,023 SOAP halos; joining lightcone
+    wrote 4,100,877 rows total
+    wrote 4,201,888 rows total
+    wrote 4,302,055 rows total
+    wrote 4,401,476 rows total
+snap 0042: wrote 423,760 rows (23.5 min total)
+snap 0043: scanning SOAP for M500c>=1e13
+snap 0043: kept 18,456 SOAP halos; joining lightcone
+    wrote 4,500,551 rows total
+    wrote 4,601,016 rows total
+    wrote 4,700,997 rows total
+    wrote 4,801,353 rows total
+    wrote 4,901,402 rows total
+snap 0043: wrote 455,617 rows (29.1 min total)
+snap 0044: scanning SOAP for M500c>=1e13
+snap 0044: kept 19,956 SOAP halos; joining lightcone
+    wrote 5,001,362 rows total
+    wrote 5,101,078 rows total
+    wrote 5,201,104 rows total
+    wrote 5,300,450 rows total
+    wrote 5,402,212 rows total
+snap 0044: wrote 487,329 rows (36.6 min total)
+snap 0045: scanning SOAP for M500c>=1e13
+snap 0045: kept 21,532 SOAP halos; joining lightcone
+    wrote 5,500,317 rows total
+    wrote 5,601,863 rows total
+    wrote 5,701,876 rows total
+Terminated
+2026-06-27T17:59:16+01:00 === catalogues pipeline start ===
+2026-06-27T17:59:16+01:00 === PHASE: L1_m9 catalogues ===
+=== building catalogue L1_m9 -> /rds/rds-lxu/flamingo/L1_m9/catalogues/halo_catalogue_M500c_1e13_zlt3_L1_m9_yang26rot.csv (status=partial) ===
+layout=L1_m9 snaps 17..77 (61 snapshots, z <= 3.0)
+resuming: 28 snapshots done, 5,411,564 rows written
+snap 0017: already complete
+snap 0018: already complete
+snap 0019: already complete
+snap 0020: already complete
+snap 0021: already complete
+snap 0022: already complete
+snap 0023: already complete
+snap 0024: already complete
+snap 0025: already complete
+snap 0026: already complete
+snap 0027: already complete
+snap 0028: already complete
+snap 0029: already complete
+snap 0030: already complete
+snap 0031: already complete
+snap 0032: already complete
+snap 0033: already complete
+snap 0034: already complete
+snap 0035: already complete
+snap 0036: already complete
+snap 0037: already complete
+snap 0038: already complete
+snap 0039: already complete
+snap 0040: already complete
+snap 0041: already complete
+snap 0042: already complete
+snap 0043: already complete
+snap 0044: already complete
+snap 0045: 215,293,150 lightcone rows
+    wrote 5,500,317 rows total
+    wrote 5,601,863 rows total
+    wrote 5,701,876 rows total
+    wrote 5,801,513 rows total
+    wrote 5,900,095 rows total
+snap 0045: wrote 520,687 rows (28.1 min total)
+snap 0046: 215,431,691 lightcone rows
+    wrote 6,001,833 rows total
+    wrote 6,102,184 rows total
+    wrote 6,202,099 rows total
+    wrote 6,301,377 rows total
+    wrote 6,400,601 rows total
+snap 0046: wrote 550,721 rows (51.8 min total)
+snap 0047: 214,047,320 lightcone rows
+    wrote 6,502,045 rows total
+    wrote 6,600,754 rows total
+    wrote 6,701,763 rows total
+    wrote 6,802,516 rows total
+    wrote 6,902,684 rows total
+    wrote 7,002,380 rows total
+snap 0047: wrote 582,475 rows (76.9 min total)
+snap 0048: 214,043,926 lightcone rows
+    wrote 7,100,120 rows total
+    wrote 7,201,360 rows total
+    wrote 7,301,883 rows total
+    wrote 7,400,437 rows total
+    wrote 7,502,266 rows total
+    wrote 7,601,212 rows total
+snap 0048: wrote 620,680 rows (114.5 min total)
+snap 0049: 212,770,783 lightcone rows
+    wrote 7,701,308 rows total
+    wrote 7,802,122 rows total
+Terminated
+2026-06-27T20:03:32+01:00 === parallel catalogue build start (lightcone-first) ===
+launch L1 L1_m9 -> /rds/rds-lxu/flamingo/L1_m9/catalogues/halo_catalogue_M500c_1e13_zlt3_L1_m9_yang26rot.csv (status=partial)
+launch L1 fgas+2sigma -> /rds/rds-lxu/flamingo/L1_m9/catalogues/halo_catalogue_M500c_1e13_zlt3_fgas+2sigma_yang26rot.csv (status=partial)
+launch L1 fgas-2sigma -> /rds/rds-lxu/flamingo/L1_m9/catalogues/halo_catalogue_M500c_1e13_zlt3_fgas-2sigma_yang26rot.csv (status=missing)
+launch L1 fgas-4sigma -> /rds/rds-lxu/flamingo/L1_m9/catalogues/halo_catalogue_M500c_1e13_zlt3_fgas-4sigma_yang26rot.csv (status=missing)
+launch L1 fgas-8sigma -> /rds/rds-lxu/flamingo/L1_m9/catalogues/halo_catalogue_M500c_1e13_zlt3_fgas-8sigma_yang26rot.csv (status=missing)
+launch L1 Mstar-1sigma -> /rds/rds-lxu/flamingo/L1_m9/catalogues/halo_catalogue_M500c_1e13_zlt3_Mstar-1sigma_yang26rot.csv (status=missing)
+launch L1 Mstar-1sigma_fgas-4sigma -> /rds/rds-lxu/flamingo/L1_m9/catalogues/halo_catalogue_M500c_1e13_zlt3_Mstar-1sigma_fgas-4sigma_yang26rot.csv (status=missing)
+launch L1 Jet -> /rds/rds-lxu/flamingo/L1_m9/catalogues/halo_catalogue_M500c_1e13_zlt3_Jet_yang26rot.csv (status=missing)
+launch L1 Jet_fgas-4sigma -> /rds/rds-lxu/flamingo/L1_m9/catalogues/halo_catalogue_M500c_1e13_zlt3_Jet_fgas-4sigma_yang26rot.csv (status=missing)
+skip L2 lc0: complete
+launch L2 lc1 -> /rds/rds-lxu/flamingo/L2p8_m9/lightcone1/catalogues/halo_catalogue_M500c_1e13_zlt3_L2p8_m9_yang26rot.csv (status=partial)
+launch L2 lc2 -> /rds/rds-lxu/flamingo/L2p8_m9/lightcone2/catalogues/halo_catalogue_M500c_1e13_zlt3_L2p8_m9_yang26rot.csv (status=missing)
+launch L2 lc3 -> /rds/rds-lxu/flamingo/L2p8_m9/lightcone3/catalogues/halo_catalogue_M500c_1e13_zlt3_L2p8_m9_yang26rot.csv (status=missing)
+launch L2 lc4 -> /rds/rds-lxu/flamingo/L2p8_m9/lightcone4/catalogues/halo_catalogue_M500c_1e13_zlt3_L2p8_m9_yang26rot.csv (status=missing)
+launch L2 lc5 -> /rds/rds-lxu/flamingo/L2p8_m9/lightcone5/catalogues/halo_catalogue_M500c_1e13_zlt3_L2p8_m9_yang26rot.csv (status=missing)
+launch L2 lc6 -> /rds/rds-lxu/flamingo/L2p8_m9/lightcone6/catalogues/halo_catalogue_M500c_1e13_zlt3_L2p8_m9_yang26rot.csv (status=missing)
+launch L2 lc7 -> /rds/rds-lxu/flamingo/L2p8_m9/lightcone7/catalogues/halo_catalogue_M500c_1e13_zlt3_L2p8_m9_yang26rot.csv (status=missing)
+waiting on 16 catalogue job(s): 1233303 1233573 1233856 1234179 1234578 1235079 1235678 1235945 1236266 1236715 1236987 1237253 1237561 1237885 1238145 1238430
+2026-06-28T03:27:27+01:00 === parallel catalogue build start (lightcone-first) ===
+launch L1 L1_m9 -> /rds/rds-lxu/flamingo/L1_m9/catalogues/halo_catalogue_M500c_1e13_zlt3_L1_m9_yang26rot.csv (status=partial)
+launch L1 fgas+2sigma -> /rds/rds-lxu/flamingo/L1_m9/catalogues/halo_catalogue_M500c_1e13_zlt3_fgas+2sigma_yang26rot.csv (status=partial)
+launch L1 fgas-2sigma -> /rds/rds-lxu/flamingo/L1_m9/catalogues/halo_catalogue_M500c_1e13_zlt3_fgas-2sigma_yang26rot.csv (status=missing)
+launch L1 fgas-4sigma -> /rds/rds-lxu/flamingo/L1_m9/catalogues/halo_catalogue_M500c_1e13_zlt3_fgas-4sigma_yang26rot.csv (status=missing)
+launch L1 fgas-8sigma -> /rds/rds-lxu/flamingo/L1_m9/catalogues/halo_catalogue_M500c_1e13_zlt3_fgas-8sigma_yang26rot.csv (status=missing)
+launch L1 Mstar-1sigma -> /rds/rds-lxu/flamingo/L1_m9/catalogues/halo_catalogue_M500c_1e13_zlt3_Mstar-1sigma_yang26rot.csv (status=missing)
+launch L1 Mstar-1sigma_fgas-4sigma -> /rds/rds-lxu/flamingo/L1_m9/catalogues/halo_catalogue_M500c_1e13_zlt3_Mstar-1sigma_fgas-4sigma_yang26rot.csv (status=missing)
+launch L1 Jet -> /rds/rds-lxu/flamingo/L1_m9/catalogues/halo_catalogue_M500c_1e13_zlt3_Jet_yang26rot.csv (status=missing)
+launch L1 Jet_fgas-4sigma -> /rds/rds-lxu/flamingo/L1_m9/catalogues/halo_catalogue_M500c_1e13_zlt3_Jet_fgas-4sigma_yang26rot.csv (status=missing)
+skip L2 lc0: complete
+launch L2 lc1 -> /rds/rds-lxu/flamingo/L2p8_m9/lightcone1/catalogues/halo_catalogue_M500c_1e13_zlt3_L2p8_m9_yang26rot.csv (status=partial)
+launch L2 lc2 -> /rds/rds-lxu/flamingo/L2p8_m9/lightcone2/catalogues/halo_catalogue_M500c_1e13_zlt3_L2p8_m9_yang26rot.csv (status=missing)
+launch L2 lc3 -> /rds/rds-lxu/flamingo/L2p8_m9/lightcone3/catalogues/halo_catalogue_M500c_1e13_zlt3_L2p8_m9_yang26rot.csv (status=missing)
+launch L2 lc4 -> /rds/rds-lxu/flamingo/L2p8_m9/lightcone4/catalogues/halo_catalogue_M500c_1e13_zlt3_L2p8_m9_yang26rot.csv (status=missing)
+launch L2 lc5 -> /rds/rds-lxu/flamingo/L2p8_m9/lightcone5/catalogues/halo_catalogue_M500c_1e13_zlt3_L2p8_m9_yang26rot.csv (status=missing)
+launch L2 lc6 -> /rds/rds-lxu/flamingo/L2p8_m9/lightcone6/catalogues/halo_catalogue_M500c_1e13_zlt3_L2p8_m9_yang26rot.csv (status=missing)
+launch L2 lc7 -> /rds/rds-lxu/flamingo/L2p8_m9/lightcone7/catalogues/halo_catalogue_M500c_1e13_zlt3_L2p8_m9_yang26rot.csv (status=missing)
+waiting on 16 catalogue job(s): 1507231 1507545 1507814 1508429 1509074 1509364 1509688 1509957 1510227 1510930 1511190 1511515 1511807 1512068 1512347 1512608
+catalogue job PID 1507231 failed
+catalogue job PID 1507545 failed
+catalogue job PID 1507814 failed
+catalogue job PID 1508429 failed
+catalogue job PID 1509074 failed
+catalogue job PID 1509364 failed
+catalogue job PID 1509688 failed
+catalogue job PID 1509957 failed
+catalogue job PID 1510227 failed
+catalogue job PID 1510930 failed
+catalogue job PID 1511190 failed
+catalogue job PID 1511515 failed
+catalogue job PID 1511807 failed
+catalogue job PID 1512068 failed
+catalogue job PID 1512347 failed
+catalogue job PID 1512608 failed
+2026-06-28T03:59:43+01:00 === parallel catalogue build finished with errors ===

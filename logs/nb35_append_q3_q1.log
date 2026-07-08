@@ -1,0 +1,112 @@
+=== L1_m9 ===
+  loading map y_unlensed_L1_m9_lc0_nside4096.fits
+/scratch/scratch-lxu/flamingo_repo/scripts/compute_masked_tsz_ps_L1_m9_feedback.py:138: HealpyDeprecationWarning: "verbose" was deprecated in version 1.15.0 and will be removed in a future version. 
+  ymap = hp.read_map(mpath, verbose=False)
+  loading catalogue halo_catalogue_M500c_5e13_zlt3_L1_m9_yang26rot_qfrommz.csv
+  full sky (NaMaster)...
+  q>3 mask + NaMaster...
+    N(q>3)=2,888  f_sky=0.8751
+  q>1 mask + NaMaster...
+    N(q>1)=17,730  f_sky=0.7192
+  done in 150s
+=== fgas+2sigma ===
+  loading map y_unlensed_fgas+2sigma_lc0_nside4096.fits
+/scratch/scratch-lxu/flamingo_repo/scripts/compute_masked_tsz_ps_L1_m9_feedback.py:138: HealpyDeprecationWarning: "verbose" was deprecated in version 1.15.0 and will be removed in a future version. 
+  ymap = hp.read_map(mpath, verbose=False)
+  loading catalogue halo_catalogue_M500c_5e13_zlt3_fgas+2sigma_yang26rot_qfrommz.csv
+  full sky (NaMaster)...
+  q>3 mask + NaMaster...
+    N(q>3)=2,935  f_sky=0.8697
+  q>1 mask + NaMaster...
+    N(q>1)=18,389  f_sky=0.7086
+  done in 163s
+=== fgas-2sigma ===
+  loading map y_unlensed_fgas-2sigma_lc0_nside4096.fits
+/scratch/scratch-lxu/flamingo_repo/scripts/compute_masked_tsz_ps_L1_m9_feedback.py:138: HealpyDeprecationWarning: "verbose" was deprecated in version 1.15.0 and will be removed in a future version. 
+  ymap = hp.read_map(mpath, verbose=False)
+  loading catalogue halo_catalogue_M500c_5e13_zlt3_fgas-2sigma_yang26rot_qfrommz.csv
+  full sky (NaMaster)...
+  q>3 mask + NaMaster...
+    N(q>3)=2,759  f_sky=0.8778
+  q>1 mask + NaMaster...
+    N(q>1)=17,117  f_sky=0.7270
+  done in 178s
+=== fgas-4sigma ===
+  loading map y_unlensed_fgas-4sigma_lc0_nside4096.fits
+/scratch/scratch-lxu/flamingo_repo/scripts/compute_masked_tsz_ps_L1_m9_feedback.py:138: HealpyDeprecationWarning: "verbose" was deprecated in version 1.15.0 and will be removed in a future version. 
+  ymap = hp.read_map(mpath, verbose=False)
+  loading catalogue halo_catalogue_M500c_5e13_zlt3_fgas-4sigma_yang26rot_qfrommz.csv
+  full sky (NaMaster)...
+  q>3 mask + NaMaster...
+    N(q>3)=2,664  f_sky=0.8803
+  q>1 mask + NaMaster...
+    N(q>1)=16,379  f_sky=0.7361
+  done in 179s
+=== fgas-8sigma ===
+  loading map y_unlensed_fgas-8sigma_lc0_nside4096.fits
+/scratch/scratch-lxu/flamingo_repo/scripts/compute_masked_tsz_ps_L1_m9_feedback.py:138: HealpyDeprecationWarning: "verbose" was deprecated in version 1.15.0 and will be removed in a future version. 
+  ymap = hp.read_map(mpath, verbose=False)
+  loading catalogue halo_catalogue_M500c_5e13_zlt3_fgas-8sigma_yang26rot_qfrommz.csv
+  full sky (NaMaster)...
+  q>3 mask + NaMaster...
+    N(q>3)=2,571  f_sky=0.8870
+  q>1 mask + NaMaster...
+    N(q>1)=15,494  f_sky=0.7474
+  done in 177s
+=== Mstar-1sigma ===
+  loading map y_unlensed_Mstar-1sigma_lc0_nside4096.fits
+/scratch/scratch-lxu/flamingo_repo/scripts/compute_masked_tsz_ps_L1_m9_feedback.py:138: HealpyDeprecationWarning: "verbose" was deprecated in version 1.15.0 and will be removed in a future version. 
+  ymap = hp.read_map(mpath, verbose=False)
+  loading catalogue halo_catalogue_M500c_5e13_zlt3_Mstar-1sigma_yang26rot_qfrommz.csv
+  full sky (NaMaster)...
+  q>3 mask + NaMaster...
+    N(q>3)=2,915  f_sky=0.8744
+  q>1 mask + NaMaster...
+    N(q>1)=17,238  f_sky=0.7239
+  done in 176s
+=== Mstar-1sigma_fgas-4sigma ===
+  loading map y_unlensed_Mstar-1sigma_fgas-4sigma_lc0_nside4096.fits
+/scratch/scratch-lxu/flamingo_repo/scripts/compute_masked_tsz_ps_L1_m9_feedback.py:138: HealpyDeprecationWarning: "verbose" was deprecated in version 1.15.0 and will be removed in a future version. 
+  ymap = hp.read_map(mpath, verbose=False)
+  loading catalogue halo_catalogue_M500c_5e13_zlt3_Mstar-1sigma_fgas-4sigma_yang26rot_qfrommz.csv
+  full sky (NaMaster)...
+  q>3 mask + NaMaster...
+    N(q>3)=2,708  f_sky=0.8814
+  q>1 mask + NaMaster...
+    N(q>1)=16,347  f_sky=0.7393
+  done in 164s
+=== Jet ===
+  loading map y_unlensed_Jet_lc0_nside4096.fits
+/scratch/scratch-lxu/flamingo_repo/scripts/compute_masked_tsz_ps_L1_m9_feedback.py:138: HealpyDeprecationWarning: "verbose" was deprecated in version 1.15.0 and will be removed in a future version. 
+  ymap = hp.read_map(mpath, verbose=False)
+  loading catalogue halo_catalogue_M500c_5e13_zlt3_Jet_yang26rot_qfrommz.csv
+  full sky (NaMaster)...
+  q>3 mask + NaMaster...
+    N(q>3)=2,849  f_sky=0.8737
+  q>1 mask + NaMaster...
+    N(q>1)=17,387  f_sky=0.7199
+  done in 151s
+=== Jet_fgas-4sigma ===
+  loading map y_unlensed_Jet_fgas-4sigma_lc0_nside4096.fits
+/scratch/scratch-lxu/flamingo_repo/scripts/compute_masked_tsz_ps_L1_m9_feedback.py:138: HealpyDeprecationWarning: "verbose" was deprecated in version 1.15.0 and will be removed in a future version. 
+  ymap = hp.read_map(mpath, verbose=False)
+  loading catalogue halo_catalogue_M500c_5e13_zlt3_Jet_fgas-4sigma_yang26rot_qfrommz.csv
+  full sky (NaMaster)...
+  q>3 mask + NaMaster...
+    N(q>3)=2,684  f_sky=0.8812
+  q>1 mask + NaMaster...
+    N(q>1)=15,984  f_sky=0.7407
+  done in 148s
+
+wrote /scratch/scratch-lxu/flamingo_repo/data/bandpowers_L1_m9_feedback/masked_tsz_ps.npz  dl_masked shape=(9, 6, 199)  cuts=[np.float64(50.0), np.float64(20.0), np.float64(10.0), np.float64(5.0), np.float64(3.0), np.float64(1.0)]
+
+=== N(q>cut) per variant (appended cuts) ===
+  L1_m9                         q>3= 2888  q>1=17730
+  fgas+2sigma                   q>3= 2935  q>1=18389
+  fgas-2sigma                   q>3= 2759  q>1=17117
+  fgas-4sigma                   q>3= 2664  q>1=16379
+  fgas-8sigma                   q>3= 2571  q>1=15494
+  Mstar-1sigma                  q>3= 2915  q>1=17238
+  Mstar-1sigma_fgas-4sigma      q>3= 2708  q>1=16347
+  Jet                           q>3= 2849  q>1=17387
+  Jet_fgas-4sigma               q>3= 2684  q>1=15984
