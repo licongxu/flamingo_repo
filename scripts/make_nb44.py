@@ -286,6 +286,212 @@ plt.show()"""
 ))
 
 cells.append(nbf.v4.new_markdown_cell(
+"""## 3. nb42 redo: L2p8 rotation groups with the calibrated analytic background
+
+The nb42 analysis (five L2p8_m9 lc0 rotation-group maps, mass-stratified subsamples of
+the deep $M_{500c} > 10^{13}\\,M_\\odot$ catalogue, hybrid stratified estimator) is
+repeated with the nb44 machinery, produced by
+`scripts/export_L2p8_rotgroup_stack_yell_apod.py` on the **identical** nb42 subsamples:
+
+* apodized windows and patches (as in Part 1-2);
+* per-cluster analytic background from each group map's own measured $C_\\ell$
+  (re-pixel-windowed, extrapolated), calibrated by a per-group transfer
+  $\\hat T_g(\\ell)$ from a 1200-stamp uniform-sphere random ensemble
+  (split-half validated). Randoms are uniform and each map subtracts its own
+  monopole, so the L1_m9 DC-offset term is zero here by construction;
+* the nb42 hybrid estimator is unchanged except that the incoherent branch uses
+  $|\\tilde y_i|^2 - \\hat T_g B_i$ instead of the 2-random-aperture subtraction;
+  the coherent faint-strata branch (phase-centred stack, variance debias,
+  $R(u)$ calibration) is identical."""
+))
+
+cells.append(nbf.v4.new_code_cell(
+"""NB42_DIR = REPO / "data/nb42_rotgroup_stack_yell"
+NB44G_DIR = REPO / "data/nb44_rotgroup_stack_yell_apod"
+N_GROUPS = 5
+SNR_MIN = 5.0
+
+def log_bin(ell, dl, lmin=10, lmax=6000, nbin=30):
+    edges = np.logspace(np.log10(lmin), np.log10(lmax), nbin + 1)
+    idx = np.digitize(ell, edges) - 1
+    lb, db = [], []
+    for b in range(nbin):
+        sel = (idx == b) & (ell >= lmin)
+        if sel.any():
+            lb.append(ell[sel].mean())
+            db.append(dl[sel].mean())
+    return np.array(lb), np.array(db)
+
+def calibrate_R(u_samples, R_samples, u_eval):
+    lo, hi = np.log10(2e-4), np.log10(150.0)
+    edges = np.linspace(lo, hi, 36)
+    lu = np.log10(np.clip(u_samples, 10**lo, 10**hi))
+    idx = np.digitize(lu, edges) - 1
+    cent, med = [], []
+    for b in range(edges.size - 1):
+        m = idx == b
+        if m.sum() >= 5:
+            cent.append(0.5 * (edges[b] + edges[b + 1]))
+            med.append(np.median(R_samples[m]))
+    cent, med = np.array(cent), np.array(med)
+    R = np.interp(np.log10(np.clip(u_eval, 10**lo, 10**hi)), cent, med)
+    return np.clip(R, 1.0, 6.0)
+
+def fit_transfer(ens):
+    \"\"\"Split-half validated smooth T-hat(ell); returns (T_hat, val_mean).\"\"\"
+    n = ens["abs_y2"].shape[0]
+    half = np.arange(n) % 2 == 0
+    T_rb = rebin(ens["abs_y2"][half]).sum(axis=0) / rebin(ens["bg_pred"][half]).sum(axis=0)
+    good = ell_rb > 0
+    lg = np.geomspace(ell_rb[good][0], ell_rb[good][-1], 120)
+    T_sm = savgol_filter(np.interp(lg, ell_rb[good], T_rb[good]), 21, 2)
+    T_half = np.interp(ens["ell_b"], lg, T_sm)
+    r_val = (rebin(ens["abs_y2"][~half]).sum(axis=0)
+             / rebin(T_half * ens["bg_pred"])[~half].sum(axis=0))
+    val_mean = r_val[(ell_rb > 100) & (ell_rb < 6000)].mean()
+    # final transfer from the full ensemble
+    T_rb = rebin(ens["abs_y2"]).sum(axis=0) / rebin(ens["bg_pred"]).sum(axis=0)
+    T_sm = savgol_filter(np.interp(lg, ell_rb[good], T_rb[good]), 21, 2)
+    return np.interp(ens["ell_b"], lg, T_sm), val_mean
+
+def hybrid(st, sub):
+    \"\"\"nb42 hybrid stratified estimator; `sub` = bg-subtracted incoherent power.\"\"\"
+    ell_g = st["ell_b"]
+    nell = ell_g.size
+    pw_g = np.interp(ell_g, np.arange(pw.size), pw)
+    norm = 1.0 / (4.0 * np.pi) / pw_g**2
+    mbin = st["mbin"]
+    N_b = st["N_bin"].astype(np.float64)
+    n_arr = st["n_bin"].astype(np.float64)
+    nbin_m = N_b.size
+    re = st["re_y"]
+    theta500_rad = st["theta500_arcmin"] / (180.0 * 60.0 / np.pi)
+
+    T = np.zeros((nbin_m, nell)); sigT = np.full((nbin_m, nell), np.inf)
+    P = np.zeros((nbin_m, nell)); sigP = np.full((nbin_m, nell), np.inf)
+    theta_med = np.zeros(nbin_m)
+    for b in range(nbin_m):
+        m = mbin == b
+        n = int(m.sum())
+        if n == 0:
+            continue
+        theta_med[b] = np.median(theta500_rad[m])
+        T[b] = N_b[b] * sub[m].mean(axis=0)
+        if n >= 2:
+            fpc = max(1.0 - n / N_b[b], 0.0)
+            sigT[b] = N_b[b] * sub[m].std(axis=0, ddof=1) / np.sqrt(n) * np.sqrt(fpc)
+            sbar = re[m].mean(axis=0)
+            v = re[m].var(axis=0, ddof=1)
+            P[b] = sbar**2 - v / n
+            sigP[b] = np.sqrt(4.0 * sbar**2 * v / n + 2.0 * v**2 / (n * (n - 1)))
+
+    band = (ell_g >= 300) & (ell_g <= 4000)
+    with np.errstate(divide="ignore", invalid="ignore"):
+        snr = np.nanmedian(np.where(sigT > 0, T / sigT, np.inf), axis=1)
+    reliable = (np.isinf(snr) | (snr >= SNR_MIN)) & (n_arr > 0)
+    u_s, R_s = [], []
+    for b in np.where(reliable & (n_arr >= 2))[0]:
+        ok = band & (P[b] > 0) & (T[b] > 0)
+        u_s.append(ell_g[ok] * theta_med[b])
+        R_s.append(T[b, ok] / (N_b[b] * P[b, ok]))
+    u_s, R_s = np.concatenate(u_s), np.concatenate(R_s)
+
+    contrib = np.zeros((nbin_m, nell)); err2 = np.zeros(nell)
+    for b in range(nbin_m):
+        if n_arr[b] == 0:
+            continue
+        if reliable[b]:
+            contrib[b] = T[b]
+            e = np.where(np.isfinite(sigT[b]), sigT[b], 0.0)
+        else:
+            Rb = calibrate_R(u_s, R_s, ell_g * theta_med[b])
+            contrib[b] = N_b[b] * np.clip(P[b], 0.0, None) * Rb
+            e = N_b[b] * sigP[b] * Rb
+        err2 += e**2
+    return contrib.sum(axis=0) * norm, np.sqrt(err2) * norm
+
+groups = []
+for g in range(N_GROUPS):
+    st = np.load(NB44G_DIR / f"group{g}_apod.npz")
+    ens = np.load(NB44G_DIR / f"group{g}_ensemble100.npz")
+    old = np.load(NB42_DIR / f"group{g}_order0.npz")
+    md = np.load(NB42_DIR / f"measured_dl_group{g}.npz")
+    T_hat_g, val_mean = fit_transfer(ens)
+    cl_new, cl_new_err = hybrid(st, st["abs_y2"] - T_hat_g * st["bg_pred"])
+    cl_old, _ = hybrid(old, old["abs_y2"] - old["bg_y2"])
+    ell_g = st["ell_b"]
+    fac_g = ell_g * (ell_g + 1.0) / (2.0 * np.pi)
+    ellb, dlb = log_bin(md["ell"], md["dl"])
+    groups.append(dict(
+        g=g, zlo=float(st["z_inner"]), zhi=float(st["z_outer"]), ell=ell_g,
+        dl_new=fac_g * cl_new, dl_new_err=fac_g * cl_new_err, dl_old=fac_g * cl_old,
+        ellb=ellb, dlb=dlb, val=val_mean,
+    ))
+    b = (ellb >= 300) & (ellb <= 4000)
+    rn = np.interp(ellb, ell_g, fac_g * cl_new) / dlb
+    ro = np.interp(ellb, ell_g, fac_g * cl_old) / dlb
+    print(f"group {g} (z {st['z_inner']:.2f}-{st['z_outer']:.2f}): T-hat val mean = {val_mean:.3f}; "
+          f"median ratio 300<ell<4000: new = {np.median(rn[b]):.3f}, nb42 = {np.median(ro[b]):.3f}")"""
+))
+
+cells.append(nbf.v4.new_code_cell(
+"""fig, axes = plt.subplots(2, 3, figsize=(12.5, 7.4), sharex=True, sharey=True)
+for k, gr in enumerate(groups):
+    ax = axes.ravel()[k]
+    ax.loglog(gr["ellb"], gr["dlb"], "o", ms=4, mfc="none", color="k", label="measured map")
+    sel = (gr["ell"] > 80) & (gr["ell"] < 6000)
+    ax.loglog(gr["ell"][sel], gr["dl_new"][sel], color="C1", lw=1.8,
+              label="hybrid stack, calibrated analytic bg")
+    ax.fill_between(gr["ell"][sel], (gr["dl_new"] - gr["dl_new_err"])[sel],
+                    (gr["dl_new"] + gr["dl_new_err"])[sel], color="C1", alpha=0.3, lw=0)
+    ax.loglog(gr["ell"][sel], gr["dl_old"][sel], color="C0", lw=1.2, ls="--",
+              label="hybrid stack, nb42 (2 randoms)")
+    ax.set_title(f"group {gr['g']}:  $z = {gr['zlo']:.2f}$-${gr['zhi']:.2f}$", fontsize=10)
+    ax.grid(True, which="both", alpha=0.25)
+    ax.set_xlim(80, 6000)
+    ax.set_ylim(1e-16, 3e-13)
+axes.ravel()[5].axis("off")
+h, l = axes.ravel()[0].get_legend_handles_labels()
+axes.ravel()[5].legend(h, l, loc="center", frameon=True, fontsize=10)
+for ax in axes[1]:
+    ax.set_xlabel(r"multipole $\\ell$")
+for ax in axes[:, 0]:
+    ax.set_ylabel(r"$D_\\ell$  [$y^2$]")
+fig.suptitle("L2p8_m9 rotation groups: stratified stack vs measured map power", y=0.98)
+fig.tight_layout()
+for ext in ("pdf", "png"):
+    fig.savefig(FIG_DIR / f"rotgroup_spectra_analytic_bg.{ext}", bbox_inches="tight")
+plt.show()"""
+))
+
+cells.append(nbf.v4.new_code_cell(
+"""fig, (ax, axo) = plt.subplots(2, 1, figsize=(7.2, 7.0), sharex=True,
+                              gridspec_kw={"hspace": 0.06})
+cmap = plt.get_cmap("viridis")
+for k, gr in enumerate(groups):
+    c = cmap(k / max(N_GROUPS - 1, 1))
+    rn = np.interp(gr["ellb"], gr["ell"], gr["dl_new"]) / gr["dlb"]
+    en = np.interp(gr["ellb"], gr["ell"], gr["dl_new_err"]) / gr["dlb"]
+    ro = np.interp(gr["ellb"], gr["ell"], gr["dl_old"]) / gr["dlb"]
+    ax.semilogx(gr["ellb"], rn, color=c, lw=1.8,
+                label=f"group {gr['g']} ($z$ {gr['zlo']:.2f}-{gr['zhi']:.2f})")
+    ax.fill_between(gr["ellb"], rn - en, rn + en, color=c, alpha=0.25, lw=0)
+    axo.semilogx(gr["ellb"], ro, color=c, lw=1.4, ls="--")
+for a, t in ((ax, "calibrated analytic bg (this nb)"), (axo, "nb42 (2 random apertures)")):
+    a.axhline(1.0, color="k", lw=0.8)
+    a.axhspan(0.9, 1.1, color="0.9", zorder=0)
+    a.set_ylim(0.4, 1.6)
+    a.set_ylabel(f"stack / measured\\n{t}", fontsize=10)
+    a.grid(True, which="both", alpha=0.25)
+ax.legend(loc="upper left", frameon=True, fontsize=8, ncol=2)
+axo.set_xlim(100, 6000)
+axo.set_xlabel(r"multipole $\\ell$")
+for ext in ("pdf", "png"):
+    fig.savefig(FIG_DIR / f"rotgroup_ratio_analytic_bg.{ext}", bbox_inches="tight")
+plt.show()"""
+))
+
+cells.append(nbf.v4.new_markdown_cell(
 """## Conclusions
 
 * The raw MASTER-forward convolution alone is **not** sufficient: the measured background
@@ -307,8 +513,11 @@ cells.append(nbf.v4.new_markdown_cell(
   background is $85\\%$ of the total stamp power, so even a $1\\%$ background error moves
   the difference by $\\sim6\\%$.
 * Per-cluster determinism is the operational win: subsets, mass/redshift strata, or
-  single-cluster profiles can now be background-subtracted without re-measuring randoms,
-  which is what the faint-strata nb42 successor needs.
+  single-cluster profiles can now be background-subtracted without re-measuring randoms.
+* **Rotation groups (Part 3):** the nb42 hybrid estimator with the calibrated analytic
+  background reproduces each group's measured $D_\\ell$ (Figs. 3-4, band medians printed
+  above); the incoherent branch no longer carries per-cluster random-aperture noise, and
+  the per-group $\\hat T_g$ split-half validation means are printed alongside.
 
 Provenance: `.json` manifests next to the `.npz` inputs (git hash, config, runtimes),
 `masked_mean_offset.json` for $\\delta$, and `runs/logbook.md` for the run record."""

@@ -1,0 +1,7 @@
+loading comptonY_L2p8_m9_lc0_nside4096_rotgroup3_shells27-43.fits ...
+  monopole = 3.0506e-07
+group 3: 1200 stamps (ensemble)
+  400/1200  (0.21 s/stamp)
+  800/1200  (0.21 s/stamp)
+  1200/1200  (0.21 s/stamp)
+wrote /scratch/scratch-lxu/flamingo_repo/data/nb44_rotgroup_stack_yell_apod/group3_ensemble100.npz  (258.7 s total)

@@ -1,0 +1,11 @@
+loading comptonY_L2p8_m9_lc0_nside4096_rotgroup4_shells44-59.fits ...
+  monopole = 1.2318e-07
+group 4: 2545 stamps (clusters)
+  400/2545  (0.21 s/stamp)
+  800/2545  (0.21 s/stamp)
+  1200/2545  (0.21 s/stamp)
+  1600/2545  (0.21 s/stamp)
+  2000/2545  (0.21 s/stamp)
+  2400/2545  (0.21 s/stamp)
+  2545/2545  (0.21 s/stamp)
+wrote /scratch/scratch-lxu/flamingo_repo/data/nb44_rotgroup_stack_yell_apod/group4_apod.npz  (553.4 s total)

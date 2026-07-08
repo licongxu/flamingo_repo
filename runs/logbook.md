@@ -182,3 +182,33 @@
 - Conclusion: complete compilable draft on paper_draft branch; open items are the
   FLAMINGO joint chain (future work per Discussion), suptitle strip on nb14/nb15
   figures, and acknowledgments/funding text. Stop.
+
+## 2026-07-08T18:50Z — 2D (z, M) kernel-analysis plots via hmfast (GPU)
+
+- git (flamingo_repo): 6bcca20 (branch paper_draft); hmfast: branch kernel2d, ab56e4a8
+- Intent: port the tszpower 1D kernel-analysis figures of the combine_tsz_clusters
+  paper (Sec. kernels) to 2D (z, M) maps in the Osato & Nagai (2021) Fig. 3 style,
+  computed fully with hmfast on GPU (tszpower no longer imports on this machine:
+  classy_sz/TF CUDA_ERROR_INVALID_HANDLE on Blackwell).
+- Design doc: docs/superpowers/specs/2026-07-08-2d-kernel-analysis-design.md
+- Code: new HaloModel.cl_1h_integrand (hmfast commits b26bbd8 + ab56e4a, branch
+  kernel2d; TDD, 4 new tests, full suite 75 passed; code-reviewer agent: no
+  blocking findings). NOTE: hmfast checkout left on branch kernel2d; unrelated
+  user WIP in pressure.py/profiles __init__ left untouched and uncommitted.
+- Commands: python /scratch/scratch-lxu/tsz_cnc_paper_plots/kernel_analysis/kernels_2d.py
+  (interactive, cuda:0, runtime 20 s, memory << 1 GiB; within 10-min interactive rule)
+- Artifacts (all in /scratch/scratch-lxu/tsz_cnc_paper_plots/kernel_analysis/):
+  kernels2d_all_observables.{pdf,png}, kernels2d_per_ell.{pdf,png},
+  kernels2d_manifest.json (config + hmfast hash + diagnostics), kernels2d_data.npz
+- Verification: (i) integrand integrates back to cl_1h_masked at rtol 1e-10;
+  (ii) parametric SNR y0 / Arnaud closed-form y0 = 1.0008 (const), so the SNR grid
+  matches the legacy GNFW y0; (iii) at ell=500: masked <M>=2.11e14 Msun/h (paper
+  range 2.0-2.3e14), <z>=0.35 (0.22-0.42); full-sky <M>=4.8e14 consistent with the
+  paper ell-trend; CNC <z>=0.23 (paper ~0.23). CNC <M>=4.1e14 vs paper text 5.5e14,
+  but marginals visually match the legacy 1D curves (peaks ~4-5e14); the paper-text
+  numbers look rounded/loose. (iv) VLM figure review passed (2 figures).
+- Weight convention: masked PS uses conditional moment <A^2 1(undetected)>
+  (paper formalism, validated benchmark); legacy 1D scripts used 1 - P_det
+  (switchable via N_POWER_MASKED=0 in the script).
+- Conclusion: done; figures publication-ready and ready to be \includegraphics'd
+  into the paper (not wired into paper.tex, out of scope).

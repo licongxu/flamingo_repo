@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-08T18:29:14+00:00",
-  "active_job": "nb44 ensemble300 export (pid 3134982, pre-existing, not part of this session)",
-  "session": "paper_draft manuscript writing"
+  "timestamp_utc": "2026-07-08T18:51:19Z",
+  "active_job_id": null,
+  "note": "2D kernel-analysis plots complete (interactive GPU run, no SLURM job)"
 }
