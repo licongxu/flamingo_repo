@@ -309,10 +309,12 @@ for gr in groups:
     z = jnp.geomspace(max(gr["zlo"], 0.001), gr["zhi"], 60)
     cl1 = np.asarray(hm.cl_1h(tracer, tracer, l=ell_th, m=m_grid, z=z))
     cl2 = np.asarray(hm.cl_2h(tracer, tracer, l=ell_th, m=m_grid, z=z))
+    cl2_nl = np.asarray(hm.cl_2h(tracer, tracer, l=ell_th, m=m_grid, z=z, linear=False))
     gr["ell_th"] = np.asarray(ell_th)
     gr["dl_a10"] = pref * (cl1 + cl2)
     gr["dl_a10_2h"] = pref * cl2
-print("A10 reference curves done")"""))
+    gr["dl_a10_2h_nl"] = pref * cl2_nl
+print("A10 reference curves done (linear + nonlinear 2-halo)")"""))
 
 cells.append(nbf.v4.new_markdown_cell(
 """## Main comparison: measured group $D_\\ell$ vs stacked-profile theory
@@ -321,10 +323,13 @@ Black points: measured map spectra (the nb39 datapoints). Solid: hybrid stratifi
 stack sum with its sampling-uncertainty band. Dashed: the pure stacked-profile
 route (every stratum from its stacked coherent profile). Dotted: raw sum without
 background subtraction. Grey:
-the A10 halo model that the stacked theory replaces. The thin dash-dotted curve adds
+the A10 halo model that the stacked theory replaces. The thin dash-dotted curves add
 the A10 *2-halo* term to the stacked sum: an aperture-limited cluster sum cannot
 contain power from scales larger than the apertures, and this shows the low-$\\ell$
-gap is exactly that term."""))
+gap is exactly that term. Two 2-halo variants are shown: the grey curve uses the
+**linear** matter power spectrum (hmfast default) and the orange curve uses the
+**nonlinear** one (`cl_2h(..., linear=False)`), which adds small-scale power and so
+lifts the 2-halo contribution at higher $\\ell$."""))
 
 cells.append(nbf.v4.new_code_cell(
 """fig, axes = plt.subplots(2, 3, figsize=(14.5, 8.4), sharex=True)
@@ -345,10 +350,13 @@ for gr, ax, col in zip(groups, axes, COLORS):
             label="stack, direct sum (hybrid)")
     ax.plot(gr["ell_st"], gr["dl_shape"], color=col, lw=1.6, ls="--",
             label="stacked profiles (all-coherent)")
-    ax.plot(gr["ell_th"], gr["dl_a10_2h"] + np.interp(
-                gr["ell_th"], gr["ell_st"], gr["dl_direct"]),
+    stack_th = np.interp(gr["ell_th"], gr["ell_st"], gr["dl_direct"])
+    ax.plot(gr["ell_th"], gr["dl_a10_2h"] + stack_th,
             color="0.35", lw=1.0, ls="-.", alpha=0.9,
-            label="stack direct + A10 2-halo")
+            label="stack direct + A10 2-halo (lin PS)")
+    ax.plot(gr["ell_th"], gr["dl_a10_2h_nl"] + stack_th,
+            color="#b35806", lw=1.0, ls="-.", alpha=0.9,
+            label="stack direct + A10 2-halo (nl PS)")
     ax.set_xscale("log")
     ax.set_yscale("log")
     ax.set_xlim(ELL_MIN, 6000)
