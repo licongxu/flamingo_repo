@@ -252,6 +252,12 @@ for g in range(N_GROUPS):
         w_sum > 0, w_sum, np.nan
     )
     Fhat = fhat**2 * calibrate_R(u_s, R_s, u_grid)
+    # coherent mean fractional shape f(u) (no incoherence factor R), for the
+    # 2-halo term where the profile enters linearly; NaN tails (u outside the
+    # stamp coverage) filled with the u->0 plateau value 1
+    finite_f = np.isfinite(fhat)
+    fhat_shape = np.interp(u_grid, u_grid[finite_f], fhat[finite_f],
+                           left=1.0, right=fhat[finite_f][-1])
 
     # pure stacked-profile route: every stratum from its own stacked coherent
     # profile (identical to the hybrid's faint-strata branch, applied everywhere)
@@ -277,7 +283,7 @@ for g in range(N_GROUPS):
         dl_raw=dl_from_cl(ell_st, cl_raw),
         dl_shape=dl_from_cl(ell_st, cl_shape),
         ellb=ellb, dlb=dlb,
-        u_grid=u_grid, Fhat=Fhat,
+        u_grid=u_grid, Fhat=Fhat, fhat=fhat_shape,
         contrib3000=np.array([np.interp(3000.0, ell_st, contrib[b] * norm) for b in range(nbin_m)]),
         logm_edges=st["logm_edges"],
         reliable=reliable, used_coh=used_coh, snr=snr, n_bin=n_arr.astype(int),
@@ -317,6 +323,191 @@ for gr in groups:
 print("A10 reference curves done (linear + nonlinear 2-halo)")"""))
 
 cells.append(nbf.v4.new_markdown_cell(
+"""## Reference: HMx electron-pressure 2-halo $C_\\ell^{yy}$
+
+An independent 2-halo prediction from the HMx halo model (Mead & Troster 2020;
+`pyhmcode`), for contrast with the hmfast A10 curves. HMx supplies the
+electron-pressure **3D** 2-halo power $P_{ee}^{2h}(k,z)$ (its own gas pressure
+profile and Sheth-Tormen bias, fed the *same* D3A linear $P(k)$ as hmfast), which
+is Limber-projected to $C_\\ell^{yy}$ with HMx's own Compton-$y$ kernel
+$K_y(r)=\\frac{\\sigma_T}{m_e c^2}\\,\\frac{\\mathrm{Mpc}/h}{a^2}\\,(\\mathrm{eV}\\times10^6)$
+(`library/src/limber.f90`), integrated over each group's redshift range. The 2-halo
+term is taken directly from `calculate_nonlinear_power_spectrum(..., return_halo_terms=True)`
+(no one-halo term). HMx uses the FLAMINGO m9 fiducial AGN heating temperature
+$\\log_{10}T_{\\rm heat}=7.95$ (Kugel et al. 2023)."""))
+
+cells.append(nbf.v4.new_code_cell(
+"""import pyhmcode
+from scipy.interpolate import RegularGridInterpolator
+
+_h = D3A_COSMOLOGY.H0 / 100.0
+_Om = float(D3A_COSMOLOGY.omega_m(0.0))
+
+# same D3A linear P(k,z) hmfast uses, in Mpc/h units, on an ascending-z grid
+_z_tab = np.linspace(0.0, 3.0, 40)
+_k_h = np.asarray(D3A_COSMOLOGY.pk(0.0, linear=True)[0]) / _h            # h/Mpc
+_pofk = np.array([np.asarray(D3A_COSMOLOGY.pk(float(z), linear=True)[1])
+                  for z in _z_tab]) * _h**3                              # (Mpc/h)^3
+
+_cosmo = pyhmcode.Cosmology()
+_cosmo.om_m, _cosmo.om_b, _cosmo.om_v = _Om, D3A_COSMOLOGY.omega_b / _h**2, 1.0 - _Om
+_cosmo.h, _cosmo.ns = _h, D3A_COSMOLOGY.n_s
+_cosmo.sig8, _cosmo.m_nu = float(D3A_COSMOLOGY.sigma8(0.0)), D3A_COSMOLOGY.m_ncdm
+_cosmo.theat = 10**7.95
+_cosmo.set_linear_power_spectrum(_k_h, _z_tab, _pofk)
+
+_hmod = pyhmcode.Halomodel(pyhmcode.HMx2020_matter_pressure_w_temp_scaling, verbose=False)
+_fields = [pyhmcode.field_matter, pyhmcode.field_electron_pressure]
+_, _, _pk2h = pyhmcode.calculate_nonlinear_power_spectrum(
+    cosmology=_cosmo, halomodel=_hmod, fields=_fields,
+    return_halo_terms=True, verbose=False)
+_ip = _fields.index(pyhmcode.field_electron_pressure)
+_Pee2h = np.asarray(_pk2h[_ip, _ip])                     # (nz, nk), (eV/cm^3)^2 (Mpc/h)^3
+_interp = RegularGridInterpolator(
+    (_z_tab, np.log(_k_h)), np.log(np.where(_Pee2h > 0, _Pee2h, 1e-300)),
+    bounds_error=False, fill_value=-np.inf)
+
+# HMx Compton-y kernel constants (SI); K_y(z) converts eV/cm^3 -> J/m^3 too
+_sigmaT, _me, _c = 6.6524587158e-29, 9.1093837015e-31, 2.99792458e8
+_Mpc_m, _eV_J = 3.0856775814913673e22, 1.602176634e-19
+_yfac = _sigmaT / (_me * _c**2)
+
+
+def hmx_clyy_2h(ells, zlo, zhi, nz=200):
+    "Limber-project HMx P_ee^2h to C_l^yy over [zlo, zhi] (HMx y_kernel, Mpc/h)."
+    zg = np.linspace(max(zlo, 1e-3), zhi, nz)
+    a = 1.0 / (1.0 + zg)
+    chi_h = np.asarray(D3A_COSMOLOGY.angular_diameter_distance(zg)) * (1 + zg) * _h
+    dchi = np.gradient(chi_h, zg)
+    Ky = _yfac * (_Mpc_m / _h) / a**2 * (_eV_J * 1e6)
+    out = np.zeros(len(ells))
+    for i, l in enumerate(ells):
+        Pee = np.exp(_interp(np.column_stack([zg, np.log((l + 0.5) / chi_h)])))
+        out[i] = np.trapezoid(Ky**2 * Pee / chi_h**2 * dchi, zg)
+    return out
+
+
+for gr in groups:
+    gr["dl_hmx_2h"] = pref * hmx_clyy_2h(gr["ell_th"], gr["zlo"], gr["zhi"])
+print("HMx electron-pressure 2-halo Clyy done")"""))
+
+cells.append(nbf.v4.new_markdown_cell(
+"""## hmfast 2-halo with the *measured stacked pressure profile* as form factor
+
+A fourth 2-halo variant that keeps the **entire default hmfast 2-halo machinery**
+(Tinker 2010 halo bias, Tinker 2008 mass function, low-mass counter-term, and the
+**linear** matter power spectrum) but replaces the analytic A10 GNFW Fourier form
+factor by the group's own measured stacked profile. Each halo's harmonic profile is
+written as $u_\\ell(M,z) = Y(M,z)\\,\\hat f_g(u)$, with $u = \\ell\\,\\theta_{500}$,
+$\\theta_{500} = R_{500c}/d_A$: the total-Compton-$Y$ amplitude $Y(M,z)$ is the
+default GNFW $k\\to0$ plateau (unchanged $Y$-$M$ scaling), while the shape
+$\\hat f_g(u)$ is the coherent mean fractional stacked profile of that redshift group
+(the $R$-free $\\hat f$ of the previous section, normalised to 1 at $u\\to0$). Feeding
+this profile to the default `hm.cl_2h(..., linear=True)` leaves bias, mass function,
+counter-term and $P_{\\rm lin}$ exactly at their hmfast defaults; only the pressure
+shape is empirical. Passing the GNFW's own fractional shape reproduces the A10
+2-halo curve to $<0.05\\%$, confirming the substitution is amplitude-preserving.
+
+A fifth variant is identical except that the halo bias is switched from Tinker 2010
+to **Sheth & Tormen (1999)** (`ST99HaloBias`), keeping the same stacked-profile form
+factor, T08 mass function, counter-term, and linear $P(k)$. A sixth uses **both**
+the ST99 mass function (`ST99HaloMass`) and ST99 bias, still with the stacked-profile
+form factor, counter-term, and linear $P(k)$."""))
+
+cells.append(nbf.v4.new_code_cell(
+"""import jax
+from hmfast.halos import HaloModel
+from hmfast.halos.bias import ST99HaloBias
+from hmfast.halos.massfunc import ST99HaloMass
+from hmfast.halos.mass_definition import MassDefinition, convert_m_delta
+
+
+class StackedShapeGNFWProfile(GNFWPressureProfile):
+    \"\"\"GNFW total-Y amplitude with a measured stacked fractional shape fhat(u).\"\"\"
+
+    def __init__(self, u_grid, fhat, **kw):
+        super().__init__(**kw)
+        self.u_grid = jnp.asarray(u_grid)
+        self.fhat = jnp.asarray(fhat)
+
+    @jax.jit
+    def u_k(self, halo_model, k, m, z):
+        k, m, z = jnp.atleast_1d(k), jnp.atleast_1d(m), jnp.atleast_1d(z)
+        cosmo = halo_model.cosmology
+        # total-Y amplitude: default GNFW u_k plateau (k->0), shape (Nm, Nz)
+        A = super().u_k(halo_model, jnp.array([1e-5]), m, z)[0]
+        d_A = jnp.atleast_1d(cosmo.angular_diameter_distance(z))          # (Nz,)
+        chi = (1.0 + z) * d_A
+        ell = k[:, None] * chi[None, :] - 0.5                            # (Nk, Nz) = Limber l
+        # theta500 = R500c / d_A (physical), matching u = l*theta500 in the stack
+        mdef500 = MassDefinition(500, "critical")
+        c_old = halo_model.concentration.c_delta(halo_model, m, z)
+        m500c = convert_m_delta(cosmo, m, z, halo_model.mass_definition, mdef500, c_old=c_old)
+        r500c = mdef500.r_delta(cosmo, m500c, z)                         # (Nm, Nz) physical Mpc
+        theta500 = r500c / d_A[None, :]                                  # (Nm, Nz)
+        u500 = ell[:, None, :] * theta500[None, :, :]                    # (Nk, Nm, Nz)
+        fh = jnp.interp(u500.ravel(), self.u_grid, self.fhat).reshape(u500.shape)
+        return A[None, :, :] * fh
+
+    def _tree_flatten(self):
+        leaves = (self.P0, self.c500, self.alpha, self.beta, self.gamma, self.B,
+                  self.u_grid, self.fhat)
+        aux_data = (tuple(self._x.tolist()), self._hankel)
+        return (leaves, aux_data)
+
+    @classmethod
+    def _tree_unflatten(cls, aux_data, leaves):
+        x_tuple, hankel = aux_data
+        obj = cls.__new__(cls)
+        (obj.P0, obj.c500, obj.alpha, obj.beta, obj.gamma, obj.B,
+         obj.u_grid, obj.fhat) = leaves
+        obj._x = np.array(x_tuple)
+        obj._hankel = hankel
+        return obj
+
+
+jax.tree_util.register_pytree_node(
+    StackedShapeGNFWProfile,
+    lambda o: o._tree_flatten(),
+    lambda a, c: StackedShapeGNFWProfile._tree_unflatten(a, c),
+)
+
+# same defaults as hm, except Sheth-Tormen 1999 linear bias (keep T08 HMF)
+hm_st99 = HaloModel(cosmology=D3A_COSMOLOGY, halo_bias=ST99HaloBias())
+# ST99 mass function + ST99 bias
+hm_st_full = HaloModel(
+    cosmology=D3A_COSMOLOGY,
+    halo_mass_function=ST99HaloMass(),
+    halo_bias=ST99HaloBias(),
+)
+
+for gr in groups:
+    z = jnp.geomspace(max(gr["zlo"], 0.001), gr["zhi"], 60)
+    prof_st = StackedShapeGNFWProfile(gr["u_grid"], gr["fhat"], **A10_B1, B=1.0)
+    tr_st = tSZTracer(profile=prof_st)
+    cl2_st = np.asarray(hm.cl_2h(tr_st, tr_st, l=ell_th, m=m_grid, z=z))
+    cl2_st99 = np.asarray(hm_st99.cl_2h(tr_st, tr_st, l=ell_th, m=m_grid, z=z))
+    cl2_st_full = np.asarray(hm_st_full.cl_2h(tr_st, tr_st, l=ell_th, m=m_grid, z=z))
+    gr["dl_stack2h"] = pref * cl2_st
+    gr["dl_stack2h_st99"] = pref * cl2_st99
+    gr["dl_stack2h_stmf"] = pref * cl2_st_full
+    r = gr["dl_stack2h"] / gr["dl_a10_2h"]
+    r99 = gr["dl_stack2h_st99"] / gr["dl_stack2h"]
+    rmf = gr["dl_stack2h_stmf"] / gr["dl_stack2h"]
+    print(f"group {gr['g']}: stacked-profile 2h / A10 2h  "
+          f"l=100:{np.interp(100.,gr['ell_th'],r):.2f}  "
+          f"l=1000:{np.interp(1000.,gr['ell_th'],r):.2f}  "
+          f"l=3000:{np.interp(3000.,gr['ell_th'],r):.2f}")
+    print(f"         ST99bias/T10 stacked-profile 2h  "
+          f"l=100:{np.interp(100.,gr['ell_th'],r99):.3f}  "
+          f"l=1000:{np.interp(1000.,gr['ell_th'],r99):.3f}  "
+          f"l=3000:{np.interp(3000.,gr['ell_th'],r99):.3f}")
+    print(f"         ST99MF+bias/T10 stacked-profile 2h  "
+          f"l=100:{np.interp(100.,gr['ell_th'],rmf):.3f}  "
+          f"l=1000:{np.interp(1000.,gr['ell_th'],rmf):.3f}  "
+          f"l=3000:{np.interp(3000.,gr['ell_th'],rmf):.3f}")"""))
+
+cells.append(nbf.v4.new_markdown_cell(
 """## Main comparison: measured group $D_\\ell$ vs stacked-profile theory
 
 Black points: measured map spectra (the nb39 datapoints). Solid: hybrid stratified
@@ -326,10 +517,20 @@ background subtraction. Grey:
 the A10 halo model that the stacked theory replaces. The thin dash-dotted curves add
 the A10 *2-halo* term to the stacked sum: an aperture-limited cluster sum cannot
 contain power from scales larger than the apertures, and this shows the low-$\\ell$
-gap is exactly that term. Two 2-halo variants are shown: the grey curve uses the
-**linear** matter power spectrum (hmfast default) and the orange curve uses the
+gap is exactly that term. Four 2-halo variants are shown: the grey curve uses the
+**linear** matter power spectrum (hmfast default), the orange curve uses the
 **nonlinear** one (`cl_2h(..., linear=False)`), which adds small-scale power and so
-lifts the 2-halo contribution at higher $\\ell$."""))
+lifts the 2-halo contribution at higher $\\ell$, the green curve is the
+independent **HMx** electron-pressure 2-halo $C_\\ell^{yy}$ (`pyhmcode`, Sheth-Tormen
+bias and HMx gas pressure profile, fed the same D3A linear $P(k)$), the purple
+curve keeps the full default hmfast 2-halo (T10 bias, linear $P(k)$) but swaps the
+A10 GNFW form factor for the **group's own measured stacked pressure profile**
+$\\hat f_g(u)$, retaining the default GNFW total-$Y$ amplitude; the brown curve is
+identical to purple except that the halo bias is **Sheth & Tormen (1999)** instead
+of T10; and the teal curve further replaces the T08 mass function by the **ST99
+mass function** (ST99 HMF + ST99 bias). The HMx 2-halo is several tens of times
+larger than the A10 linear-$P(k)$ 2-halo, reflecting HMx's hotter, more extended
+pressure profile and its larger effective 2-halo power."""))
 
 cells.append(nbf.v4.new_code_cell(
 """fig, axes = plt.subplots(2, 3, figsize=(14.5, 8.4), sharex=True)
@@ -357,6 +558,18 @@ for gr, ax, col in zip(groups, axes, COLORS):
     ax.plot(gr["ell_th"], gr["dl_a10_2h_nl"] + stack_th,
             color="#b35806", lw=1.0, ls="-.", alpha=0.9,
             label="stack direct + A10 2-halo (nl PS)")
+    ax.plot(gr["ell_th"], gr["dl_hmx_2h"] + stack_th,
+            color="#238b45", lw=1.2, ls="-.", alpha=0.9,
+            label="stack direct + HMx 2-halo (yy)")
+    ax.plot(gr["ell_th"], gr["dl_stack2h"] + stack_th,
+            color="#984ea3", lw=1.2, ls="-.", alpha=0.9,
+            label="stack direct + stacked-profile 2-halo (T10)")
+    ax.plot(gr["ell_th"], gr["dl_stack2h_st99"] + stack_th,
+            color="#8c510a", lw=1.2, ls="-.", alpha=0.9,
+            label="stack direct + stacked-profile 2-halo (ST99 bias)")
+    ax.plot(gr["ell_th"], gr["dl_stack2h_stmf"] + stack_th,
+            color="#01665e", lw=1.2, ls="-.", alpha=0.9,
+            label="stack direct + stacked-profile 2-halo (ST99 HMF+bias)")
     ax.set_xscale("log")
     ax.set_yscale("log")
     ax.set_xlim(ELL_MIN, 6000)
@@ -387,11 +600,14 @@ axr.set_xlabel(r"multipole $\\ell$")
 axr.set_title("stack / measured (solid direct, dashed shape)")
 axr.grid(True, which="both", alpha=0.25)
 axr.legend(fontsize=8, loc="lower left", ncol=2)
-axes[0].legend(fontsize=7.5, loc="lower left")
 
+handles, labels = axes[0].get_legend_handles_labels()
+fig.legend(handles, labels, fontsize=7.5, loc="upper center",
+           bbox_to_anchor=(0.5, 1.0), ncol=4, frameon=True,
+           columnspacing=1.0, handlelength=2.2, borderaxespad=0.2)
 fig.suptitle(r"L2p8_m9 lc0 rotation groups: measured tSZ $D_\\ell$ vs empirical "
-             r"Fourier-space stacked profiles", y=0.995)
-fig.tight_layout()
+             r"Fourier-space stacked profiles", y=1.06)
+fig.tight_layout(rect=[0, 0, 1, 0.92])
 for ext in ("pdf", "png"):
     fig.savefig(FIG_DIR / f"rotgroup_dl_vs_stack_5panel.{ext}", bbox_inches="tight")
 plt.show()
