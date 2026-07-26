@@ -10,6 +10,7 @@ mask-decoupled binned bandpowers as ``D_ell = ell(ell+1) C_ell / 2 pi``.
 """
 from __future__ import annotations
 
+import healpy as hp
 import numpy as np
 
 try:
@@ -48,6 +49,7 @@ def decoupled_dl(
     delta_ell: int = 30,
     lmax: int | None = None,
     lmax_cap: int = 6000,
+    deconvolve_pixwin: bool = False,
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Mask-decoupled binned auto-spectrum of a scalar map.
 
@@ -67,6 +69,10 @@ def decoupled_dl(
         Maximum multipole. Defaults to ``min(3*nside - 1, lmax_cap)``.
     lmax_cap : int, optional
         Hard ceiling on ``lmax`` to bound NaMaster cost (default 6000).
+    deconvolve_pixwin : bool, optional
+        Divide the bandpowers by the squared HEALPix pixel window ``w_ell^2``
+        to undo the smoothing of the finite pixel size (default ``False``).
+        Required when comparing measured bandpowers to a theory ``C_ell``.
 
     Returns
     -------
@@ -94,5 +100,8 @@ def decoupled_dl(
     cl = workspace.decouple_cell(nmt.compute_coupled_cell(field, field))[0]
 
     ell_eff = bands.get_effective_ells()
+    if deconvolve_pixwin:
+        pixwin = hp.pixwin(nside, lmax=lmax)
+        cl = cl / np.interp(ell_eff, np.arange(pixwin.size), pixwin) ** 2
     dl = ell_eff * (ell_eff + 1.0) * cl / (2.0 * np.pi)
     return ell_eff, dl, cl

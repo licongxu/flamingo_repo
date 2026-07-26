@@ -4,8 +4,10 @@ General-purpose tools for processing FLAMINGO lightcone products: HEALPix maps,
 catalogue handling, cluster masking, GNFW pressure profiles, and power spectra
 (measured and halo-model theory).
 
-This branch (`source-code`) holds only the backbone package; the analysis
-notebooks and task-specific scripts live on other branches.
+This branch (`paper-results`) is the `source-code` backbone plus a thin,
+reproducible pipeline that produces the paper's tSZ power-spectrum results.
+See [Paper results](#paper-results) below; the rest of this README documents
+the backbone package itself.
 
 ## Install
 
@@ -96,3 +98,100 @@ dl = dl_of_cl(th["ell"], th["cl"])
 ```bash
 pytest -q
 ```
+
+---
+
+# Paper results
+
+`paper_results/` is the pipeline behind the paper's tSZ power-spectrum figures.
+It measures, for the FLAMINGO **L1_m9** lightcone-0 Compton-y maps:
+
+1. the **total** (unmasked) tSZ power spectrum, and the **masked** spectrum
+   after excising every cluster a Planck-like survey would detect at
+   `q > 50, 20, 10, 5, 1`;
+2. the same two spectra for **all nine feedback variants**, so the sensitivity
+   of the diffuse tSZ signal to the feedback model can be read off directly.
+
+Every physical operation is a call into `flamingo` (`src/`); the modules below
+only select inputs, loop, and save. `paper_results/__init__.py` puts this
+checkout's `src/` at the front of `sys.path`, so the pipeline always runs
+against the source code on this branch regardless of what is pip-installed.
+
+## Pipeline
+
+| Step | Module | Uses from `flamingo` | Writes |
+|------|--------|----------------------|--------|
+| 1 | `paper_results.compute_q` | `cnc.SZScaling`, `catalogue.theta_500` | `q` catalogues (cache) |
+| 2 | `paper_results.compute_ps` | `masking.disc_mask`, `powerspectra.namaster` | `results/bandpowers/` |
+| 3 | `paper_results.figures` | — | `figures/` |
+
+```bash
+python -m paper_results.compute_q      # ~1 min, GPU
+python -m paper_results.compute_ps     # ~1 h for 9 variants x 6 spectra
+python -m paper_results.figures
+```
+
+Each step caches its output and skips work already done; pass `--force` to
+recompute and `--variant NAME` (repeatable) to restrict to some variants.
+All paths, thresholds and estimator settings live in `paper_results/config.py`.
+
+## Step 1 — cluster detection significance
+
+There is no cluster *finder* here: `q` is what the assumed SZ scaling relation
+predicts a Planck-like survey would measure, given only `(M_500c, z)`:
+
+$$q = \frac{y_0(M_{500c}/B,\,z)\;e^{\epsilon}}{\sigma_{y_0}(\theta_{500})},
+\qquad \epsilon\sim\mathcal N(0,\sigma_{\ln Y}^2)$$
+
+with the Arnaud et al. (2010) self-similar pressure profile, hydrostatic bias
+`B = 1.35`, `alpha_SZ = 2/3 + 0.12 + 1/3`, intrinsic scatter
+`sigma_lnY = 0.173`, and the Planck-like matched-filter noise curve
+`sigma_y0(theta_500)` from szifi (`immf6`). This lives in
+[`flamingo.cnc`](src/flamingo/cnc.py). The amplitude `A_SZ` is calibrated
+against the analytic A10 profile at build time (`SZScaling.calibrated()`), and
+the scatter is drawn deterministically from each halo's SOAP index so runs are
+reproducible.
+
+Two angular scales appear and must not be conflated:
+
+* the **true** `theta_500 = R_500c / D_A(z)` from the catalogue sets the
+  *masking radius*;
+* the **hydrostatic** `theta_500(M_500c/B)` inside the scaling relation sets
+  the *matched-filter noise* entering `q`.
+
+## Step 2 — power spectra
+
+Unmasked and masked spectra go through the *same* NaMaster estimator, so they
+are directly comparable:
+
+* binary mask: discs of radius `5 x theta_500` around every halo with `q` above
+  the cut (`flamingo.masking.disc_mask`);
+* C1 apodization, 0.5 deg (`flamingo.powerspectra.namaster.apodize`);
+* mask-weighted monopole subtracted, mask-decoupled pseudo-Cl, linear
+  `Delta ell = 30` bandpowers to `ell_max = 6000`, HEALPix pixel window
+  deconvolved (`flamingo.powerspectra.namaster.decoupled_dl`).
+
+The unmasked case runs through NaMaster with a unit mask rather than through
+`anafast`, so both share identical binning and pixel-window handling.
+
+## Outputs
+
+```
+results/bandpowers/<variant>.npz              ell, dl_fullsky, dl_masked, n_masked, fsky, settings
+results/bandpowers/Dl_yy_<variant>_<tag>.txt  plain "ell  D_ell" columns, tag in {fullsky, qgt50 ... qgt1}
+results/counts.md                             N(q > cut) per variant
+figures/fiducial_masked_tsz_ps.{pdf,png}      figure 1
+figures/feedback_tsz_ps.{pdf,png}             figure 2
+```
+
+## Inputs
+
+Large inputs are read from outside the repo and are not version controlled:
+
+| What | Where |
+|------|-------|
+| L1_m9 y-maps, `nside=4096` | `/rds/rds-lxu/flamingo/L1_m9/maps/y_unlensed_<variant>_lc0_nside4096.fits` |
+| L1_m9 halo catalogues, `M_500c > 5e13`, `z < 3` | `/rds/rds-lxu/flamingo/L1_m9/catalogues/` |
+| szifi matched-filter noise curves | `$FLAMINGO_ROOT/data/noise/` |
+
+Override with `FLAMINGO_ROOT`, `L1M9_MAP_DIR` and `L1M9_CAT_DIR`.
