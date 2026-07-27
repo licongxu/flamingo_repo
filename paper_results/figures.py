@@ -139,7 +139,7 @@ def figure_feedback() -> None:
 
     axes[0, 0].set_ylabel(r"$\ell(\ell+1)C_\ell^{yy}/2\pi$")
     axes[1, 0].set_ylabel("ratio to fiducial")
-    axes[0, 0].legend(fontsize=8, loc="lower right", ncol=2, frameon=False)
+    axes[0, 0].legend(fontsize=7.5, loc="upper left", ncol=1, frameon=False)
     fig.suptitle(
         "FLAMINGO L1_m9 feedback variants: tSZ power spectrum before and after cluster masking",
         fontsize=12,
