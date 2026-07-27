@@ -120,3 +120,10 @@ DELTA_ELL = 30
 
 #: Lowest column-mass kept by the catalogues (documented, not applied here).
 M_MIN_MSUN = 5.0e13
+
+#: Hydrostatic mass bias of the halo-model prediction compared against the maps.
+#: The maps are built from the simulated pressure itself, so there is no
+#: observational mass calibration to undo and the comparison is made at ``B = 1``.
+#: The mass and redshift integration grids live with the model, as
+#: :data:`flamingo.theory.clyy.M_GRID` and :data:`~flamingo.theory.clyy.Z_GRID`.
+THEORY_B = 1.0
