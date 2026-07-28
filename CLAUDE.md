@@ -2,7 +2,11 @@
 
 **Rule of reply:** Always say "HONEY" to me before you reply
 
-always use `source /scratch/scratch-lxu/venv/cmbagent_env/bin/activate` to activate your Python environment before running any code or commands.
+**Python environment:** In this repo, always use venv before running any code or commands:
+
+```bash
+source /scratch/scratch-lxu/venv/cmbagent_env/bin/activate
+```
 
 
 **Tradeoff:** These guidelines bias toward caution over speed. For trivial tasks, use judgment.
