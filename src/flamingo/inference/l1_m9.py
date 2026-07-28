@@ -158,7 +158,7 @@ class L1M9CustomGNFWTheory(Theory):
             alpha=1.062,
             beta=5.4807,
             gamma=0.3292,
-            B=1.0,
+            B=1.41,
         )
         self._tracer = tSZTracer(profile=self._profile)
         self._ell = jnp.asarray(ELL_SMOOTH)
