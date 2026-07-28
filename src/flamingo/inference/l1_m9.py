@@ -161,7 +161,6 @@ class L1M9CustomGNFWTheory(Theory):
             B=1.41,
         )
         self._tracer = tSZTracer(profile=self._profile)
-        self._ell = jnp.asarray(ELL_SMOOTH)
         self._mass = jnp.asarray(MASS_GRID)
         self._redshift = jnp.asarray(REDSHIFT_GRID)
         self._evaluate_cl = jax.jit(self._evaluate_cl_impl)
@@ -172,20 +171,21 @@ class L1M9CustomGNFWTheory(Theory):
         self,
         A_SZ: float,
         alpha_SZ: float,
+        ell: jax.Array,
     ) -> tuple[jax.Array, jax.Array]:
         profile = self._profile.update(A_SZ=A_SZ, alpha_SZ=alpha_SZ)
         tracer = self._tracer.update(profile=profile)
         cl_1h = self._halo_model.cl_1h(
             tracer,
             None,
-            self._ell,
+            ell,
             self._mass,
             self._redshift,
         )
         cl_2h = self._halo_model.cl_2h(
             tracer,
             None,
-            self._ell,
+            ell,
             self._mass,
             self._redshift,
         )
@@ -197,14 +197,33 @@ class L1M9CustomGNFWTheory(Theory):
         alpha_SZ: float,
     ) -> dict[str, np.ndarray]:
         """Evaluate and bin the custom-GNFW 1h and 2h spectra."""
+        spectrum = self.evaluate_spectrum(A_SZ, alpha_SZ)
+        return {
+            "1h": _bin_dl(spectrum["ell"], spectrum["1h"]),
+            "2h": _bin_dl(spectrum["ell"], spectrum["2h"]),
+        }
+
+    def evaluate_spectrum(
+        self,
+        A_SZ: float,
+        alpha_SZ: float,
+        ell: np.ndarray | None = None,
+    ) -> dict[str, np.ndarray]:
+        """Evaluate the custom-GNFW 1h, 2h, and total D_ell spectra."""
+        ell = ELL_SMOOTH if ell is None else np.asarray(ell, dtype=float)
         cl_1h, cl_2h = self._evaluate_cl(
             float(A_SZ),
             float(alpha_SZ),
+            jnp.asarray(ell),
         )
-        prefactor = ELL_SMOOTH * (ELL_SMOOTH + 1.0) / (2.0 * np.pi)
+        prefactor = ell * (ell + 1.0) / (2.0 * np.pi)
+        dl_1h = prefactor * np.asarray(cl_1h)
+        dl_2h = prefactor * np.asarray(cl_2h)
         return {
-            "1h": _bin_dl(ELL_SMOOTH, prefactor * np.asarray(cl_1h)),
-            "2h": _bin_dl(ELL_SMOOTH, prefactor * np.asarray(cl_2h)),
+            "ell": ell.copy(),
+            "1h": dl_1h,
+            "2h": dl_2h,
+            "total": dl_1h + dl_2h,
         }
 
     def calculate(

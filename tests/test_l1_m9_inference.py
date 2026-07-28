@@ -43,3 +43,39 @@ def test_custom_gnfw_theory_returns_positive_1h_and_2h_bandpowers():
         assert np.all(np.isfinite(term))
         assert np.all(term > 0.0)
     assert np.all(bandpowers["1h"] + bandpowers["2h"] > 0.0)
+
+
+def test_custom_gnfw_theory_returns_total_spectrum_for_best_fit():
+    theory = L1M9CustomGNFWTheory()
+    theory.initialize()
+
+    spectrum = theory.evaluate_spectrum(-4.1095805, 0.97447729)
+
+    assert set(spectrum) == {"ell", "1h", "2h", "total"}
+    assert spectrum["ell"].shape == spectrum["total"].shape
+    for term in ("1h", "2h", "total"):
+        assert np.all(np.isfinite(spectrum[term]))
+        assert np.all(spectrum[term] > 0.0)
+    np.testing.assert_allclose(
+        spectrum["total"],
+        spectrum["1h"] + spectrum["2h"],
+        rtol=1e-14,
+    )
+
+
+def test_custom_gnfw_theory_evaluates_a_requested_multipole_grid():
+    theory = L1M9CustomGNFWTheory()
+    theory.initialize()
+    requested_ell = np.geomspace(100.0, 10000.0, 8)
+
+    spectrum = theory.evaluate_spectrum(
+        -4.1095805,
+        0.97447729,
+        ell=requested_ell,
+    )
+
+    np.testing.assert_array_equal(spectrum["ell"], requested_ell)
+    for term in ("1h", "2h", "total"):
+        assert spectrum[term].shape == requested_ell.shape
+        assert np.all(np.isfinite(spectrum[term]))
+        assert np.all(spectrum[term] > 0.0)
