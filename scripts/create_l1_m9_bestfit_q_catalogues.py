@@ -110,7 +110,12 @@ def rewrite_catalogue(
             handle.write(_provenance(source, scaling))
 
         first_chunk = True
-        for chunk in pd.read_csv(source, comment="#", chunksize=chunksize):
+        for chunk in pd.read_csv(
+            source,
+            comment="#",
+            chunksize=chunksize,
+            float_precision="round_trip",
+        ):
             missing = REQUIRED_COLUMNS.difference(chunk.columns)
             if missing:
                 raise ValueError(

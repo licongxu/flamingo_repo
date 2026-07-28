@@ -104,6 +104,23 @@ def test_rewrite_refuses_to_overwrite_without_force(tmp_path):
     assert output.read_text() == "keep me\n"
 
 
+def test_rewrite_preserves_round_trip_float_values(tmp_path):
+    source = tmp_path / "halo_qfrommz.csv"
+    output = module.bestfit_path(source)
+    source.write_text(
+        "soap_index,z,M_500c_Msun,q_from_mz\n"
+        "378,2.7199730290461037,5.4e13,99\n"
+    )
+
+    module.rewrite_catalogue(source, output, FakeScaling())
+
+    source_z = pd.read_csv(source, float_precision="round_trip")["z"].to_numpy()
+    output_z = pd.read_csv(output, comment="#", float_precision="round_trip")[
+        "z"
+    ].to_numpy()
+    assert np.array_equal(source_z, output_z)
+
+
 def test_rewrite_removes_temporary_file_after_calculation_failure(tmp_path):
     class BrokenScaling(FakeScaling):
         def q(self, mass, redshift, *, index):
