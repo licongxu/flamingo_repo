@@ -1,6 +1,7 @@
 import numpy as np
 
 from flamingo.inference.l1_m9 import (
+    L1M9CustomGNFWTheory,
     gaussian_loglike,
     load_bandpower_likelihood,
 )
@@ -28,3 +29,17 @@ def test_gaussian_loglike_matches_literal_quadratic_form():
     inverse = np.diag([1.0 / 4.0, 1.0 / 9.0])
     expected = -0.5 * (1.0 / 4.0 + 4.0 / 9.0)
     assert gaussian_loglike(observed, theory, inverse) == expected
+
+
+def test_custom_gnfw_theory_returns_positive_1h_and_2h_bandpowers():
+    theory = L1M9CustomGNFWTheory()
+    theory.initialize()
+
+    bandpowers = theory.evaluate_bandpowers(-4.1, 1.12)
+
+    assert set(bandpowers) == {"1h", "2h"}
+    for term in bandpowers.values():
+        assert term.shape == (18,)
+        assert np.all(np.isfinite(term))
+        assert np.all(term > 0.0)
+    assert np.all(bandpowers["1h"] + bandpowers["2h"] > 0.0)
