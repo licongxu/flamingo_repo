@@ -57,9 +57,21 @@ Follow the high-multipole prescription in
 - 12 geometrically spaced theory samples per bin.
 
 The upper panel covers `100 <= ell <= 10000` and contains the log-binned map
-bandpowers, best-fit custom-GNFW total, and best-fit 1-halo term. Do not draw
-the 2-halo term. The lower panel covers the identical full range and shows
-map divided by best-fit total in every displayed bin.
+bandpowers, best-fit custom-GNFW total, best-fit custom-GNFW 1-halo term, and
+the D3A simple A10 GNFW total at `B = 1`. Do not draw either model's 2-halo
+term. The lower panel covers the identical full range and shows map divided by
+best-fit custom-GNFW total in every displayed bin.
+
+The simple-GNFW curve appears only in this high-multipole figure. The original
+18-point figure remains unchanged.
+
+Write the pixwin-deconvolved empirical high-multipole bandpowers, without
+modifying the original 18-point file, to:
+
+`data_paper/binned_bandpowers/Dl_yy_L1_m9_fiducial_fullsky_logbins_dln0p4_lmax10000_pixwin_deconvolved.txt`
+
+The file contains descriptive comment metadata followed by exactly two
+columns: geometric `ell_eff` and displayed `1e12_D_ell_yy`.
 
 Write this independent figure as
 `figures/l1_m9_fullsky_bestfit_customgnfw_highell.png` and `.pdf`.
@@ -82,4 +94,6 @@ For the high-multipole figure, additionally check that:
 - adjacent bin edges differ by `Delta ln ell = 0.4`;
 - the data, total theory, 1-halo theory, and ratio are finite and positive;
 - `total = 1h + 2h` numerically even though the 2-halo line is not drawn; and
+- the simple-GNFW `B = 1` total is finite, positive, and evaluated in D3A;
+- the saved empirical file reproduces all plotted map bandpowers exactly;
 - both panels span the same complete multipole range.

@@ -151,6 +151,7 @@ git commit -m "feat: plot L1_m9 best-fit custom-GNFW spectrum"
 - Modify: `src/flamingo/inference/l1_m9.py`
 - Create: `scripts/plot_l1_m9_bestfit_customgnfw_highell.py`
 - Create: `tests/test_l1_m9_bestfit_highell_plot.py`
+- Create: `data_paper/binned_bandpowers/Dl_yy_L1_m9_fiducial_fullsky_logbins_dln0p4_lmax10000_pixwin_deconvolved.txt`
 - Create at runtime: `figures/l1_m9_fullsky_bestfit_customgnfw_highell.png`
 - Create at runtime: `figures/l1_m9_fullsky_bestfit_customgnfw_highell.pdf`
 
@@ -163,6 +164,9 @@ git commit -m "feat: plot L1_m9 best-fit custom-GNFW spectrum"
 - Produces:
   `bin_cl_log(ell, cl, edges) -> tuple[np.ndarray, np.ndarray]`, returning
   geometric centres and mean `C_ell` per bin.
+- Produces the D3A simple A10 GNFW `B = 1` total on the identical log bins.
+- Produces a two-column empirical bandpower text file with self-describing
+  metadata.
 
 - [ ] **Step 1: Write failing tests for logarithmic binning**
 
@@ -195,15 +199,16 @@ that array while preserving the existing default and bandpower behavior.
 
 Read the map without mutation, compute `C_ell` through `ell = 10000`,
 deconvolve `hp.pixwin(nside, lmax=10000) ** 2`, and log-bin it. Evaluate
-best-fit custom-GNFW theory at 12 geometric samples per bin, average its
-`C_ell` terms, and convert data and theory to displayed `1e12 D_ell` at the
-same geometric centres.
+best-fit custom-GNFW theory and the D3A simple A10 GNFW `B = 1` total at 12
+geometric samples per bin, average their `C_ell` terms, and convert data and
+theory to displayed `1e12 D_ell` at the same geometric centres. Write the
+empirical displayed bandpowers to the approved data-paper filename.
 
 - [ ] **Step 6: Render both panels**
 
-The upper panel draws map, total, and 1-halo. The lower panel draws map/total
-for every displayed bin. Both panels use `100 <= ell <= 10000`; no 2-halo
-line is drawn.
+The upper panel draws map, best-fit custom-GNFW total and 1-halo, and simple
+GNFW `B = 1` total. The lower panel draws map/best-fit-custom-total for every
+displayed bin. Both panels use `100 <= ell <= 10000`; no 2-halo line is drawn.
 
 - [ ] **Step 7: Run and visually inspect the real-map figure**
 
@@ -214,8 +219,9 @@ PYTHONPATH=src MPLBACKEND=Agg \
 python scripts/plot_l1_m9_bestfit_customgnfw_highell.py
 ```
 
-Expected: nonempty PNG/PDF outputs with complete-range ratio points and no
-change to the 18-point likelihood data.
+Expected: nonempty PNG/PDF outputs with complete-range ratio points, the new
+two-column empirical bandpower file, and no change to the 18-point likelihood
+data.
 
 - [ ] **Step 8: Run final verification and commit**
 
