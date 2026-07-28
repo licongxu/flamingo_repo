@@ -134,3 +134,53 @@ def assemble_covariance(
         np.asarray(cov_gaussian)
         + np.asarray(trispectrum_binned) / (4.0 * np.pi * fsky)
     )
+
+
+def validate_covariance(
+    cov_gaussian: np.ndarray,
+    trispectrum_binned: np.ndarray,
+    cov_full: np.ndarray,
+) -> dict[str, float]:
+    """Validate shapes, finiteness, assembly, symmetry, and definiteness."""
+    arrays = {
+        "cov_gaussian": np.asarray(cov_gaussian, dtype=float),
+        "trispectrum_binned": np.asarray(trispectrum_binned, dtype=float),
+        "cov_full": np.asarray(cov_full, dtype=float),
+    }
+    for name, array in arrays.items():
+        if array.shape != (18, 18):
+            raise ValueError(f"{name} has shape {array.shape}, expected (18, 18)")
+        if not np.all(np.isfinite(array)):
+            raise ValueError(f"{name} contains non-finite entries")
+
+    expected = assemble_covariance(
+        arrays["cov_gaussian"], arrays["trispectrum_binned"]
+    )
+    component_residual = float(np.max(np.abs(arrays["cov_full"] - expected)))
+    scale = float(np.max(np.abs(expected)))
+    if component_residual > 1e-12 * max(scale, np.finfo(float).tiny):
+        raise ValueError("full covariance does not equal Gaussian + T/(4 pi)")
+
+    asymmetry = float(
+        np.max(np.abs(arrays["cov_full"] - arrays["cov_full"].T))
+    )
+    if asymmetry > 1e-12 * max(scale, np.finfo(float).tiny):
+        raise ValueError("full covariance is not symmetric")
+    if np.any(np.diag(arrays["cov_gaussian"]) <= 0.0):
+        raise ValueError("Gaussian covariance diagonal is not positive")
+    if np.any(np.diag(arrays["trispectrum_binned"]) < 0.0):
+        raise ValueError("trispectrum has a negative diagonal")
+
+    eigenvalues = np.linalg.eigvalsh(
+        0.5 * (arrays["cov_full"] + arrays["cov_full"].T)
+    )
+    min_eigenvalue = float(eigenvalues.min())
+    if min_eigenvalue <= 0.0:
+        raise ValueError("full covariance is not positive definite")
+    return {
+        "max_component_residual": component_residual,
+        "max_asymmetry": asymmetry,
+        "min_eigenvalue": min_eigenvalue,
+        "max_eigenvalue": float(eigenvalues.max()),
+        "condition_number": float(eigenvalues.max() / min_eigenvalue),
+    }

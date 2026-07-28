@@ -8,6 +8,7 @@ from scripts.compute_l1_m9_simplegnfw_covariance import (
     bin_dl,
     bin_trispectrum,
     gaussian_covariance,
+    validate_covariance,
 )
 
 
@@ -41,3 +42,13 @@ def test_assemble_covariance_adds_trispectrum_over_4pi():
     trispectrum = np.full((18, 18), 3.0)
     got = assemble_covariance(gaussian, trispectrum)
     np.testing.assert_allclose(got, gaussian + trispectrum / (4.0 * np.pi))
+
+
+def test_validate_covariance_reports_a_positive_definite_component_sum():
+    gaussian = np.eye(18) * 2.0
+    trispectrum = np.ones((18, 18))
+    full = assemble_covariance(gaussian, trispectrum)
+    diagnostics = validate_covariance(gaussian, trispectrum, full)
+    assert diagnostics["max_component_residual"] == 0.0
+    assert diagnostics["max_asymmetry"] == 0.0
+    assert diagnostics["min_eigenvalue"] > 0.0
