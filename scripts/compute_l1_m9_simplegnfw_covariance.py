@@ -25,6 +25,18 @@ from flamingo.catalogue.frame import D3A_COSMOLOGY
 
 REPO = Path(__file__).resolve().parents[1]
 OUTPUT_DIR = REPO / "data_paper" / "covariance"
+F_SKY = 1.0
+MASS_GRID = np.geomspace(1e11, 1e16, 64)
+REDSHIFT_GRID = np.geomspace(0.005, 3.0, 96)
+ELL_SMOOTH = np.geomspace(9.0, 1085.0, 50)
+PROFILE_PARAMETERS = {
+    "P0": 8.13,
+    "c500": 1.156,
+    "alpha": 1.062,
+    "beta": 5.4807,
+    "gamma": 0.3292,
+    "B": 1.0,
+}
 
 ELL_MIN = np.array(
     [9, 12, 16, 21, 27, 35, 46, 60, 78, 102, 133, 173, 224, 292, 380, 494, 642, 835],
@@ -184,3 +196,162 @@ def validate_covariance(
         "max_eigenvalue": float(eigenvalues.max()),
         "condition_number": float(eigenvalues.max() / min_eigenvalue),
     }
+
+
+def compute_covariance() -> dict[str, np.ndarray]:
+    """Evaluate simple-GNFW power and covariance components with hmfast."""
+    devices = jax.devices()
+    if not devices or devices[0].platform != "gpu":
+        raise RuntimeError(f"CUDA device required, got {devices}")
+
+    halo_model = HaloModel(
+        cosmology=D3A_COSMOLOGY,
+        mass_definition=MassDefinition(500, "critical"),
+        convert_masses=True,
+        hm_consistency=False,
+    )
+    profile = GNFWPressureProfile(**PROFILE_PARAMETERS)
+    tracer = tSZTracer(profile=profile)
+    ell = jnp.asarray(ELL_SMOOTH)
+    mass = jnp.asarray(MASS_GRID)
+    redshift = jnp.asarray(REDSHIFT_GRID)
+
+    cl_1h = np.asarray(halo_model.cl_1h(tracer, None, ell, mass, redshift))
+    cl_2h = np.asarray(halo_model.cl_2h(tracer, None, ell, mass, redshift))
+    prefactor = ELL_SMOOTH * (ELL_SMOOTH + 1.0) / (2.0 * np.pi)
+    dl_1h = bin_dl(ELL_SMOOTH, prefactor * cl_1h)
+    dl_2h = bin_dl(ELL_SMOOTH, prefactor * cl_2h)
+    dl_total = dl_1h + dl_2h
+
+    trispectrum_cl = np.asarray(
+        halo_model.trispectrum_1h(
+            tracer,
+            None,
+            ell,
+            ell,
+            mass,
+            redshift,
+        )
+    )
+    trispectrum_binned = bin_trispectrum(ELL_SMOOTH, trispectrum_cl)
+    cov_gaussian = gaussian_covariance(dl_total, F_SKY)
+    cov_full = assemble_covariance(
+        cov_gaussian,
+        trispectrum_binned,
+        F_SKY,
+    )
+    return {
+        "dl_1h": dl_1h,
+        "dl_2h": dl_2h,
+        "dl_total": dl_total,
+        "cov_gaussian": cov_gaussian,
+        "trispectrum_binned": trispectrum_binned,
+        "cov_full": cov_full,
+    }
+
+
+def write_outputs(
+    result: dict[str, np.ndarray],
+    runtime_seconds: float,
+) -> dict:
+    """Validate and save the theory bandpowers and covariance artifacts."""
+    diagnostics = validate_covariance(
+        result["cov_gaussian"],
+        result["trispectrum_binned"],
+        result["cov_full"],
+    )
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    np.save(
+        OUTPUT_DIR / "cov_gaussian_L1_m9_fullsky_Dl_yy_binned_18.npy",
+        result["cov_gaussian"],
+    )
+    np.save(
+        OUTPUT_DIR / "trispectrum_L1_m9_fullsky_Dl_yy_binned_18.npy",
+        result["trispectrum_binned"],
+    )
+    np.save(
+        OUTPUT_DIR / "cov_full_L1_m9_fullsky_Dl_yy_binned_18.npy",
+        result["cov_full"],
+    )
+    np.savetxt(
+        OUTPUT_DIR / "cov_full_L1_m9_fullsky_Dl_yy_binned_18.csv",
+        result["cov_full"],
+        delimiter=",",
+        fmt="%.16e",
+    )
+    np.savetxt(
+        OUTPUT_DIR / "Dl_yy_simplegnfw_B1_theory_binned_18.txt",
+        np.column_stack(
+            [
+                ELL_EFF,
+                result["dl_1h"],
+                result["dl_2h"],
+                result["dl_total"],
+            ]
+        ),
+        header="ell_eff  D_ell_1h  D_ell_2h  D_ell_total",
+        fmt="%.16e",
+    )
+
+    cosmology = {
+        key: float(getattr(D3A_COSMOLOGY, key))
+        for key in (
+            "H0",
+            "omega_cdm",
+            "omega_b",
+            "ln1e10A_s",
+            "n_s",
+            "tau_reio",
+            "m_ncdm",
+        )
+    }
+    metadata = {
+        "data_file": str(
+            REPO
+            / "data_paper/binned_bandpowers/Dl_yy_L1_m9_fullsky_binned_18.txt"
+        ),
+        "cosmology": cosmology,
+        "pressure_profile": "hmfast.GNFWPressureProfile",
+        "profile_parameters": PROFILE_PARAMETERS,
+        "sigma_lnY": 0.0,
+        "f_sky": F_SKY,
+        "mass_units": "physical M_sun",
+        "mass_grid": {
+            "minimum": float(MASS_GRID[0]),
+            "maximum": float(MASS_GRID[-1]),
+            "count": int(MASS_GRID.size),
+        },
+        "redshift_grid": {
+            "minimum": float(REDSHIFT_GRID[0]),
+            "maximum": float(REDSHIFT_GRID[-1]),
+            "count": int(REDSHIFT_GRID.size),
+        },
+        "ell_grid_count": int(ELL_SMOOTH.size),
+        "ell_effective": ELL_EFF.tolist(),
+        "gaussian_power_terms": ["1h", "2h"],
+        "non_gaussian_term": "connected 1h trispectrum / (4 pi f_sky)",
+        "jax_devices": [str(device) for device in jax.devices()],
+        "cuda_visible_devices": os.environ.get("CUDA_VISIBLE_DEVICES"),
+        "runtime_seconds": float(runtime_seconds),
+        "diagnostics": diagnostics,
+    }
+    with (
+        OUTPUT_DIR / "covariance_L1_m9_fullsky_metadata.json"
+    ).open("w", encoding="utf-8") as handle:
+        json.dump(metadata, handle, indent=2, sort_keys=True)
+        handle.write("\n")
+    return metadata
+
+
+def main() -> None:
+    """Run the covariance calculation, write artifacts, and print diagnostics."""
+    started = time.perf_counter()
+    result = compute_covariance()
+    metadata = write_outputs(result, time.perf_counter() - started)
+    print(json.dumps(metadata, indent=2, sort_keys=True))
+    print("Gaussian sigma:", np.sqrt(np.diag(result["cov_gaussian"])))
+    print("Full sigma:", np.sqrt(np.diag(result["cov_full"])))
+
+
+if __name__ == "__main__":
+    main()
