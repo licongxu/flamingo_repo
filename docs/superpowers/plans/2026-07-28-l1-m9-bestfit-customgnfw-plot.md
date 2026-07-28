@@ -15,7 +15,11 @@
 - Halo masses remain in physical `M_sun`, never `M_sun/h`.
 - Plot exactly two series: the 18 empirical L1_m9 bandpowers and the best-fit custom-GNFW total.
 - Fix D3A cosmology, `A_SZ = -4.1095805`, `alpha_SZ = 0.97447729`, and `B = 1.41`.
-- Do not plot the superseded posterior curve, the former `B = 1.0` fiducial curve, separate 1-halo or 2-halo curves, covariance error bars, or a ratio panel.
+- In the original 18-point figure, do not plot the superseded posterior curve,
+  the former `B = 1.0` fiducial curve, separate 1-halo or 2-halo curves,
+  covariance error bars, or a ratio panel.
+- Do not modify the original 18-point data file, its covariance, or the first figure while generating the independent high-multipole figure.
+- The high-multipole figure uses `Delta ln ell = 0.4`, geometric centres, `ell <= 10000`, and the original full-sky map.
 
 ---
 
@@ -140,3 +144,87 @@ git add src/flamingo/inference/l1_m9.py tests/test_l1_m9_inference.py \
   docs/superpowers/plans/2026-07-28-l1-m9-bestfit-customgnfw-plot.md
 git commit -m "feat: plot L1_m9 best-fit custom-GNFW spectrum"
 ```
+
+### Task 2: Independent logarithmically binned high-multipole figure
+
+**Files:**
+- Modify: `src/flamingo/inference/l1_m9.py`
+- Create: `scripts/plot_l1_m9_bestfit_customgnfw_highell.py`
+- Create: `tests/test_l1_m9_bestfit_highell_plot.py`
+- Create at runtime: `figures/l1_m9_fullsky_bestfit_customgnfw_highell.png`
+- Create at runtime: `figures/l1_m9_fullsky_bestfit_customgnfw_highell.pdf`
+
+**Interfaces:**
+- Consumes: the read-only map
+  `/rds/rds-lxu/flamingo/L1_m9/maps/y_unlensed_L1_m9_lc0_nside4096.fits`.
+- Produces: `L1M9CustomGNFWTheory.evaluate_spectrum(A_SZ, alpha_SZ, ell=None)`
+  with an optional multipole grid.
+- Produces: `make_log_bins(ell_min, ell_max, dln_ell) -> np.ndarray`.
+- Produces:
+  `bin_cl_log(ell, cl, edges) -> tuple[np.ndarray, np.ndarray]`, returning
+  geometric centres and mean `C_ell` per bin.
+
+- [ ] **Step 1: Write failing tests for logarithmic binning**
+
+Use literal edges and a constant `C_ell` fixture to verify exact
+`Delta ln ell = 0.4`, geometric centres, right-edge exclusion, and inclusion
+of the final right edge.
+
+- [ ] **Step 2: Run the targeted tests and verify failure**
+
+Run:
+
+```bash
+pytest tests/test_l1_m9_bestfit_highell_plot.py -q
+```
+
+Expected: failure because the high-multipole plotting module does not exist.
+
+- [ ] **Step 3: Implement the minimal binning helpers**
+
+Implement exact exponential edges and integer-multipole bin means. Reject any
+bin containing no input multipoles.
+
+- [ ] **Step 4: Extend the theory evaluator test-first**
+
+Add a failing test that passes a custom multipole array to
+`evaluate_spectrum`, then minimally update the public method to compute on
+that array while preserving the existing default and bandpower behavior.
+
+- [ ] **Step 5: Implement the high-multipole data and theory calculation**
+
+Read the map without mutation, compute `C_ell` through `ell = 10000`,
+deconvolve `hp.pixwin(nside, lmax=10000) ** 2`, and log-bin it. Evaluate
+best-fit custom-GNFW theory at 12 geometric samples per bin, average its
+`C_ell` terms, and convert data and theory to displayed `1e12 D_ell` at the
+same geometric centres.
+
+- [ ] **Step 6: Render both panels**
+
+The upper panel draws map, total, and 1-halo. The lower panel draws map/total
+for every displayed bin. Both panels use `100 <= ell <= 10000`; no 2-halo
+line is drawn.
+
+- [ ] **Step 7: Run and visually inspect the real-map figure**
+
+Run:
+
+```bash
+PYTHONPATH=src MPLBACKEND=Agg \
+python scripts/plot_l1_m9_bestfit_customgnfw_highell.py
+```
+
+Expected: nonempty PNG/PDF outputs with complete-range ratio points and no
+change to the 18-point likelihood data.
+
+- [ ] **Step 8: Run final verification and commit**
+
+Run:
+
+```bash
+pytest -q
+git diff --check
+```
+
+Verify the original 18-point data checksum is unchanged, then commit only the
+new source, tests, documentation, and figure artifacts.
