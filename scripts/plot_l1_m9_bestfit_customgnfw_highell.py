@@ -10,6 +10,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
+from scipy.optimize import minimize_scalar
 
 from flamingo.inference.l1_m9 import L1M9CustomGNFWTheory
 from flamingo.theory.clyy import cl_yy
@@ -108,9 +109,10 @@ def compute_theory_bandpowers(
 def compute_simple_gnfw_bandpowers(
     edges: np.ndarray,
     *,
+    B: float,
     n_per_bin: int = 12,
 ) -> dict[str, np.ndarray]:
-    """Evaluate and log-bin the D3A A10 GNFW total spectrum with B=1."""
+    """Evaluate and log-bin a D3A A10 GNFW total spectrum."""
     chunks = []
     for index, (lower, upper) in enumerate(zip(edges[:-1], edges[1:])):
         if index == len(edges) - 2:
@@ -120,10 +122,42 @@ def compute_simple_gnfw_bandpowers(
         chunks.append(ell_bin)
     ell = np.concatenate(chunks)
 
-    spectrum = cl_yy(ell, B=1.0)
+    spectrum = cl_yy(ell, B=B)
     centres, cl_binned = bin_cl_log(ell, spectrum["cl"], edges)
     centre_prefactor = centres * (centres + 1.0) / (2.0 * np.pi)
     return {"ell": centres, "total": centre_prefactor * cl_binned}
+
+
+def fit_simple_gnfw_mass_bias(
+    edges: np.ndarray,
+    measured_dl: np.ndarray,
+    *,
+    n_per_bin: int = 12,
+    bounds: tuple[float, float] = (0.5, 2.0),
+) -> tuple[float, dict[str, np.ndarray]]:
+    """Fit B using equal-weight residuals in log D_ell."""
+
+    def objective(mass_bias: float) -> float:
+        model = compute_simple_gnfw_bandpowers(
+            edges,
+            B=mass_bias,
+            n_per_bin=n_per_bin,
+        )
+        residual = np.log(measured_dl) - np.log(model["total"])
+        return float(np.sum(residual**2))
+
+    result = minimize_scalar(
+        objective,
+        bounds=bounds,
+        method="bounded",
+        options={"xatol": 1e-6},
+    )
+    best_B = float(result.x)
+    return best_B, compute_simple_gnfw_bandpowers(
+        edges,
+        B=best_B,
+        n_per_bin=n_per_bin,
+    )
 
 
 def compute_map_bandpowers(
@@ -168,7 +202,9 @@ def make_high_ell_figure(
     map_dl: np.ndarray,
     total_dl: np.ndarray,
     one_halo_dl: np.ndarray,
-    simple_gnfw_dl: np.ndarray,
+    simple_gnfw_curves: dict[float, np.ndarray],
+    best_simple_gnfw_B: float,
+    best_simple_gnfw_dl: np.ndarray,
 ) -> plt.Figure:
     """Draw the high-ell map/model comparison and full-range ratio."""
     figure, (upper, ratio) = plt.subplots(
@@ -204,13 +240,27 @@ def make_high_ell_figure(
         linestyle="--",
         label="customGNFW best fit, 1-halo",
     )
+    simple_styles = {
+        1.0: ("#2166ac", "-."),
+        1.1: ("#4393c3", ":"),
+        1.35: ("#92c5de", "--"),
+    }
+    for mass_bias, simple_gnfw_dl in simple_gnfw_curves.items():
+        color, linestyle = simple_styles[mass_bias]
+        upper.loglog(
+            ell,
+            simple_gnfw_dl,
+            color=color,
+            linewidth=2.0,
+            linestyle=linestyle,
+            label=rf"simple GNFW, B={mass_bias:g}, total",
+        )
     upper.loglog(
         ell,
-        simple_gnfw_dl,
-        color="#2878b5",
-        linewidth=2.0,
-        linestyle="-.",
-        label="simple GNFW, B=1, total",
+        best_simple_gnfw_dl,
+        color="#54278f",
+        linewidth=2.5,
+        label=rf"simple GNFW, best-fit B={best_simple_gnfw_B:.3f}, total",
     )
     ratio.semilogx(ell, map_dl / total_dl, color="black", marker="o", markersize=4.0)
     ratio.axhline(1.0, color="#c23b32", linewidth=1.0)
@@ -252,9 +302,17 @@ if __name__ == "__main__":
         deconvolve_pixwin=True,
     )
     model = compute_theory_bandpowers(log_edges)
-    simple_gnfw = compute_simple_gnfw_bandpowers(log_edges)
+    simple_gnfw = {
+        mass_bias: compute_simple_gnfw_bandpowers(log_edges, B=mass_bias)
+        for mass_bias in (1.0, 1.1, 1.35)
+    }
+    best_simple_gnfw_B, best_simple_gnfw = fit_simple_gnfw_mass_bias(
+        log_edges,
+        measured_dl,
+    )
     np.testing.assert_allclose(map_ell, model["ell"], rtol=0.0, atol=0.0)
-    np.testing.assert_allclose(map_ell, simple_gnfw["ell"], rtol=0.0, atol=0.0)
+    for spectrum in simple_gnfw.values():
+        np.testing.assert_allclose(map_ell, spectrum["ell"], rtol=0.0, atol=0.0)
     displayed_map_dl = measured_dl * DISPLAY_SCALE
     write_empirical_bandpowers(BANDPOWER_FILE, map_ell, displayed_map_dl)
     figure = make_high_ell_figure(
@@ -262,8 +320,14 @@ if __name__ == "__main__":
         displayed_map_dl,
         model["total"] * DISPLAY_SCALE,
         model["1h"] * DISPLAY_SCALE,
-        simple_gnfw["total"] * DISPLAY_SCALE,
+        {
+            mass_bias: spectrum["total"] * DISPLAY_SCALE
+            for mass_bias, spectrum in simple_gnfw.items()
+        },
+        best_simple_gnfw_B,
+        best_simple_gnfw["total"] * DISPLAY_SCALE,
     )
+    print(f"best-fit simple-GNFW B = {best_simple_gnfw_B:.8f}", flush=True)
     print(f"wrote {BANDPOWER_FILE.relative_to(REPO)}", flush=True)
     for output_path in save_figure(figure, OUTPUT_STEM):
         print(f"wrote {output_path.relative_to(REPO)}", flush=True)

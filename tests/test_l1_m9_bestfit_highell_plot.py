@@ -54,7 +54,7 @@ def test_compute_theory_bandpowers_returns_positive_total_equal_to_sum():
     np.testing.assert_allclose(theory["total"], theory["1h"] + theory["2h"])
 
 
-def test_compute_simple_gnfw_bandpowers_returns_positive_total():
+def test_compute_simple_gnfw_bandpowers_uses_requested_mass_bias():
     try:
         from scripts.plot_l1_m9_bestfit_customgnfw_highell import (
             compute_simple_gnfw_bandpowers,
@@ -63,12 +63,38 @@ def test_compute_simple_gnfw_bandpowers_returns_positive_total():
         pytest.fail("compute_simple_gnfw_bandpowers is missing")
 
     edges = 100.0 * np.exp(0.4 * np.arange(3))
-    theory = compute_simple_gnfw_bandpowers(edges, n_per_bin=4)
+    theory_b1 = compute_simple_gnfw_bandpowers(edges, B=1.0, n_per_bin=4)
+    theory_b135 = compute_simple_gnfw_bandpowers(edges, B=1.35, n_per_bin=4)
 
-    assert set(theory) == {"ell", "total"}
-    assert theory["total"].shape == (2,)
-    assert np.all(np.isfinite(theory["total"]))
-    assert np.all(theory["total"] > 0.0)
+    for theory in (theory_b1, theory_b135):
+        assert set(theory) == {"ell", "total"}
+        assert theory["total"].shape == (2,)
+        assert np.all(np.isfinite(theory["total"]))
+        assert np.all(theory["total"] > 0.0)
+    fractional_change = np.abs(theory_b135["total"] / theory_b1["total"] - 1.0)
+    assert np.max(fractional_change) > 0.01
+
+
+def test_fit_simple_gnfw_mass_bias_recovers_log_space_minimum(monkeypatch):
+    import scripts.plot_l1_m9_bestfit_customgnfw_highell as module
+
+    edges = np.array([100.0, 200.0, 400.0])
+
+    def synthetic_bandpowers(edges, *, B, n_per_bin):
+        return {
+            "ell": np.sqrt(edges[:-1] * edges[1:]),
+            "total": B * np.array([1.0, 2.0]),
+        }
+
+    monkeypatch.setattr(module, "compute_simple_gnfw_bandpowers", synthetic_bandpowers)
+    best_B, best_model = module.fit_simple_gnfw_mass_bias(
+        edges,
+        measured_dl=np.array([1.25, 2.5]),
+        n_per_bin=4,
+    )
+
+    assert best_B == pytest.approx(1.25, abs=1e-5)
+    np.testing.assert_allclose(best_model["total"], [1.25, 2.5], atol=1e-5)
 
 
 def test_compute_map_bandpowers_applies_pixel_window_deconvolution(tmp_path):
@@ -136,7 +162,13 @@ def test_make_high_ell_figure_has_full_range_ratio_and_no_2h_line():
         map_dl=np.array([0.1, 0.2, 0.4, 0.8]),
         total_dl=np.array([0.08, 0.18, 0.38, 0.78]),
         one_halo_dl=np.array([0.07, 0.17, 0.37, 0.77]),
-        simple_gnfw_dl=np.array([0.12, 0.24, 0.48, 0.96]),
+        simple_gnfw_curves={
+            1.0: np.array([0.12, 0.24, 0.48, 0.96]),
+            1.1: np.array([0.11, 0.22, 0.44, 0.88]),
+            1.35: np.array([0.09, 0.18, 0.36, 0.72]),
+        },
+        best_simple_gnfw_B=1.23,
+        best_simple_gnfw_dl=np.array([0.1, 0.2, 0.4, 0.8]),
     )
 
     upper, ratio = figure.axes
@@ -145,6 +177,9 @@ def test_make_high_ell_figure_has_full_range_ratio_and_no_2h_line():
         "customGNFW best fit, total",
         "customGNFW best fit, 1-halo",
         "simple GNFW, B=1, total",
+        "simple GNFW, B=1.1, total",
+        "simple GNFW, B=1.35, total",
+        "simple GNFW, best-fit B=1.230, total",
     ]
     np.testing.assert_allclose(upper.get_xlim(), [100.0, 10000.0])
     np.testing.assert_allclose(ratio.get_xlim(), [100.0, 10000.0])
