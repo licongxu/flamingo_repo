@@ -1,8 +1,8 @@
-# L1_m9 Fiducial Custom-GNFW Power-Spectrum Plot Implementation Plan
+# L1_m9 Best-Fit Custom-GNFW Power-Spectrum Plot Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Generate reproducible PNG and PDF figures containing only the empirical full-sky L1_m9 tSZ bandpowers and the fiducial D3A custom-GNFW total prediction.
+**Goal:** Generate reproducible PNG and PDF figures containing only the empirical full-sky L1_m9 tSZ bandpowers and the rerun chain's best-fit D3A custom-GNFW total prediction.
 
 **Architecture:** Add a small public spectrum evaluator to the existing fixed-D3A custom-GNFW theory class, then use it from one focused plotting script. Test the numerical interface and plot inputs before rendering the final artifacts.
 
@@ -13,9 +13,9 @@
 - Run every command after `source /scratch/scratch-lxu/venv/cmbagent_env/bin/activate`.
 - All theory calculations use hmfast.
 - Halo masses remain in physical `M_sun`, never `M_sun/h`.
-- Plot exactly two series: the 18 empirical L1_m9 bandpowers and the fiducial custom-GNFW total.
-- Fix D3A cosmology, `A_SZ = -4.094622`, and `alpha_SZ = 1.12`.
-- Do not plot the posterior best-fit curve, separate 1-halo or 2-halo curves, covariance error bars, or a ratio panel.
+- Plot exactly two series: the 18 empirical L1_m9 bandpowers and the best-fit custom-GNFW total.
+- Fix D3A cosmology, `A_SZ = -4.1095805`, `alpha_SZ = 0.97447729`, and `B = 1.41`.
+- Do not plot the superseded posterior curve, the former `B = 1.0` fiducial curve, separate 1-halo or 2-halo curves, covariance error bars, or a ratio panel.
 
 ---
 
@@ -25,8 +25,8 @@
 - Modify: `src/flamingo/inference/l1_m9.py`
 - Create: `scripts/plot_l1_m9_fiducial_customgnfw.py`
 - Modify: `tests/test_l1_m9_inference.py`
-- Create at runtime: `figures/l1_m9_fullsky_fiducial_customgnfw.png`
-- Create at runtime: `figures/l1_m9_fullsky_fiducial_customgnfw.pdf`
+- Create at runtime: `figures/l1_m9_fullsky_bestfit_customgnfw.png`
+- Create at runtime: `figures/l1_m9_fullsky_bestfit_customgnfw.pdf`
 
 **Interfaces:**
 - Consumes: `L1M9CustomGNFWTheory._evaluate_cl(A_SZ, alpha_SZ)` and the module's `ELL_SMOOTH`.
@@ -36,10 +36,10 @@
 - [ ] **Step 1: Write failing numerical tests**
 
 Add tests that initialize `L1M9CustomGNFWTheory`, evaluate
-`(-4.094622, 1.12)`, and assert:
+`(-4.1095805, 0.97447729)` with the profile fixed at `B = 1.41`, and assert:
 
 ```python
-result = theory.evaluate_spectrum(-4.094622, 1.12)
+result = theory.evaluate_spectrum(-4.1095805, 0.97447729)
 assert set(result) == {"ell", "1h", "2h", "total"}
 assert result["ell"].shape == result["total"].shape
 assert np.all(np.isfinite(result["total"]))
@@ -94,9 +94,10 @@ The script will:
 
 ```python
 DATA_FILE = Path("data_paper/binned_bandpowers/Dl_yy_L1_m9_fullsky_binned_18.txt")
-OUTPUT_STEM = Path("figures/l1_m9_fullsky_fiducial_customgnfw")
-A_SZ = -4.094622
-ALPHA_SZ = 1.12
+OUTPUT_STEM = Path("figures/l1_m9_fullsky_bestfit_customgnfw")
+A_SZ = -4.1095805
+ALPHA_SZ = 0.97447729
+B = 1.41
 DISPLAY_SCALE = 1e12
 ```
 
@@ -134,8 +135,8 @@ Expected: all tests pass and the diff check is clean.
 ```bash
 git add src/flamingo/inference/l1_m9.py tests/test_l1_m9_inference.py \
   scripts/plot_l1_m9_fiducial_customgnfw.py \
-  figures/l1_m9_fullsky_fiducial_customgnfw.png \
-  figures/l1_m9_fullsky_fiducial_customgnfw.pdf \
-  docs/superpowers/plans/2026-07-28-l1-m9-fiducial-customgnfw-plot.md
-git commit -m "feat: plot L1_m9 fiducial custom-GNFW spectrum"
+  figures/l1_m9_fullsky_bestfit_customgnfw.png \
+  figures/l1_m9_fullsky_bestfit_customgnfw.pdf \
+  docs/superpowers/plans/2026-07-28-l1-m9-bestfit-customgnfw-plot.md
+git commit -m "feat: plot L1_m9 best-fit custom-GNFW spectrum"
 ```
