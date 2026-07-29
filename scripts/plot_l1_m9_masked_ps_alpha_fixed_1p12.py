@@ -108,7 +108,6 @@ def _plot(
     for panel in (ax, axr):
         panel.set_xscale("log")
         panel.set_xlim(*ell_range)
-        panel.grid(alpha=0.25, which="both", lw=0.4)
     ax.tick_params(labelbottom=False)
     axr.set_xlabel(r"multipole $\ell$")
     _save(fig, stem)
