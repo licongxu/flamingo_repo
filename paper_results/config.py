@@ -22,6 +22,11 @@ FLAMINGO_DATA = FLAMINGO_ROOT / "data"
 MAP_DIR = Path(os.environ.get("L1M9_MAP_DIR", "/rds/rds-lxu/flamingo/L1_m9/maps"))
 CAT_DIR = Path(os.environ.get("L1M9_CAT_DIR", "/rds/rds-lxu/flamingo/L1_m9/catalogues"))
 
+#: Cached rotation-group tSZ ``D_ell``, one ``.npz`` per feedback variant. The
+#: yang26 lightcone re-rotates the box after every group of shells, so the 13
+#: groups are near-independent redshift slices of the same lightcone.
+ROTGROUP_DIR = FLAMINGO_DATA / "nb40_l1_m9_rotation_group_tsz_ps"
+
 #: Planck-like matched-filter noise curves (szifi).
 SIGMA_Y0_FILE = FLAMINGO_DATA / "noise" / "sigma_dict_szifi.npy"
 SKYFRACS_FILE = FLAMINGO_DATA / "noise" / "skyfracs_szifi_cosmology.npy"
