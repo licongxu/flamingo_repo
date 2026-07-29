@@ -268,10 +268,15 @@ def run_point(
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--variant", required=True, choices=sorted(VARIANTS))
+    parser.add_argument(
+        "--q-cut", type=float, action="append", dest="q_cuts",
+        help="restrict the sweep to this q threshold (repeatable); default all of Q_CUTS",
+    )
     parser.add_argument("--force", action="store_true", help="ignore cached points")
     args = parser.parse_args()
 
     variant = args.variant
+    q_cuts = args.q_cuts or Q_CUTS
     spec = VARIANTS[variant]
     t0 = time.time()
     OUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -304,7 +309,7 @@ def main() -> None:
     if max_dev > 5e-3:
         raise RuntimeError(f"unit-mask validation failed: max frac diff {max_dev:.3e}")
 
-    for cut in Q_CUTS:
+    for cut in q_cuts:
         for r_mult in R_MULTS:
             if r_mult == 0.0:
                 continue
@@ -315,7 +320,7 @@ def main() -> None:
         "variant": variant,
         "map": str(spec["map"]),
         "catalogue": str(spec["catalogue"]),
-        "q_cuts": Q_CUTS,
+        "q_cuts": q_cuts,
         "r_mults": R_MULTS,
         "masking": {
             "radius": "r_mult * theta_500 (no floor; production uses max(4*theta500, 2*FWHM))",
@@ -328,7 +333,10 @@ def main() -> None:
         "unit_mask_vs_stored_fullsky_max_frac_diff": max_dev,
         "runtime_seconds": time.time() - t0,
     }
-    with open(OUT_DIR / f"{variant}_null_test_metadata.json", "w") as handle:
+    # Suffix the metadata file when the sweep was split across processes by
+    # q-cut, so concurrent runs don't clobber each other's summary.
+    suffix = "" if args.q_cuts is None else "_" + "_".join(f"q{c:g}" for c in q_cuts)
+    with open(OUT_DIR / f"{variant}_null_test_metadata{suffix}.json", "w") as handle:
         json.dump(meta, handle, indent=2)
     print(f"done ({time.time() - t0:.0f}s)", flush=True)
 

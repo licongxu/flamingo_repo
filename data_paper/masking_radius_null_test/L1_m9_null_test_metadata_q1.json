@@ -1,0 +1,30 @@
+{
+  "variant": "L1_m9",
+  "map": "/rds/rds-lxu/flamingo/L1_m9/maps/y_unlensed_L1_m9_lc0_nside4096.fits",
+  "catalogue": "/rds/rds-lxu/flamingo/L1_m9/catalogues/halo_catalogue_M500c_5e13_zlt3_L1_m9_yang26rot_qfrommz_alpha_fixed_1p12.csv",
+  "q_cuts": [
+    1.0
+  ],
+  "r_mults": [
+    0.0,
+    0.5,
+    1.0,
+    1.5,
+    2.0,
+    3.0,
+    4.0,
+    5.0,
+    6.0,
+    8.0
+  ],
+  "masking": {
+    "radius": "r_mult * theta_500 (no floor; production uses max(4*theta500, 2*FWHM))",
+    "theta500": "R_500c/D_A(z), D3A cosmology",
+    "positions": "theta_rot_rad/phi_rot_rad (yang26-rotated frame)",
+    "apodization": "C2 0.25 deg",
+    "monopole": "mask-weighted, subtracted",
+    "estimator": "NaMaster MASTER, nlb=1, lmax=10000, no beam, pixwin deconvolved"
+  },
+  "unit_mask_vs_stored_fullsky_max_frac_diff": 4.165027467362137e-08,
+  "runtime_seconds": 7527.911830186844
+}
