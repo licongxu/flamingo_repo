@@ -109,6 +109,30 @@ Delete them once regenerated.
 
 ## 5. TODO on the new cluster
 
+### Do this FIRST — the chains are already unblocked (~45 min)
+
+The cobaya goal (total tSZ + q>50, 20, 10, 5 on the L1_m9 fiducial 18-bin
+bandpowers) does **not** depend on the rest of the sweep. Every dataset it needs
+already carries the corrected selection:
+
+* `Dl_yy_L1_m9_fullsky_binned_18.txt` — full sky, never affected by the bug;
+* `Dl_yy_L1_m9_masked_qgt{50,20,10,5}_qfrommz_alpha_fixed_1p12_binned_18.txt` —
+  regenerated 2026-07-30 19:53-20:08.
+
+The cut that was interrupted is `q>1`, which the goal does not use. So:
+
+```bash
+python scripts/compute_l1_m9_customgnfw_bestfit_covariance.py   # ~1 min, new f_sky
+python scripts/run_masked_ps_chains.py                          # 5 chains, ~25 min
+# then getdist triangle plots
+```
+
+Only copy the `/rds` catalogues (or re-run `regenerate_q_catalogues.py`) if the
+masked bandpowers above are not carried over with them. Everything in the table
+below can follow afterwards.
+
+### Then the rest of the sweep
+
 Everything below still carries the **old, wrong** selection. Full-sky products
 are unaffected and must NOT be regenerated.
 
