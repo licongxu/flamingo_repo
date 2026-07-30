@@ -90,7 +90,25 @@ clusters (732 of them, where a true q>5 cut has 2780).
 
 > **These live on this cluster's `/rds` and are NOT in git.** On a new cluster
 > either copy `/rds/rds-lxu/flamingo/*/catalogues/*_qfrommz*.csv` across, or
-> re-run `scripts/regenerate_q_catalogues.py` (~45 min for all 34).
+> re-run `scripts/regenerate_q_catalogues.py` (~45 min for all 34). Note the
+> script *rewrites existing* catalogues, so the source FLAMINGO catalogues must
+> be present either way.
+
+### What git does NOT carry (`.gitignore`: `data/ chains/ *.npy *.npz *.csv *.fits`)
+
+Copy these by hand; the first group is tiny and the code will not run without it.
+
+| item | size | note |
+|---|---|---|
+| `data/noise/sigma_dict_szifi.npy`, `skyfracs_szifi_cosmology.npy` | 3.3 MB total | **essential** — `SZScaling` and `build_snr_grid` need them |
+| `chains/l1_m9_customgnfw_asz_alpha_fixed_1p12/best_fit.json` | (same 3.3 MB) | **essential** — supplies `A_SZ=-4.0953238`; value also recorded above |
+| `data_paper/covariance/*.npy` | 116 KB | regenerable in ~1 min, see blocker note below |
+| `/rds/.../L1_m9/catalogues` | 140 GB | regenerable from source catalogues |
+| `/rds/.../L2p8_m9/lightcone*/catalogues` | 100 GB | regenerable from source catalogues |
+| `/rds/.../maps`, `healpix_map` | large | needed for any NaMaster re-run |
+
+The masked/full-sky bandpower `.txt` files **are** tracked and pushed, including
+the four regenerated cuts the chains need.
 
 ---
 
@@ -126,6 +144,22 @@ python scripts/compute_l1_m9_customgnfw_bestfit_covariance.py   # ~1 min, new f_
 python scripts/run_masked_ps_chains.py                          # 5 chains, ~25 min
 # then getdist triangle plots
 ```
+
+> **Blocker on the covariance step.** It reads `f_sky_eff` from
+> `data_paper/binned_bandpowers/L1_m9_masked_qfrommz_alpha_fixed_1p12_metadata.json`.
+> That file is **absent**: the stale one was quarantined and the new one was
+> never written (the run was killed during `q>1`, and the metadata is emitted
+> only after the cut loop finishes). The script will raise
+> `KeyError: missing f_sky_eff for masked_qgt50`. Two ways round it:
+>
+> 1. re-run `compute_l1_m9_masked_ps_alpha_fixed_1p12.py` (~30 min, also gives
+>    you the missing `q>1` cut and writes the metadata properly); or
+> 2. hand-write the JSON from the measured values in the table in section 1 --
+>    `qgt50 0.9956, qgt20 0.9840, qgt10 0.9550, qgt5 0.8869` (`f_sky_raw`
+>    respectively `0.9961, 0.9871, 0.9659, 0.9207`) -- which is enough for the
+>    four cuts the chains use.
+>
+> Option 1 is safer; option 2 is instant if you only want the chains.
 
 Only copy the `/rds` catalogues (or re-run `regenerate_q_catalogues.py`) if the
 masked bandpowers above are not carried over with them. Everything in the table
