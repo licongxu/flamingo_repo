@@ -1,0 +1,72 @@
+{
+  "cosmology": {
+    "H0": 68.1,
+    "ln1e10A_s": 3.035173309489548,
+    "m_ncdm": 0.06,
+    "n_s": 0.965,
+    "omega_b": 0.022538784599999993,
+    "omega_cdm": 0.11872788986038219,
+    "tau_reio": 0.0544
+  },
+  "cuda_visible_devices": "1",
+  "data_file": "/scratch/scratch-lxu/flamingo_repo/data_paper/binned_bandpowers/Dl_yy_L1_m9_fullsky_binned_18.txt",
+  "diagnostics": {
+    "condition_number": 32710.60232672165,
+    "max_asymmetry": 5.739718509874451e-42,
+    "max_component_residual": 0.0,
+    "max_eigenvalue": 1.3305053355755765e-25,
+    "min_eigenvalue": 4.0675048483857235e-30
+  },
+  "ell_effective": [
+    10.0,
+    13.5,
+    18.0,
+    23.5,
+    30.5,
+    40.0,
+    52.5,
+    68.5,
+    89.5,
+    117.0,
+    152.5,
+    198.0,
+    257.5,
+    335.5,
+    436.5,
+    567.5,
+    738.0,
+    959.5
+  ],
+  "ell_grid_count": 50,
+  "f_sky": 1.0,
+  "gaussian_power_terms": [
+    "1h",
+    "2h"
+  ],
+  "jax_devices": [
+    "cuda:0"
+  ],
+  "mass_grid": {
+    "count": 64,
+    "maximum": 1e+16,
+    "minimum": 100000000000.0
+  },
+  "mass_units": "physical M_sun",
+  "non_gaussian_term": "connected 1h trispectrum / (4 pi f_sky)",
+  "pressure_profile": "hmfast.GNFWPressureProfile",
+  "profile_parameters": {
+    "B": 1.0,
+    "P0": 8.13,
+    "alpha": 1.062,
+    "beta": 5.4807,
+    "c500": 1.156,
+    "gamma": 0.3292
+  },
+  "redshift_grid": {
+    "count": 96,
+    "maximum": 3.0,
+    "minimum": 0.005
+  },
+  "runtime_seconds": 13.448214558011387,
+  "sigma_lnY": 0.0
+}
