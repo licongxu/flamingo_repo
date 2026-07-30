@@ -1,0 +1,61 @@
+{
+  "q_cut": 1.0,
+  "cut_tag": "qgt1",
+  "variants": {
+    "fiducial": {
+      "n_masked": 13475,
+      "f_sky_raw": 0.800338144103686,
+      "f_sky_eff": 0.6892739642957671,
+      "runtime_seconds": 337.95865273475647
+    },
+    "fgas+2sigma": {
+      "n_masked": 13938,
+      "f_sky_raw": 0.7928390155235926,
+      "f_sky_eff": 0.6785317763618165,
+      "runtime_seconds": 698.2166864871979
+    },
+    "fgas-2sigma": {
+      "n_masked": 12978,
+      "f_sky_raw": 0.8073527862628301,
+      "f_sky_eff": 0.6984681912286924,
+      "runtime_seconds": 1056.2589464187622
+    },
+    "fgas-4sigma": {
+      "n_masked": 12449,
+      "f_sky_raw": 0.8144687165816625,
+      "f_sky_eff": 0.7092253592997303,
+      "runtime_seconds": 1417.7602384090424
+    },
+    "fgas-8sigma": {
+      "n_masked": 11740,
+      "f_sky_raw": 0.8228505601485571,
+      "f_sky_eff": 0.7216278331136747,
+      "runtime_seconds": 1760.4673697948456
+    },
+    "Jet": {
+      "n_masked": 13264,
+      "f_sky_raw": 0.8024802903334299,
+      "f_sky_eff": 0.6922565591741335,
+      "runtime_seconds": 2213.4797019958496
+    },
+    "Jet_fgas-4sigma": {
+      "n_masked": 12012,
+      "f_sky_raw": 0.8178712874650955,
+      "f_sky_eff": 0.7150245861064555,
+      "runtime_seconds": 2685.1280822753906
+    },
+    "Mstar-1sigma": {
+      "n_masked": 13232,
+      "f_sky_raw": 0.8045599063237509,
+      "f_sky_eff": 0.6949365037618378,
+      "runtime_seconds": 3235.798705816269
+    },
+    "Mstar-1sigma_fgas-4sigma": {
+      "n_masked": 12327,
+      "f_sky_raw": 0.8163881798585256,
+      "f_sky_eff": 0.7120648272895965,
+      "runtime_seconds": 3926.89231300354
+    }
+  },
+  "runtime_seconds": 3926.8924231529236
+}
