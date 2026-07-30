@@ -21,6 +21,13 @@ __pycache__/
 # The paper bandpowers are small and are the point of this branch: keep them.
 !results/**/*.npz
 
+# Likewise every paper data product under data_paper/: bandpowers, theory
+# covariances and null-test caches together are ~1.4 MB, and they are what the
+# figures and chains are actually built from.
+!data_paper/**/*.npy
+!data_paper/**/*.npz
+!data_paper/**/*.csv
+
 config/secret_key
 config/codex.sqlite3
 config/cache/

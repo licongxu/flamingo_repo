@@ -1,0 +1,14 @@
+# L1_m9 Jet lightcone-0 tSZ; HEALPix Nside=4096 pixel window deconvolved; masked q>5 (qfrommz_alpha_fixed_1p12); r=max(4*theta500, 2x10arcmin), C2 apodization 0.25 deg, masked monopole subtracted, NaMaster MASTER per-ell (nlb=1, lmax=10000); uniform mean of C_ell in log bins, Delta ln ell = 0.4, ell_max = 10000
+# ell_eff  1e12_D_ell_yy
+1.005184e+02 4.066236e-02
+1.499558e+02 7.153864e-02
+2.237077e+02 1.200620e-01
+3.337327e+02 2.046168e-01
+4.978707e+02 3.334059e-01
+7.427358e+02 5.210854e-01
+1.108032e+03 7.693101e-01
+1.652989e+03 1.039886e+00
+2.465970e+03 1.269756e+00
+3.678794e+03 1.378316e+00
+5.488116e+03 1.298220e+00
+8.187308e+03 1.062459e+00

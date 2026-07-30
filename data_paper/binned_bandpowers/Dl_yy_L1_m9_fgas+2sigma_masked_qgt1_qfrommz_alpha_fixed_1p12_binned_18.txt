@@ -1,0 +1,20 @@
+# L1_m9 fgas+2sigma lightcone-0 tSZ; HEALPix Nside=4096 pixel window deconvolved; masked q>1 (qfrommz_alpha_fixed_1p12); r=max(4*theta500, 2x10arcmin), C2 apodization 0.25 deg, masked monopole subtracted, NaMaster MASTER per-ell (nlb=1, lmax=10000); uniform mean of D_ell over inclusive Planck bins
+# ell_eff  1e12_D_ell_yy
+1.000000e+01 9.554554e-04
+1.350000e+01 1.220967e-03
+1.800000e+01 1.941147e-03
+2.350000e+01 3.716427e-03
+3.050000e+01 4.762259e-03
+4.000000e+01 6.770614e-03
+5.250000e+01 1.011469e-02
+6.850000e+01 1.390034e-02
+8.950000e+01 1.988148e-02
+1.170000e+02 2.914051e-02
+1.525000e+02 4.279841e-02
+1.980000e+02 6.189289e-02
+2.575000e+02 8.569772e-02
+3.355000e+02 1.262599e-01
+4.365000e+02 1.782971e-01
+5.675000e+02 2.506260e-01
+7.380000e+02 3.443864e-01
+9.595000e+02 4.726334e-01
