@@ -1,0 +1,14 @@
+# L1_m9 Mstar-1sigma_fgas-4sigma lightcone-0 tSZ; HEALPix Nside=4096 pixel window deconvolved; full sky (anafast, mean subtracted); uniform mean of C_ell in log bins, Delta ln ell = 0.4, ell_max = 10000
+# ell_eff  1e12_D_ell_yy
+1.005184e+02 1.781102e-01
+1.499558e+02 2.504745e-01
+2.237077e+02 3.298523e-01
+3.337327e+02 4.226935e-01
+4.978707e+02 5.580258e-01
+7.427358e+02 7.410966e-01
+1.108032e+03 9.689295e-01
+1.652989e+03 1.188578e+00
+2.465970e+03 1.329395e+00
+3.678794e+03 1.328535e+00
+5.488116e+03 1.140408e+00
+8.187308e+03 8.278844e-01

@@ -1,0 +1,14 @@
+# L1_m9 fiducial lightcone-0 tSZ; HEALPix Nside=4096 pixel window deconvolved; full sky (anafast, mean subtracted); uniform mean of C_ell in log bins, Delta ln ell = 0.4, ell_max = 10000
+# ell_eff  1e12_D_ell_yy
+1.005184e+02 1.702265e-01
+1.499558e+02 2.457764e-01
+2.237077e+02 3.352649e-01
+3.337327e+02 4.363914e-01
+4.978707e+02 5.751074e-01
+7.427358e+02 7.672481e-01
+1.108032e+03 1.018836e+00
+1.652989e+03 1.283356e+00
+2.465970e+03 1.496625e+00
+3.678794e+03 1.588056e+00
+5.488116e+03 1.483780e+00
+8.187308e+03 1.209307e+00

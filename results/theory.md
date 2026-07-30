@@ -1,7 +1,7 @@
 # Halo-model prediction for the total tSZ power spectrum
 
 Produced by `python -m paper_results.figures --figure theory`, which calls
-`flamingo.theory.cl_yy`. Figure: `figures/fiducial_tsz_ps_vs_halo_model.pdf`.
+`flamingo.theory.cl_yy`. Figure: `figures/paper/fiducial_tsz_ps_vs_halo_model.pdf`.
 
 ## Settings
 

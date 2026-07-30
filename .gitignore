@@ -20,6 +20,7 @@ __pycache__/
 
 # The paper bandpowers are small and are the point of this branch: keep them.
 !results/**/*.npz
+!data_paper/masking_radius_null_test/*.npz
 
 config/secret_key
 config/codex.sqlite3

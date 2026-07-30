@@ -1,0 +1,114 @@
+{
+  "q_cut": 5.0,
+  "catalogue_suffix": "_yang26rot_qfrommz_alpha_fixed_1p12.csv",
+  "masking": {
+    "radius": "max(4*theta500, 2*FWHM), FWHM=10 arcmin",
+    "theta500": "R_500c/D_A(z), D3A cosmology",
+    "positions": "theta_rot_rad/phi_rot_rad (yang26-rotated frame)",
+    "apodization": "C2 0.25 deg",
+    "monopole": "mask-weighted, subtracted",
+    "estimator": "NaMaster MASTER, nlb=1, lmax=10000, no beam, pixwin deconvolved"
+  },
+  "fullsky_estimator": "healpy.anafast, mean subtracted, lmax=10000, pixwin deconvolved",
+  "binning_18": "uniform mean of D_ell over inclusive Planck bins",
+  "binning_12": "uniform mean of C_ell, Delta ln ell = 0.4, ell_max = 10000",
+  "variants": {
+    "fiducial": {
+      "map": "/rds/rds-lxu/flamingo/L1_m9/maps/y_unlensed_L1_m9_lc0_nside4096.fits",
+      "catalogue": "/rds/rds-lxu/flamingo/L1_m9/catalogues/halo_catalogue_M500c_5e13_zlt3_L1_m9_yang26rot_qfrommz_alpha_fixed_1p12.csv",
+      "n_halos": 1530770,
+      "n_masked": 732,
+      "f_sky_raw": 0.9615383247534434,
+      "f_sky_eff": 0.9493476504305253,
+      "rotation_ratio_rot": 1.9063520101326232,
+      "rotation_ratio_nat": 0.9797505780247846,
+      "check_vs_stored": {
+        "fullsky_binned_18": 4.201837067174807e-08,
+        "fullsky_logbins": 2.220446049250313e-16,
+        "masked_qgt5_binned_18": 4.0773120568715626e-07,
+        "masked_qgt5_logbins": 4.289045245631229e-07
+      }
+    },
+    "fgas+2sigma": {
+      "map": "/rds/rds-lxu/flamingo/L1_m9/maps/y_unlensed_fgas+2sigma_lc0_nside4096.fits",
+      "catalogue": "/rds/rds-lxu/flamingo/L1_m9/catalogues/halo_catalogue_M500c_5e13_zlt3_fgas+2sigma_yang26rot_qfrommz_alpha_fixed_1p12.csv",
+      "n_halos": 1620947,
+      "n_masked": 791,
+      "f_sky_raw": 0.9607656896114349,
+      "f_sky_eff": 0.9480479938960028,
+      "rotation_ratio_rot": 1.8669848993681504,
+      "rotation_ratio_nat": 0.9728985509479466
+    },
+    "fgas-2sigma": {
+      "map": "/rds/rds-lxu/flamingo/L1_m9/maps/y_unlensed_fgas-2sigma_lc0_nside4096.fits",
+      "catalogue": "/rds/rds-lxu/flamingo/L1_m9/catalogues/halo_catalogue_M500c_5e13_zlt3_fgas-2sigma_yang26rot_qfrommz_alpha_fixed_1p12.csv",
+      "n_halos": 1468895,
+      "n_masked": 740,
+      "f_sky_raw": 0.9615735113620758,
+      "f_sky_eff": 0.9493270120777448,
+      "rotation_ratio_rot": 1.8361705455033461,
+      "rotation_ratio_nat": 1.0058337380246385
+    },
+    "fgas-4sigma": {
+      "map": "/rds/rds-lxu/flamingo/L1_m9/maps/y_unlensed_fgas-4sigma_lc0_nside4096.fits",
+      "catalogue": "/rds/rds-lxu/flamingo/L1_m9/catalogues/halo_catalogue_M500c_5e13_zlt3_fgas-4sigma_yang26rot_qfrommz_alpha_fixed_1p12.csv",
+      "n_halos": 1408414,
+      "n_masked": 706,
+      "f_sky_raw": 0.962130089600881,
+      "f_sky_eff": 0.9502224367775756,
+      "rotation_ratio_rot": 1.7995329291252444,
+      "rotation_ratio_nat": 0.9902144834796667
+    },
+    "fgas-8sigma": {
+      "map": "/rds/rds-lxu/flamingo/L1_m9/maps/y_unlensed_fgas-8sigma_lc0_nside4096.fits",
+      "catalogue": "/rds/rds-lxu/flamingo/L1_m9/catalogues/halo_catalogue_M500c_5e13_zlt3_fgas-8sigma_yang26rot_qfrommz_alpha_fixed_1p12.csv",
+      "n_halos": 1334015,
+      "n_masked": 642,
+      "f_sky_raw": 0.9653670142094294,
+      "f_sky_eff": 0.9545728095974467,
+      "rotation_ratio_rot": 1.6799732325656802,
+      "rotation_ratio_nat": 0.9753173618793779
+    },
+    "Jet": {
+      "map": "/rds/rds-lxu/flamingo/L1_m9/maps/y_unlensed_Jet_lc0_nside4096.fits",
+      "catalogue": "/rds/rds-lxu/flamingo/L1_m9/catalogues/halo_catalogue_M500c_5e13_zlt3_Jet_yang26rot_qfrommz_alpha_fixed_1p12.csv",
+      "n_halos": 1558242,
+      "n_masked": 736,
+      "f_sky_raw": 0.9591815570990244,
+      "f_sky_eff": 0.9466646715968466,
+      "rotation_ratio_rot": 1.7632976302544534,
+      "rotation_ratio_nat": 0.9800344579995931
+    },
+    "Jet_fgas-4sigma": {
+      "map": "/rds/rds-lxu/flamingo/L1_m9/maps/y_unlensed_Jet_fgas-4sigma_lc0_nside4096.fits",
+      "catalogue": "/rds/rds-lxu/flamingo/L1_m9/catalogues/halo_catalogue_M500c_5e13_zlt3_Jet_fgas-4sigma_yang26rot_qfrommz_alpha_fixed_1p12.csv",
+      "n_halos": 1331629,
+      "n_masked": 651,
+      "f_sky_raw": 0.9636092483997345,
+      "f_sky_eff": 0.9524926555487717,
+      "rotation_ratio_rot": 1.6907957883745182,
+      "rotation_ratio_nat": 0.9912967474833669
+    },
+    "Mstar-1sigma": {
+      "map": "/rds/rds-lxu/flamingo/L1_m9/maps/y_unlensed_Mstar-1sigma_lc0_nside4096.fits",
+      "catalogue": "/rds/rds-lxu/flamingo/L1_m9/catalogues/halo_catalogue_M500c_5e13_zlt3_Mstar-1sigma_yang26rot_qfrommz_alpha_fixed_1p12.csv",
+      "n_halos": 1479333,
+      "n_masked": 733,
+      "f_sky_raw": 0.9611024409532547,
+      "f_sky_eff": 0.9489092406378993,
+      "rotation_ratio_rot": 1.7763350464581233,
+      "rotation_ratio_nat": 0.9997023463080853
+    },
+    "Mstar-1sigma_fgas-4sigma": {
+      "map": "/rds/rds-lxu/flamingo/L1_m9/maps/y_unlensed_Mstar-1sigma_fgas-4sigma_lc0_nside4096.fits",
+      "catalogue": "/rds/rds-lxu/flamingo/L1_m9/catalogues/halo_catalogue_M500c_5e13_zlt3_Mstar-1sigma_fgas-4sigma_yang26rot_qfrommz_alpha_fixed_1p12.csv",
+      "n_halos": 1375041,
+      "n_masked": 677,
+      "f_sky_raw": 0.9637357294559479,
+      "f_sky_eff": 0.9523714963719726,
+      "rotation_ratio_rot": 1.6906185630875927,
+      "rotation_ratio_nat": 0.9904081743278069
+    }
+  },
+  "runtime_seconds": 3879.69411611557
+}

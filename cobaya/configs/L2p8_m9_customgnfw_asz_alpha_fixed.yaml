@@ -1,0 +1,35 @@
+# Fiducial L2p8_m9 full-sky tSZ fit: fixed D3A cosmology and alpha_SZ=1.12.
+output: /scratch/scratch-lxu/flamingo_repo/chains/L2p8_m9_customgnfw_asz_alpha_fixed_1p12_B1p41/chain
+
+likelihood:
+  flamingo.inference.l1_m9.L1M9BandPowerLikelihood:
+    data_file: /scratch/scratch-lxu/flamingo_repo/data_paper/binned_bandpowers/Dl_yy_L2p8_m9_fullsky_binned_18.txt
+    covariance_file: /scratch/scratch-lxu/flamingo_repo/data_paper/covariance/cov_full_L1_m9_fullsky_Dl_yy_binned_18.npy
+    data_scale: 1.0e-12
+
+theory:
+  flamingo.inference.l1_m9.L1M9CustomGNFWTheory: {}
+
+params:
+  A_SZ:
+    prior: {min: -5.5, max: -3.0}
+    ref: {dist: norm, loc: -4.1, scale: 0.08}
+    proposal: 0.02
+    latex: A_{\rm SZ}
+  alpha_SZ:
+    value: 1.12
+    latex: \alpha_{\rm SZ}
+
+sampler:
+  mcmc:
+    Rminus1_stop: 0.01
+    Rminus1_cl_stop: 0.05
+    drag: false
+    proposal_scale: 1.5
+    learn_every: 20
+    learn_proposal: true
+    burn_in: 100
+    max_tries: 100000
+
+timing: true
+logging_level: info

@@ -322,9 +322,9 @@ def _legend_in_spare(fig, axes, n_groups: int, **kwargs) -> None:
 
 def _save(fig, name: str) -> None:
     """Write a figure as PDF and PNG into ``figures/``."""
-    config.FIGURES.mkdir(parents=True, exist_ok=True)
+    config.FIGURES_ROTATION_GROUPS.mkdir(parents=True, exist_ok=True)
     for suffix in ("pdf", "png"):
-        path = config.FIGURES / f"{name}.{suffix}"
+        path = config.FIGURES_ROTATION_GROUPS / f"{name}.{suffix}"
         fig.savefig(path, dpi=180, bbox_inches="tight")
         print(f"wrote {path.relative_to(config.REPO)}", flush=True)
     plt.close(fig)

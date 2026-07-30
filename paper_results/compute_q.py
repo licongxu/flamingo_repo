@@ -166,7 +166,8 @@ def write_counts_table(summaries: list[dict]) -> None:
         "",
         f"Halos with `M_500c > {config.M_MIN_MSUN:.0e} Msun`, `z < 3`, lightcone 0.",
         "`q` is the significance predicted by the SZ scaling relation of",
-        "`flamingo.cnc.SZScaling` (Arnaud A10, B=1.35, sigma_lnY=0.173, szifi immf6);",
+        "`flamingo.cnc.SZScaling` (custom-GNFW best fit A_SZ=-4.0953238, "
+        "alpha_SZ=1.12, B=1.41, sigma_lnY=0.173, szifi immf6);",
         "clusters above each threshold are the ones masked in the power spectra.",
         "",
         "| variant | N halos | " + " | ".join(f"N(q>{c:g})" for c in config.Q_CUTS) + " |",

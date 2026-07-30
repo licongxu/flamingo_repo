@@ -41,7 +41,7 @@ import numpy as np
 
 REPO = Path(__file__).resolve().parents[1]
 DATA = REPO / "data_paper" / "masking_radius_null_test"
-FIGURES = REPO / "figures"
+FIGURES = REPO / "figures" / "masking_radius_null_test"
 
 VARIANTS = ["L1_m9", "L2p8_m9"]
 Q_CUTS = [20.0, 10.0, 5.0, 1.0]
@@ -230,6 +230,61 @@ def figure_random_control(sweeps: dict, controls: dict) -> None:
     _save(fig, FIGURES / "masking_radius_random_control")
 
 
+def export_datapoints(sweeps: dict, controls: dict) -> None:
+    """Write plot-ready bandpowers as small text tables alongside the .npz cache."""
+    for variant in VARIANTS:
+        unmasked = np.load(DATA / f"{variant}_unmasked.npz")
+        ell = unmasked["ell_log"]
+        header = (
+            "# masking-radius null test (12 log bins, D_l in 1e12 Compton-y units)\n"
+            + "# columns: r_mult f_sky_raw n_masked "
+            + " ".join(f"ell={e:.0f}" for e in ell)
+        )
+        out_u = DATA / f"{variant}_unmasked_logbins.txt"
+        out_u.write_text(
+            header.replace("r_mult f_sky_raw n_masked", "r_mult=0 (unmasked)") + "\n"
+            + " ".join(f"{v:.6e}" for v in unmasked["dl_12"]) + "\n"
+        )
+        print(f"wrote {out_u.relative_to(REPO)}", flush=True)
+
+        for cut in Q_CUTS:
+            s = sweeps[variant, cut]
+            lines = [header]
+            for ir, r_mult in enumerate(s["r"]):
+                tag = radius_tag(r_mult)
+                meta_path = DATA / f"{variant}_qgt{cut:g}_{tag}.npz"
+                meta = np.load(meta_path) if meta_path.exists() else None
+                n_masked = int(meta["n_masked"]) if meta is not None else -1
+                fsky = s["f_sky"][ir]
+                row = " ".join(
+                    [f"{r_mult:g}", f"{fsky:.6f}", str(n_masked)]
+                    + [f"{v:.6e}" for v in s["dl_12"][ir]]
+                )
+                lines.append(row)
+            out = DATA / f"{variant}_qgt{cut:g}_sweep_logbins.txt"
+            out.write_text("\n".join(lines) + "\n")
+            print(f"wrote {out.relative_to(REPO)}", flush=True)
+
+    for (variant, cut), ctrl in controls.items():
+        s = sweeps[variant, cut]
+        ell = s["ell_log"]
+        header = (
+            f"# random-position control for {variant}, q>{cut:g}\n"
+            + "# columns: r_mult f_sky_raw "
+            + " ".join(f"ell={e:.0f}" for e in ell)
+        )
+        lines = [header]
+        for ir, r_mult in enumerate(ctrl["r"]):
+            row = " ".join(
+                [f"{r_mult:g}", f"{ctrl['f_sky'][ir]:.6f}"]
+                + [f"{v:.6e}" for v in ctrl["dl_12"][ir]]
+            )
+            lines.append(row)
+        out = DATA / f"{variant}_random_qgt{cut:g}_sweep_logbins.txt"
+        out.write_text("\n".join(lines) + "\n")
+        print(f"wrote {out.relative_to(REPO)}", flush=True)
+
+
 def write_table(sweeps: dict) -> None:
     """Residual systematic of the production radius, per multipole and cut."""
     lines = [
@@ -285,6 +340,7 @@ def main() -> None:
     figure_residual(sweeps)
     figure_convergence(sweeps)
     figure_random_control(sweeps, controls)
+    export_datapoints(sweeps, controls)
     write_table(sweeps)
 
 

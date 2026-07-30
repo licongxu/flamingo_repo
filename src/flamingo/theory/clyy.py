@@ -89,7 +89,16 @@ def cl_yy(
     if z_grid is None:
         z_grid = Z_GRID
 
-    hm = HaloModel(cosmology=cosmology, hm_consistency=hm_consistency)
+    # Mass grid is physical M_500c (tSZ / A10 convention). Do not use the
+    # HaloModel default (M_200c), or convert_m_delta will treat M_500c as M_200c.
+    from hmfast.halos.mass_definition import MassDefinition
+
+    hm = HaloModel(
+        cosmology=cosmology,
+        mass_definition=MassDefinition(500, "critical"),
+        convert_masses=True,
+        hm_consistency=hm_consistency,
+    )
     tsz = tSZTracer(profile=GNFWPressureProfile(**gnfw_params, B=B))
 
     ell = jnp.asarray(ell, dtype=float)

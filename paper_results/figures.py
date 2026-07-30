@@ -224,9 +224,9 @@ def figure_theory() -> None:
 
 def _save(fig, name: str) -> None:
     """Write a figure as PDF and PNG into ``figures/``."""
-    config.FIGURES.mkdir(parents=True, exist_ok=True)
+    config.FIGURES_PAPER.mkdir(parents=True, exist_ok=True)
     for suffix in ("pdf", "png"):
-        path = config.FIGURES / f"{name}.{suffix}"
+        path = config.FIGURES_PAPER / f"{name}.{suffix}"
         fig.savefig(path, dpi=180, bbox_inches="tight")
         print(f"wrote {path.relative_to(config.REPO)}", flush=True)
     plt.close(fig)

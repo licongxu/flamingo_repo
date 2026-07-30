@@ -1,0 +1,14 @@
+# L1_m9 fiducial masked tSZ, q>3 (qfrommz_alpha_fixed_1p12); synthetic-data masking: r=max(4*theta500, 2x10arcmin), C2 apodization 0.25 deg, masked monopole subtracted, NaMaster MASTER per-ell, pixwin deconvolved; uniform mean of C_ell in log bins, Delta ln ell = 0.4, ell_max = 10000
+# ell_eff  1e12_D_ell_yy
+1.005184e+02 3.328396e-02
+1.499558e+02 5.957862e-02
+2.237077e+02 1.026422e-01
+3.337327e+02 1.793497e-01
+4.978707e+02 3.010283e-01
+7.427358e+02 4.839739e-01
+1.108032e+03 7.366673e-01
+1.652989e+03 1.029141e+00
+2.465970e+03 1.301769e+00
+3.678794e+03 1.469770e+00
+5.488116e+03 1.428957e+00
+8.187308e+03 1.191032e+00
