@@ -53,7 +53,9 @@ from . import paths
 # --- FLAMINGO / Planck conventions -----------------------------------------
 
 #: Hydrostatic mass bias: the scaling relation is evaluated at ``M_500c / B``.
-B_HYDROSTATIC = 1.35
+#: Matches the pressure profile and the custom-GNFW best fit used throughout
+#: the paper products, so selection and signal share one mass calibration.
+B_HYDROSTATIC = 1.41
 
 #: Intrinsic lognormal scatter in the Y-M relation (Planck 2015 XXIV).
 SIGMA_LNY = 0.173
@@ -197,7 +199,18 @@ class SZScaling:
         SZScaling
             Ready-to-evaluate scaling relation.
         """
-        halo_model = HaloModel(cosmology=cosmology)
+        # The catalogue masses are physical M_500c, so the halo model must
+        # declare that definition: ``compute_y0_parametric`` and
+        # ``compute_theta500_arcmin`` convert from ``halo_model.mass_definition``
+        # to M_500c internally, and that conversion has to be a no-op. With
+        # hmfast's default (M_200c) the masses are silently shrunk by ~0.67,
+        # which drives ``q`` down by a factor ~0.46.
+        halo_model = HaloModel(
+            cosmology=cosmology,
+            mass_definition=MassDefinition(500, "critical"),
+            convert_masses=True,
+            hm_consistency=False,
+        )
 
         m = np.logspace(13.0, 15.5, 48)
         z = np.geomspace(0.01, 3.0, 48)
