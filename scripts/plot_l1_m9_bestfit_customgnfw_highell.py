@@ -17,7 +17,7 @@ from flamingo.theory.clyy import cl_yy
 
 REPO = Path(__file__).resolve().parents[1]
 MAP_FILE = Path("/rds/rds-lxu/flamingo/L1_m9/maps/y_unlensed_L1_m9_lc0_nside4096.fits")
-OUTPUT_STEM = REPO / "figures/l1_m9_fullsky_bestfit_customgnfw_highell"
+OUTPUT_STEM = REPO / "figures/customgnfw/l1_m9_fullsky_bestfit_customgnfw_highell"
 BANDPOWER_FILE = (
     REPO
     / "data_paper/binned_bandpowers/"

@@ -30,7 +30,7 @@ import numpy as np
 REPO = Path(__file__).resolve().parents[1]
 DATA = REPO / "data_paper" / "binned_bandpowers"
 TOPOSZ = REPO / "ref_package" / "TopoSZ" / "fig12 data"
-FIGURES = REPO / "figures"
+FIGURES = REPO / "figures" / "planck_comparison"
 TAG = "qfrommz_alpha_fixed_1p12"
 
 PLANCK_B18 = TOPOSZ / "planck_sz_1712_00788v1.txt"

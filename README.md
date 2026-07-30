@@ -180,8 +180,8 @@ The unmasked case runs through NaMaster with a unit mask rather than through
 results/bandpowers/<variant>.npz              ell, dl_fullsky, dl_masked, n_masked, fsky, settings
 results/bandpowers/Dl_yy_<variant>_<tag>.txt  plain "ell  D_ell" columns, tag in {fullsky, qgt50 ... qgt1}
 results/counts.md                             N(q > cut) per variant
-figures/fiducial_masked_tsz_ps.{pdf,png}      figure 1
-figures/feedback_tsz_ps.{pdf,png}             figure 2
+figures/paper/fiducial_masked_tsz_ps.{pdf,png}      figure 1
+figures/paper/feedback_tsz_ps.{pdf,png}             figure 2
 ```
 
 ## Inputs

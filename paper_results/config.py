@@ -39,8 +39,15 @@ BANDPOWERS = RESULTS / "bandpowers"
 CACHE = FLAMINGO_DATA / "paper_results_cache"
 QCAT_CACHE = CACHE / "qcat"
 
-#: Figures.
+#: Figures (grouped by topic under ``figures/``; see ``figures/README.md``).
 FIGURES = REPO / "figures"
+FIGURES_PAPER = FIGURES / "paper"
+FIGURES_ROTATION_GROUPS = FIGURES / "rotation_groups"
+FIGURES_MASKED_PS = FIGURES / "masked_ps"
+FIGURES_FEEDBACK = FIGURES / "feedback"
+FIGURES_PLANCK = FIGURES / "planck_comparison"
+FIGURES_MASKING_RADIUS = FIGURES / "masking_radius_null_test"
+FIGURES_CUSTOMGNFW = FIGURES / "customgnfw"
 
 
 # --- Inputs -----------------------------------------------------------------

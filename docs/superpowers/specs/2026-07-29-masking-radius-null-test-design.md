@@ -98,7 +98,7 @@ area loss).
 
 Per-point caches (resumable, one file per `(variant, q, R)`) plus the summary
 table in `data_paper/masking_radius_null_test/`, and three figures in
-`figures/`:
+`figures/masking_radius_null_test/`:
 
 - `masking_radius_null_test` -- surviving power `D_ell(R) / D_ell(unmasked)`.
 - `masking_radius_convergence` -- `D_ell(R) / D_ell(8 theta_500) - 1`, the
