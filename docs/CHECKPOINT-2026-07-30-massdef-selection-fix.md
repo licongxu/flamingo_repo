@@ -99,11 +99,14 @@ clusters (732 of them, where a true q>5 cut has 2780).
 
 Copy these by hand; the first group is tiny and the code will not run without it.
 
+Everything under `data_paper/` **is** now tracked — the ignore rules carry
+explicit exceptions for it — so the theory covariances and null-test caches come
+with the checkout and no longer need copying.
+
 | item | size | note |
 |---|---|---|
 | `data/noise/sigma_dict_szifi.npy`, `skyfracs_szifi_cosmology.npy` | 3.3 MB total | **essential** — `SZScaling` and `build_snr_grid` need them |
 | `chains/l1_m9_customgnfw_asz_alpha_fixed_1p12/best_fit.json` | (same 3.3 MB) | **essential** — supplies `A_SZ=-4.0953238`; value also recorded above |
-| `data_paper/covariance/*.npy` | 116 KB | regenerable in ~1 min, see blocker note below |
 | `/rds/.../L1_m9/catalogues` | 140 GB | regenerable from source catalogues |
 | `/rds/.../L2p8_m9/lightcone*/catalogues` | 100 GB | regenerable from source catalogues |
 | `/rds/.../maps`, `healpix_map` | large | needed for any NaMaster re-run |

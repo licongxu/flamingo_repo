@@ -20,6 +20,7 @@ __pycache__/
 
 # The paper bandpowers are small and are the point of this branch: keep them.
 !results/**/*.npz
+!data_paper/masking_radius_null_test/*.npz
 
 # Likewise every paper data product under data_paper/: bandpowers, theory
 # covariances and null-test caches together are ~1.4 MB, and they are what the
