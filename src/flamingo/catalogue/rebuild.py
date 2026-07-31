@@ -260,12 +260,12 @@ def build_snapshot_frame(
     ):
         raise ValueError("SOAP selection field shape does not match requested rows")
 
+    m500_internal = np.asarray(selection_fields["m500"], dtype=np.float64)
     selected_unique = np.asarray(selection_fields["is_central"], dtype=bool) & (
-        np.asarray(selection_fields["m500"], dtype=np.float64) * 1.0e10
-        >= mass_cut_msun
+        m500_internal * 1.0e10 >= mass_cut_msun
     )
     selected_soap_rows = unique_soap_rows[selected_unique]
-    selected_m500 = np.asarray(selection_fields["m500"])[selected_unique]
+    selected_m500 = m500_internal[selected_unique]
     properties = {
         name: np.asarray(values)
         for name, values in source.read_soap_property_fields(
@@ -326,8 +326,8 @@ def build_snapshot_frame(
         "y_Mpc": position[:, 1],
         "z_Mpc": position[:, 2],
         "M_500c_Msun": selected_m500[selected_lookup] * 1.0e10,
-        "M_200c_Msun": properties["m200c"][selected_lookup] * 1.0e10,
-        "M_200m_Msun": properties["m200m"][selected_lookup] * 1.0e10,
+        "M_200c_Msun": np.asarray(properties["m200c"], dtype=np.float64)[selected_lookup] * 1.0e10,
+        "M_200m_Msun": np.asarray(properties["m200m"], dtype=np.float64)[selected_lookup] * 1.0e10,
         "R_500c_Mpc": properties["r500"][selected_lookup] * scale_factor,
         "R_200c_Mpc": properties["r200c"][selected_lookup] * scale_factor,
         "R_200m_Mpc": properties["r200m"][selected_lookup] * scale_factor,

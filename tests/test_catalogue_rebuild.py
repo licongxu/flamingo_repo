@@ -131,9 +131,9 @@ class FakeSnapshotSource:
         rows = np.asarray(rows)
         fields = {
             "is_central": np.array([True, True, True]),
-            "m500": np.array([4_000.0, 2_000.0, 6_000.0]),
-            "m200c": np.array([5_000.0, 3_000.0, 7_000.0]),
-            "m200m": np.array([5_500.0, 3_500.0, 7_500.0]),
+            "m500": np.array([4_000.0, 2_000.0, 6_000.0], dtype=np.float32),
+            "m200c": np.array([5_000.0, 3_000.0, 7_000.0], dtype=np.float32),
+            "m200m": np.array([5_500.0, 3_500.0, 7_500.0], dtype=np.float32),
             "r500": np.array([0.8, 0.6, 1.1]),
             "r200c": np.array([1.0, 0.8, 1.32]),
             "r200m": np.array([1.1, 0.9, 1.43]),
