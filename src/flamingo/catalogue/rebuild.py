@@ -549,3 +549,96 @@ def build_base_catalogue(
         "sha256": _sha256(staged_path),
         "progress": str(progress_path),
     }
+
+
+def _q_provenance(base_path: Path) -> str:
+    return "\n".join(
+        [
+            "# FLAMINGO stable-identity catalogue subset with q_from_mz.",
+            f"# Source: {base_path}",
+            "# Selection: physical M_500c > 5e13 Msun.",
+            "# A_SZ=-4.0953238 alpha_SZ=1.12 B=1.41",
+            "# sigma_lnY=0.173 seed=20260630 cosmology=D3A noise=SZiFi-immf6",
+            "# q uses the current M_500c mass definition and identity-resolved SOAP row.",
+        ]
+    ) + "\n"
+
+
+def derive_q_catalogues(
+    base_path: Path,
+    output_paths: tuple[Path, Path],
+    family: Family,
+    scaling,
+    *,
+    chunk_size: int = 100_000,
+) -> dict[str, object]:
+    """Stream one staged base catalogue into both canonical q flavours."""
+    if chunk_size <= 0:
+        raise ValueError("chunk_size must be positive")
+    base_path = Path(base_path)
+    outputs = tuple(Path(path) for path in output_paths)
+    if len(outputs) != 2 or outputs[0] == outputs[1]:
+        raise ValueError("two distinct q catalogue output paths are required")
+    for output in outputs:
+        output.parent.mkdir(parents=True, exist_ok=True)
+    temporary = tuple(
+        output.with_name(
+            f"{output.name}.tmp-{os.getpid()}-{uuid.uuid4().hex}"
+        )
+        for output in outputs
+    )
+    expected_base = base_columns(family)
+    rows = 0
+    first = True
+    try:
+        for path in temporary:
+            with path.open("x") as handle:
+                handle.write(_q_provenance(base_path))
+        for chunk in pd.read_csv(
+            base_path,
+            comment="#",
+            chunksize=chunk_size,
+            float_precision="round_trip",
+        ):
+            if tuple(chunk.columns) != expected_base:
+                raise ValueError(f"unexpected base schema in {base_path}")
+            selected = chunk.loc[chunk["M_500c_Msun"] > 5.0e13].copy()
+            if selected.empty:
+                continue
+            selected["q_from_mz"] = np.asarray(
+                scaling.q(
+                    selected["M_500c_Msun"].to_numpy(np.float64),
+                    selected["z"].to_numpy(np.float64),
+                    index=selected["soap_index"].to_numpy(np.uint32),
+                ),
+                dtype=np.float64,
+            )
+            selected = selected.loc[:, q_columns(family)]
+            q = selected["q_from_mz"].to_numpy(np.float64)
+            if not np.all(np.isfinite(q)) or not np.all(q > 0.0):
+                raise ValueError("q_from_mz contains a non-finite or non-positive value")
+            for path in temporary:
+                selected.to_csv(
+                    path,
+                    mode="a",
+                    header=first,
+                    index=False,
+                    float_format="%.17g",
+                )
+            first = False
+            rows += len(selected)
+        if first:
+            raise ValueError(f"no M_500c > 5e13 rows in {base_path}")
+        for path, output in zip(temporary, outputs, strict=True):
+            os.replace(path, output)
+    except BaseException:
+        for path in temporary:
+            path.unlink(missing_ok=True)
+        raise
+    return {
+        "base": str(base_path),
+        "outputs": [str(path) for path in outputs],
+        "rows": rows,
+        "bytes": [path.stat().st_size for path in outputs],
+        "sha256": [_sha256(path) for path in outputs],
+    }

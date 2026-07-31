@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+from dataclasses import replace
 from pathlib import Path
 import sys
 import time
@@ -15,6 +16,7 @@ from flamingo.catalogue.portal import HdfstreamSnapshotSource  # noqa: E402
 from flamingo.catalogue.rebuild import (  # noqa: E402
     build_base_catalogue,
     catalogue_targets,
+    derive_q_catalogues,
 )
 
 
@@ -39,6 +41,10 @@ def _stage_base_path(target, root: Path, stage: Path) -> Path:
     return stage / target.canonical_csvs[0].relative_to(root)
 
 
+def _stage_path(canonical: Path, root: Path, stage: Path) -> Path:
+    return stage / canonical.relative_to(root)
+
+
 def _snapshot_numbers(target) -> tuple[int, ...]:
     return tuple(range(17, 78 if target.family == "l1" else 79))
 
@@ -51,6 +57,7 @@ def _parser() -> argparse.ArgumentParser:
     subparsers = parser.add_subparsers(dest="command", required=True)
     subparsers.add_parser("inventory")
     subparsers.add_parser("build-base")
+    subparsers.add_parser("derive-q")
     return parser
 
 
@@ -61,6 +68,31 @@ def main(argv: list[str] | None = None) -> int:
         print(f"{len(targets)} target(s), {4 * len(targets)} canonical CSV(s)")
         for target in targets:
             print(f"{target.key}: {target.catalogue_dir}")
+        return 0
+
+    if args.command == "derive-q":
+        from flamingo.cnc import SZScaling
+
+        scaling = replace(
+            SZScaling.calibrated(B=1.41),
+            A_SZ=-4.0953238,
+            alpha_SZ=1.12,
+            B=1.41,
+        )
+        for index, target in enumerate(targets, start=1):
+            base = _stage_base_path(target, args.root, args.stage)
+            outputs = tuple(
+                _stage_path(path, args.root, args.stage)
+                for path in target.canonical_csvs[1:3]
+            )
+            summary = derive_q_catalogues(
+                base, outputs, target.family, scaling
+            )
+            print(
+                f"[{index}/{len(targets)}] {target.key}: "
+                f"{summary['rows']:,} q rows",
+                flush=True,
+            )
         return 0
 
     source = HdfstreamSnapshotSource()

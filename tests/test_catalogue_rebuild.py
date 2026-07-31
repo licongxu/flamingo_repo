@@ -13,6 +13,7 @@ from flamingo.catalogue.rebuild import (
     build_base_catalogue,
     build_snapshot_frame,
     catalogue_targets,
+    derive_q_catalogues,
     q_columns,
     qmap_columns,
 )
@@ -308,3 +309,40 @@ def test_base_writer_resumes_from_verified_snapshot_parts(tmp_path):
     assert [part.read_bytes() for part in parts] == part_bytes
     assert staged.is_file()
     assert pd.read_csv(staged, comment="#").columns.tolist() == list(base_columns("l2"))
+
+
+class FakeScaling:
+    def q(self, mass, redshift, *, index):
+        return np.asarray(mass) / 1.0e13 + np.asarray(redshift)
+
+
+def test_derive_q_selects_strict_m500_cut_and_preserves_family_schema(tmp_path):
+    """Selecting the threshold row or changing schema would alter CNC counts/readers."""
+    base = tmp_path / "base.csv"
+    frame = pd.DataFrame(
+        {
+            name: np.zeros(2)
+            for name in base_columns("l2")
+        }
+    )
+    frame["snap"] = [75, 76]
+    frame["soap_index"] = [7, 9]
+    frame["z"] = [0.1, 0.2]
+    frame["M_500c_Msun"] = [5.0e13, 6.0e13]
+    frame.to_csv(base, index=False)
+    outputs = (tmp_path / "q.csv", tmp_path / "q_alpha.csv")
+
+    summary = derive_q_catalogues(
+        base,
+        outputs,
+        "l2",
+        FakeScaling(),
+        chunk_size=1,
+    )
+
+    assert summary["rows"] == 1
+    for output in outputs:
+        result = pd.read_csv(output, comment="#")
+        assert result.columns.tolist() == list(q_columns("l2"))
+        assert result["soap_index"].tolist() == [9]
+        assert result["q_from_mz"].tolist() == [6.2]
