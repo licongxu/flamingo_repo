@@ -53,8 +53,9 @@ For each snapshot, variant, and lightcone:
    identity-to-row lookup.
 3. Resolve every lightcone entry to its current SOAP row by stable identity.
    Periodic lightcone copies are retained as separate observed entries.
-4. Read all current SOAP quantities used by the existing 29-column schema:
-   M500c, M200c, M200m, their radii, and the four integrated Compton-Y fields.
+4. Read all current SOAP quantities used by the existing family-specific
+   schema: M500c, M200c, M200m, and their radii for every catalogue; also read
+   the four integrated Compton-Y fields present in the L1 catalogue family.
 5. Select central halos with physical `M_500c >= 1e13 M_sun` and
    `0 <= z < 3`. No `M_sun/h` convention is introduced.
 6. Compute natural and yang26-rotated geometry with the official per-shell
@@ -63,9 +64,10 @@ For each snapshot, variant, and lightcone:
 7. Store the resolved current SOAP row in `soap_index` for provenance, but
    never use that row number as the join key.
 
-The base output preserves the existing 29-column names and order so readers do
-not require migration. Provenance comments state the stable identity join and
-official sources.
+The base output preserves the existing family-specific names and order so
+readers do not require migration: 29 columns for L1 (including the four SOAP
+integrated-Y fields) and 25 columns for L2p8. Provenance comments state the
+stable identity join and official sources.
 
 ## Derived Catalogue Flavours
 
@@ -76,11 +78,13 @@ than from an archived product.
 - Recompute `q_from_mz` with the existing calibrated convention
   `A_SZ=-4.0953238`, `alpha_SZ=1.12`, `B=1.41`, D3A cosmology, current
   M500c mass definition, and the existing deterministic scatter convention.
-- Publish both existing q-from-mz filenames and preserve their schemas.
+- Publish both existing q-from-mz filenames and preserve their schemas (30
+  columns for L1 and 26 for L2p8).
 - Recompute q-from-map from the corresponding Compton-y map, the current
   cylindrical R500 aperture prescription, and the existing averaged noise
-  curve, with no background subtraction. Preserve the current 34-column
-  schema and `q_from_aperture` name.
+  curve, with no background subtraction. Preserve the current family-specific
+  schema (34 columns for L1 and 30 for L2p8) and the
+  `q_from_aperture` name.
 
 ## Staging, Archive, and Publication
 
