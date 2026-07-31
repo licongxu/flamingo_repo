@@ -330,9 +330,9 @@ def build_snapshot_frame(
         "M_500c_Msun": selected_m500[selected_lookup] * 1.0e10,
         "M_200c_Msun": np.asarray(properties["m200c"], dtype=np.float64)[selected_lookup] * 1.0e10,
         "M_200m_Msun": np.asarray(properties["m200m"], dtype=np.float64)[selected_lookup] * 1.0e10,
-        "R_500c_Mpc": properties["r500"][selected_lookup] * scale_factor,
-        "R_200c_Mpc": properties["r200c"][selected_lookup] * scale_factor,
-        "R_200m_Mpc": properties["r200m"][selected_lookup] * scale_factor,
+        "R_500c_Mpc": np.asarray(properties["r500"], dtype=np.float64)[selected_lookup] * scale_factor,
+        "R_200c_Mpc": np.asarray(properties["r200c"], dtype=np.float64)[selected_lookup] * scale_factor,
+        "R_200m_Mpc": np.asarray(properties["r200m"], dtype=np.float64)[selected_lookup] * scale_factor,
     }
     if target.family == "l1":
         frame_data.update(

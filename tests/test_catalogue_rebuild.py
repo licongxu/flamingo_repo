@@ -128,7 +128,7 @@ class FakeSnapshotSource:
         return redshift[rows], position[rows]
 
     def read_soap_scale_factor(self, target, snap):
-        return 0.5
+        return 1.0 / 1.1
 
     def read_soap_fields(self, target, snap, rows):
         rows = np.asarray(rows)
@@ -137,9 +137,9 @@ class FakeSnapshotSource:
             "m500": np.array([4_000.0, 2_000.0, 6_000.0], dtype=np.float32),
             "m200c": np.array([5_000.0, 3_000.0, 7_000.0], dtype=np.float32),
             "m200m": np.array([5_500.0, 3_500.0, 7_500.0], dtype=np.float32),
-            "r500": np.array([0.8, 0.6, 1.1]),
-            "r200c": np.array([1.0, 0.8, 1.32]),
-            "r200m": np.array([1.1, 0.9, 1.43]),
+            "r500": np.array([0.8, 0.6, 1.1], dtype=np.float32),
+            "r200c": np.array([1.0, 0.8, 1.32], dtype=np.float32),
+            "r200m": np.array([1.1, 0.9, 1.43], dtype=np.float32),
             "y500": np.array([1.0, 2.0, 3.0]),
             "y500_noagn": np.array([0.9, 1.9, 2.9]),
             "y5r500": np.array([1.5, 2.5, 3.5]),
@@ -204,7 +204,8 @@ def test_snapshot_frame_falls_back_from_stale_hint_and_pairs_current_soap():
         [4.0, 5.0, 6.0],
     ]
     assert frame["M_500c_Msun"].tolist() == [6.0e13, 6.0e13]
-    assert np.allclose(frame["R_500c_Mpc"], 0.55)
+    expected_radius = float(np.float32(1.1)) / 1.1
+    assert frame["R_500c_Mpc"].tolist() == [expected_radius, expected_radius]
     assert frame["Y_500c_Mpc2"].tolist() == [3.0, 3.0]
 
 
