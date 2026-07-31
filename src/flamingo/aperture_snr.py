@@ -3,9 +3,30 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Callable
 
 import healpy as hp
 import numpy as np
+import pandas as pd
+
+from .catalogue import theta_500
+
+
+APERTURE_COLUMNS = [
+    "theta_500_arcmin",
+    "Y_500cyl_arcmin2",
+    "sigma_Y500_arcmin2",
+    "npix_in_aperture",
+    "q_from_aperture",
+]
+
+_REQUIRED_CATALOGUE_COLUMNS = [
+    "z",
+    "R_500c_Mpc",
+    "theta_rot_rad",
+    "phi_rot_rad",
+    "q_from_mz",
+]
 
 
 def fit_sigma_y500(
@@ -111,3 +132,53 @@ def aperture_y500(
     if not np.all(np.isfinite(y500)):
         raise ValueError("integrated Y_500 apertures must be finite")
     return y500, pixel_counts
+
+
+def catalogue_chunk_to_qfrommap(
+    frame: pd.DataFrame,
+    ymap: np.ndarray,
+    noise_coeff: np.ndarray,
+    *,
+    theta500_fn: Callable[[np.ndarray, np.ndarray], np.ndarray] = theta_500,
+) -> pd.DataFrame:
+    """Replace a chunk's parametric q with raw map-aperture observables."""
+    for column in _REQUIRED_CATALOGUE_COLUMNS:
+        if column not in frame.columns:
+            raise ValueError(f"missing column {column}")
+        values = frame[column].to_numpy(np.float64)
+        if not np.all(np.isfinite(values)):
+            raise ValueError(f"column {column} must be finite")
+
+    theta_500_rad = np.asarray(
+        theta500_fn(
+            frame["R_500c_Mpc"].to_numpy(np.float64),
+            frame["z"].to_numpy(np.float64),
+        ),
+        dtype=np.float64,
+    )
+    if theta_500_rad.shape != (len(frame),):
+        raise ValueError(
+            f"theta_500 has shape {theta_500_rad.shape}, expected {(len(frame),)}"
+        )
+    if not np.all(np.isfinite(theta_500_rad)) or not np.all(theta_500_rad > 0.0):
+        raise ValueError("theta_500 must be finite and positive")
+
+    theta_500_arcmin = np.rad2deg(theta_500_rad) * 60.0
+    y500, pixel_counts = aperture_y500(
+        ymap,
+        frame["theta_rot_rad"].to_numpy(np.float64),
+        frame["phi_rot_rad"].to_numpy(np.float64),
+        theta_500_rad,
+    )
+    sigma = sigma_y500_from_theta(theta_500_arcmin, noise_coeff)
+    q = y500 / sigma
+    if not np.all(np.isfinite(q)):
+        raise ValueError("q_from_aperture must be finite")
+
+    output = frame.drop(columns="q_from_mz").copy()
+    output["theta_500_arcmin"] = theta_500_arcmin
+    output["Y_500cyl_arcmin2"] = y500
+    output["sigma_Y500_arcmin2"] = sigma
+    output["npix_in_aperture"] = pixel_counts
+    output["q_from_aperture"] = q
+    return output

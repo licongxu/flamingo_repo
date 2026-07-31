@@ -2,9 +2,16 @@
 
 import healpy as hp
 import numpy as np
+import pandas as pd
 import pytest
 
-from flamingo.aperture_snr import aperture_y500, fit_sigma_y500, sigma_y500_from_theta
+from flamingo.aperture_snr import (
+    APERTURE_COLUMNS,
+    aperture_y500,
+    catalogue_chunk_to_qfrommap,
+    fit_sigma_y500,
+    sigma_y500_from_theta,
+)
 
 
 def _write_noise(tmp_path, noise, skyfracs):
@@ -99,3 +106,82 @@ def test_aperture_y500_rejects_invalid_geometry(theta, phi, radius, match):
 
     with pytest.raises(ValueError, match=match):
         aperture_y500(ymap, np.asarray(theta), np.asarray(phi), np.asarray(radius))
+
+
+def _catalogue_frame():
+    return pd.DataFrame(
+        {
+            "snap": [20, 21],
+            "soap_index": [7, 9],
+            "z": [0.2, 0.4],
+            "R_500c_Mpc": [0.8, 0.9],
+            "theta_rot_rad": [1.0, 1.2],
+            "phi_rot_rad": [2.0, -1.0],
+            "q_from_mz": [99.0, 98.0],
+        }
+    )
+
+
+def test_catalogue_chunk_replaces_qfrommz_with_aperture_columns():
+    """Keeping the old selection column would mix two incompatible q definitions."""
+    frame = _catalogue_frame()
+    radii = np.array([0.2, 0.15])
+    theta500_fn = lambda radius, redshift: radii
+    ymap = np.arange(hp.nside2npix(8), dtype=np.float32) * 1e-8
+    coeff = np.array([np.log(1e-4)])
+
+    out = catalogue_chunk_to_qfrommap(
+        frame, ymap, coeff, theta500_fn=theta500_fn
+    )
+
+    assert "q_from_mz" not in out
+    assert out.columns[-5:].tolist() == APERTURE_COLUMNS
+    assert out[["snap", "soap_index"]].to_numpy().tolist() == [[20, 7], [21, 9]]
+    assert np.allclose(
+        out["q_from_aperture"],
+        out["Y_500cyl_arcmin2"] / out["sigma_Y500_arcmin2"],
+    )
+    assert np.allclose(out["theta_500_arcmin"], np.rad2deg(radii) * 60.0)
+
+
+def test_catalogue_chunk_retains_finite_negative_aperture_q():
+    """Raw negative map fluctuations are data and must not be clipped away."""
+    out = catalogue_chunk_to_qfrommap(
+        _catalogue_frame().iloc[:1],
+        np.full(hp.nside2npix(8), -1e-6),
+        np.array([np.log(1e-4)]),
+        theta500_fn=lambda radius, redshift: np.array([0.2]),
+    )
+
+    assert out.loc[0, "Y_500cyl_arcmin2"] < 0.0
+    assert out.loc[0, "q_from_aperture"] < 0.0
+
+
+@pytest.mark.parametrize(
+    "missing",
+    ["z", "R_500c_Mpc", "theta_rot_rad", "phi_rot_rad", "q_from_mz"],
+)
+def test_catalogue_chunk_requires_geometry_and_old_q_column(missing):
+    """A malformed source schema must fail instead of shifting output rows or columns."""
+    frame = _catalogue_frame().drop(columns=missing)
+
+    with pytest.raises(ValueError, match=f"missing column.*{missing}"):
+        catalogue_chunk_to_qfrommap(
+            frame,
+            np.ones(hp.nside2npix(8)),
+            np.array([np.log(1e-4)]),
+            theta500_fn=lambda radius, redshift: np.full(len(frame), 0.2),
+        )
+
+
+def test_catalogue_chunk_rejects_non_positive_derived_theta():
+    """An invalid distance/radius result must not reach the aperture query."""
+    frame = _catalogue_frame().iloc[:1]
+
+    with pytest.raises(ValueError, match="theta_500.*positive"):
+        catalogue_chunk_to_qfrommap(
+            frame,
+            np.ones(hp.nside2npix(8)),
+            np.array([np.log(1e-4)]),
+            theta500_fn=lambda radius, redshift: np.array([0.0]),
+        )
