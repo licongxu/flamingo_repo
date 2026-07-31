@@ -204,7 +204,7 @@ def _identity_verified_rows(
         return np.empty(0, dtype=np.int64)
 
     hint_verified = False
-    if np.all(row_hint >= 0):
+    if target.family == "l2" and np.all(row_hint >= 0):
         try:
             hinted_hbt = np.asarray(
                 source.read_soap_identity(target, snap, rows=row_hint),

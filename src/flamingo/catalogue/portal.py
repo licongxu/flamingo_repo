@@ -85,10 +85,12 @@ class HdfstreamSnapshotSource:
 
     def read_lightcone_identity(self, target: CatalogueTarget, snap: int):
         lightcone = self.lightcone_file(target, snap)
-        return (
-            np.asarray(lightcone["InputHalos/HaloCatalogueIndex"][:]),
-            np.asarray(lightcone["InputHalos/SOAPIndex"][:]),
-        )
+        identity = np.asarray(lightcone["InputHalos/HaloCatalogueIndex"][:])
+        if target.family == "l1":
+            hint = np.full(identity.shape, -1, dtype=np.int64)
+        else:
+            hint = np.asarray(lightcone["InputHalos/SOAPIndex"][:])
+        return identity, hint
 
     def read_soap_identity(self, target: CatalogueTarget, snap: int, rows=None):
         dataset = self.soap_file(target, snap)["InputHalos/HaloCatalogueIndex"]

@@ -25,3 +25,11 @@ def test_inventory_lists_complete_matrix_without_writes(mod, tmp_path, capsys):
     assert "L1_m9/Jet_fgas-4sigma" in output
     assert "L2p8_m9/lightcone7" in output
     assert list(tmp_path.iterdir()) == []
+
+
+def test_requested_snapshots_narrow_a_pilot_without_changing_defaults(mod, tmp_path):
+    """A pilot must not accidentally start every remote snapshot."""
+    target = mod.catalogue_targets(tmp_path)[0]
+
+    assert mod._snapshot_numbers(target, (75,)) == (75,)
+    assert mod._snapshot_numbers(target, ()) == tuple(range(17, 78))

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+from concurrent.futures import ProcessPoolExecutor, as_completed
 from dataclasses import replace
 import importlib.util
 from pathlib import Path
@@ -61,8 +62,28 @@ def _stage_path(canonical: Path, root: Path, stage: Path) -> Path:
     return stage / canonical.relative_to(root)
 
 
-def _snapshot_numbers(target) -> tuple[int, ...]:
-    return tuple(range(17, 78 if target.family == "l1" else 79))
+def _snapshot_numbers(target, requested: tuple[int, ...] = ()) -> tuple[int, ...]:
+    available = tuple(range(17, 78 if target.family == "l1" else 79))
+    if not requested:
+        return available
+    invalid = sorted(set(requested).difference(available))
+    if invalid:
+        raise ValueError(f"snapshot(s) outside {target.family} range: {invalid}")
+    return tuple(sorted(set(requested)))
+
+
+def _build_one_base(target, root: Path, stage: Path, requested_snaps):
+    source = HdfstreamSnapshotSource()
+    radii, angles = source.shell_geometry(target)
+    staged = _stage_base_path(target, root, stage)
+    return build_base_catalogue(
+        target,
+        staged,
+        source,
+        snaps=_snapshot_numbers(target, requested_snaps),
+        shell_radii_mpc=radii,
+        angles=angles,
+    )
 
 
 def _validate_target(paths, target):
@@ -87,6 +108,8 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--stage", type=Path, default=DEFAULT_STAGE)
     parser.add_argument("--archive", type=Path)
     parser.add_argument("--only", action="append", default=[])
+    parser.add_argument("--snap", type=int, action="append", default=[])
+    parser.add_argument("--workers", type=int, default=1)
     subparsers = parser.add_subparsers(dest="command", required=True)
     subparsers.add_parser("inventory")
     subparsers.add_parser("build-base")
@@ -198,24 +221,36 @@ def main(argv: list[str] | None = None) -> int:
             )
         return 0
 
-    source = HdfstreamSnapshotSource()
-    for index, target in enumerate(targets, start=1):
-        started = time.monotonic()
-        staged = _stage_base_path(target, args.root, args.stage)
-        radii, angles = source.shell_geometry(target)
-        summary = build_base_catalogue(
-            target,
-            staged,
-            source,
-            snaps=_snapshot_numbers(target),
-            shell_radii_mpc=radii,
-            angles=angles,
-        )
+    if args.workers <= 0:
+        raise ValueError("--workers must be positive")
+    started = time.monotonic()
+    if args.workers == 1:
+        completed = [
+            (target, _build_one_base(target, args.root, args.stage, tuple(args.snap)))
+            for target in targets
+        ]
+    else:
+        completed = []
+        with ProcessPoolExecutor(max_workers=args.workers) as executor:
+            futures = {
+                executor.submit(
+                    _build_one_base,
+                    target,
+                    args.root,
+                    args.stage,
+                    tuple(args.snap),
+                ): target
+                for target in targets
+            }
+            for future in as_completed(futures):
+                completed.append((futures[future], future.result()))
+    for index, (target, summary) in enumerate(completed, start=1):
         print(
             f"[{index}/{len(targets)}] {target.key}: {summary['rows']:,} rows "
-            f"in {time.monotonic() - started:.1f}s -> {staged}",
+            f"-> {summary['path']}",
             flush=True,
         )
+    print(f"base build elapsed={time.monotonic() - started:.1f}s", flush=True)
     return 0
 
 
