@@ -64,7 +64,7 @@ def _stage_path(canonical: Path, root: Path, stage: Path) -> Path:
 
 
 def _snapshot_numbers(target, requested: tuple[int, ...] = ()) -> tuple[int, ...]:
-    available = tuple(range(17, 78 if target.family == "l1" else 79))
+    available = tuple(range(18, 78 if target.family == "l1" else 79))
     if not requested:
         return available
     invalid = sorted(set(requested).difference(available))

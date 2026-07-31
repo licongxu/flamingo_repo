@@ -32,4 +32,4 @@ def test_requested_snapshots_narrow_a_pilot_without_changing_defaults(mod, tmp_p
     target = mod.catalogue_targets(tmp_path)[0]
 
     assert mod._snapshot_numbers(target, (75,)) == (75,)
-    assert mod._snapshot_numbers(target, ()) == tuple(range(17, 78))
+    assert mod._snapshot_numbers(target, ()) == tuple(range(18, 78))
