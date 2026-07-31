@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 from dataclasses import replace
+import importlib.util
 from pathlib import Path
 import sys
 import time
@@ -22,6 +23,17 @@ from flamingo.catalogue.rebuild import (  # noqa: E402
 
 DEFAULT_ROOT = Path("/rds/rds-lxu/flamingo")
 DEFAULT_STAGE = DEFAULT_ROOT / ".hbt_join_fix_staging/20260731"
+
+
+def _load_qmap_module():
+    path = REPO / "scripts/compute_qfrommap_catalogues.py"
+    spec = importlib.util.spec_from_file_location("stable_qfrommap", path)
+    if spec is None or spec.loader is None:
+        raise RuntimeError(f"cannot load q-from-map producer: {path}")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
 
 
 def _selected_targets(root: Path, only: tuple[str, ...]):
@@ -58,6 +70,7 @@ def _parser() -> argparse.ArgumentParser:
     subparsers.add_parser("inventory")
     subparsers.add_parser("build-base")
     subparsers.add_parser("derive-q")
+    subparsers.add_parser("derive-qmap")
     return parser
 
 
@@ -91,6 +104,40 @@ def main(argv: list[str] | None = None) -> int:
             print(
                 f"[{index}/{len(targets)}] {target.key}: "
                 f"{summary['rows']:,} q rows",
+                flush=True,
+            )
+        return 0
+
+    if args.command == "derive-qmap":
+        qmap = _load_qmap_module()
+        noise_coeff = qmap.fit_sigma_y500(
+            REPO / "data/noise/sigma_Y500_dict_szifi.npy",
+            REPO / "data/noise/skyfracs_szifi_cosmology.npy",
+        )
+        for index, target in enumerate(targets, start=1):
+            source_path = _stage_path(
+                target.canonical_csvs[1], args.root, args.stage
+            )
+            staged_output = _stage_path(
+                target.canonical_csvs[3], args.root, args.stage
+            )
+            job = qmap.CatalogueJob(
+                target.family,
+                target.key,
+                source_path,
+                target.map_path,
+                target.canonical_csvs[3],
+            )
+            summary = qmap.rewrite_catalogue(
+                job,
+                noise_coeff,
+                force=True,
+                output=staged_output,
+            )
+            print(
+                f"[{index}/{len(targets)}] {target.key}: "
+                f"{summary['rows']:,} aperture rows q>5="
+                f"{summary['q_counts'][5]:,}",
                 flush=True,
             )
         return 0

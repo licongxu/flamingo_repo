@@ -143,18 +143,21 @@ def rewrite_catalogue(
     *,
     chunk_size: int = 100_000,
     force: bool = False,
+    output: Path | None = None,
 ) -> dict[str, object]:
     """Stream one source catalogue and atomically install its q-from-map output."""
     if chunk_size <= 0:
         raise ValueError("chunk_size must be positive")
-    if job.output.exists() and not force:
-        raise FileExistsError(f"output already exists: {job.output.name}")
+    output_path = job.output if output is None else Path(output)
+    if output_path.exists() and not force:
+        raise FileExistsError(f"output already exists: {output_path.name}")
+    output_path.parent.mkdir(parents=True, exist_ok=True)
 
     source_before = job.source.stat()
     ymap = np.asarray(hp.read_map(job.map_path, dtype=np.float32), dtype=np.float32)
     header = read_header(job.source)
-    temporary = job.output.with_name(
-        f"{job.output.name}.tmp-{os.getpid()}-{uuid.uuid4().hex}"
+    temporary = output_path.with_name(
+        f"{output_path.name}.tmp-{os.getpid()}-{uuid.uuid4().hex}"
     )
     thresholds = (1, 5, 10, 20, 50)
     q_counts = {threshold: 0 for threshold in thresholds}
@@ -200,7 +203,7 @@ def rewrite_catalogue(
             or source_after.st_mtime_ns != source_before.st_mtime_ns
         ):
             raise RuntimeError(f"{job.source.name} changed while being read")
-        os.replace(temporary, job.output)
+        os.replace(temporary, output_path)
     except BaseException:
         temporary.unlink(missing_ok=True)
         raise
@@ -208,7 +211,7 @@ def rewrite_catalogue(
     return {
         "dataset": job.dataset,
         "label": job.label,
-        "output": str(job.output),
+        "output": str(output_path),
         "rows": rows,
         "zero_pixels": zero_pixels,
         "q_counts": q_counts,

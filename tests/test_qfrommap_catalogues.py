@@ -198,6 +198,25 @@ def test_rewrite_catalogue_refuses_to_overwrite_without_force(mod, tmp_path):
     assert job.output.read_text() == "sentinel\n"
 
 
+def test_rewrite_catalogue_can_write_staging_without_touching_canonical(mod, tmp_path):
+    """Staged aperture work must not replace a canonical predecessor early."""
+    job = _writer_job(mod, tmp_path, _valid_frame())
+    job.output.write_text("sentinel\n")
+    staged = tmp_path / "staging/source_qfrommap.csv"
+
+    summary = mod.rewrite_catalogue(
+        job,
+        np.array([np.log(2.0e-4)]),
+        chunk_size=1,
+        output=staged,
+    )
+
+    assert Path(summary["output"]) == staged
+    assert staged.is_file()
+    assert job.output.read_text() == "sentinel\n"
+    assert pd.read_csv(staged, comment="#").columns[-5:].tolist() == APERTURE_COLUMNS
+
+
 def test_rewrite_catalogue_failure_preserves_output_and_removes_temporary(mod, tmp_path):
     """A late invalid chunk must never expose a partial or clobbered catalogue."""
     frame = _valid_frame()
