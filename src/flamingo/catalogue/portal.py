@@ -105,6 +105,9 @@ class HdfstreamSnapshotSource:
             self.remote_take(lightcone["Lightcone/HaloCentre"], rows),
         )
 
+    def read_soap_scale_factor(self, target: CatalogueTarget, snap: int):
+        return float(self.soap_file(target, snap)["Header"].attrs["Scale-factor"][0])
+
     def _read_named_soap_fields(self, target, snap, rows, names):
         soap = self.soap_file(target, snap)
         return {

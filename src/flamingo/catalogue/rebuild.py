@@ -317,7 +317,9 @@ def build_snapshot_frame(
     selected_lookup = np.searchsorted(selected_soap_rows, matched_soap_rows)
     if not np.array_equal(selected_soap_rows[selected_lookup], matched_soap_rows):
         raise RuntimeError("resolved SOAP row escaped the selected lookup")
-    scale_factor = 1.0 / (1.0 + redshift)
+    scale_factor = float(source.read_soap_scale_factor(target, snap))
+    if not np.isfinite(scale_factor) or not 0.0 < scale_factor <= 1.0:
+        raise ValueError(f"invalid SOAP snapshot scale factor: {scale_factor}")
     frame_data = {
         "snap": np.full(redshift.size, snap, dtype=np.int32),
         "soap_index": matched_soap_rows,

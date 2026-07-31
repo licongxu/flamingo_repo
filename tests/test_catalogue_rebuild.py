@@ -127,6 +127,9 @@ class FakeSnapshotSource:
         position = np.array([[1.0, 2.0, 3.0], [9.0, 9.0, 9.0], [4.0, 5.0, 6.0]])
         return redshift[rows], position[rows]
 
+    def read_soap_scale_factor(self, target, snap):
+        return 0.5
+
     def read_soap_fields(self, target, snap, rows):
         rows = np.asarray(rows)
         fields = {
@@ -201,7 +204,7 @@ def test_snapshot_frame_falls_back_from_stale_hint_and_pairs_current_soap():
         [4.0, 5.0, 6.0],
     ]
     assert frame["M_500c_Msun"].tolist() == [6.0e13, 6.0e13]
-    assert np.allclose(frame["R_500c_Mpc"], 1.0)
+    assert np.allclose(frame["R_500c_Mpc"], 0.55)
     assert frame["Y_500c_Mpc2"].tolist() == [3.0, 3.0]
 
 
