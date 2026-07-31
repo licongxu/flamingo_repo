@@ -6,6 +6,7 @@ import argparse
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from dataclasses import replace
 import importlib.util
+import os
 from pathlib import Path
 import sys
 import time
@@ -189,9 +190,10 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.command == "derive-qmap":
         qmap = _load_qmap_module()
+        data_root = Path(os.environ.get("FLAMINGO_ROOT", REPO))
         noise_coeff = qmap.fit_sigma_y500(
-            REPO / "data/noise/sigma_Y500_dict_szifi.npy",
-            REPO / "data/noise/skyfracs_szifi_cosmology.npy",
+            data_root / "data/noise/sigma_Y500_dict_szifi.npy",
+            data_root / "data/noise/skyfracs_szifi_cosmology.npy",
         )
         for index, target in enumerate(targets, start=1):
             source_path = _stage_path(
