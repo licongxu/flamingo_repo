@@ -18,11 +18,15 @@ from flamingo.catalogue.rebuild import (  # noqa: E402
     build_base_catalogue,
     catalogue_targets,
     derive_q_catalogues,
+    publish_file,
+    validate_catalogue,
 )
 
 
 DEFAULT_ROOT = Path("/rds/rds-lxu/flamingo")
 DEFAULT_STAGE = DEFAULT_ROOT / ".hbt_join_fix_staging/20260731"
+ARCHIVE_NAME = "hbt_join_fix_20260731"
+FLAVOURS = ("base", "q", "q_alpha", "qmap")
 
 
 def _load_qmap_module():
@@ -61,16 +65,36 @@ def _snapshot_numbers(target) -> tuple[int, ...]:
     return tuple(range(17, 78 if target.family == "l1" else 79))
 
 
+def _validate_target(paths, target):
+    summaries = [
+        validate_catalogue(path, target, flavour)
+        for path, flavour in zip(paths, FLAVOURS, strict=True)
+    ]
+    base, q, q_alpha, qmap = summaries
+    expected_rows = base["selected_rows"]
+    expected_digest = base["selected_identity_sha256"]
+    for summary in (q, q_alpha, qmap):
+        if summary["rows"] != expected_rows:
+            raise ValueError(f"{target.key}: derived/base selected row count mismatch")
+        if summary["identity_sha256"] != expected_digest:
+            raise ValueError(f"{target.key}: derived/base identity digest mismatch")
+    return summaries
+
+
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, default=DEFAULT_ROOT)
     parser.add_argument("--stage", type=Path, default=DEFAULT_STAGE)
+    parser.add_argument("--archive", type=Path)
     parser.add_argument("--only", action="append", default=[])
     subparsers = parser.add_subparsers(dest="command", required=True)
     subparsers.add_parser("inventory")
     subparsers.add_parser("build-base")
     subparsers.add_parser("derive-q")
     subparsers.add_parser("derive-qmap")
+    validate_parser = subparsers.add_parser("validate")
+    validate_parser.add_argument("--canonical", action="store_true")
+    subparsers.add_parser("publish")
     return parser
 
 
@@ -81,6 +105,38 @@ def main(argv: list[str] | None = None) -> int:
         print(f"{len(targets)} target(s), {4 * len(targets)} canonical CSV(s)")
         for target in targets:
             print(f"{target.key}: {target.catalogue_dir}")
+        return 0
+
+    if args.command in {"validate", "publish"}:
+        all_summaries = []
+        for target in targets:
+            paths = (
+                target.canonical_csvs
+                if getattr(args, "canonical", False)
+                else tuple(
+                    _stage_path(path, args.root, args.stage)
+                    for path in target.canonical_csvs
+                )
+            )
+            summaries = _validate_target(paths, target)
+            all_summaries.extend(summaries)
+            print(
+                f"VALID {target.key}: base={summaries[0]['rows']:,} "
+                f"selected={summaries[0]['selected_rows']:,}",
+                flush=True,
+            )
+        if args.command == "validate":
+            print(f"VALIDATED {len(all_summaries)}/{4 * len(targets)} files")
+            return 0
+
+        archive_root = args.archive or args.root / "archive" / ARCHIVE_NAME
+        manifest = archive_root / "manifest.json"
+        for target in targets:
+            for canonical in target.canonical_csvs:
+                staged = _stage_path(canonical, args.root, args.stage)
+                archived = archive_root / canonical.relative_to(args.root)
+                publish_file(staged, canonical, archived, manifest)
+                print(f"PUBLISHED {canonical} (archive={archived})", flush=True)
         return 0
 
     if args.command == "derive-q":

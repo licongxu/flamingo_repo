@@ -1,8 +1,11 @@
+import json
+import os
 from pathlib import Path
 
 import healpy as hp
 import numpy as np
 import pandas as pd
+import pytest
 
 from flamingo.catalogue.rebuild import (
     APERTURE_COLUMNS,
@@ -14,8 +17,10 @@ from flamingo.catalogue.rebuild import (
     build_snapshot_frame,
     catalogue_targets,
     derive_q_catalogues,
+    publish_file,
     q_columns,
     qmap_columns,
+    validate_catalogue,
 )
 
 
@@ -346,3 +351,95 @@ def test_derive_q_selects_strict_m500_cut_and_preserves_family_schema(tmp_path):
         assert result.columns.tolist() == list(q_columns("l2"))
         assert result["soap_index"].tolist() == [9]
         assert result["q_from_mz"].tolist() == [6.2]
+
+
+def _valid_catalogue_frame(family="l2", flavour="base"):
+    columns = {
+        "base": base_columns,
+        "q": q_columns,
+        "q_alpha": q_columns,
+        "qmap": qmap_columns,
+    }[flavour](family)
+    frame = pd.DataFrame({name: np.ones(2) for name in columns})
+    frame["snap"] = [75, 76]
+    frame["soap_index"] = [7, 9]
+    frame["z"] = [0.1, 0.2]
+    frame["M_500c_Msun"] = [6.0e13, 7.0e13]
+    if "q_from_mz" in frame:
+        frame["q_from_mz"] = [5.0, 6.0]
+    if "npix_in_aperture" in frame:
+        frame["npix_in_aperture"] = [0, 2]
+        frame["q_from_aperture"] = [0.0, 3.0]
+    return frame
+
+
+def test_validate_catalogue_reports_identity_digest_and_allows_zero_aperture(tmp_path):
+    """Zero-pixel apertures are permitted, while row identity must stay auditable."""
+    path = tmp_path / "qmap.csv"
+    _valid_catalogue_frame(flavour="qmap").to_csv(path, index=False)
+
+    summary = validate_catalogue(path, _target("l2"), "qmap", chunk_size=1)
+
+    assert summary["rows"] == 2
+    assert len(summary["identity_sha256"]) == 64
+    assert summary["selected_rows"] == 2
+
+
+def test_validate_catalogue_rejects_wrong_schema_before_publication(tmp_path):
+    """A missing field must block publication rather than break readers later."""
+    path = tmp_path / "bad.csv"
+    _valid_catalogue_frame().drop(columns="R_500c_Mpc").to_csv(path, index=False)
+
+    with pytest.raises(ValueError, match="schema"):
+        validate_catalogue(path, _target("l2"), "base")
+
+
+def test_publish_failure_rolls_archived_file_back(tmp_path, monkeypatch):
+    """A failed staged install must restore the predecessor at its canonical path."""
+    staged = tmp_path / "stage/catalogue.csv"
+    canonical = tmp_path / "canonical/catalogue.csv"
+    archive = tmp_path / "archive/canonical/catalogue.csv"
+    manifest = tmp_path / "archive/manifest.json"
+    staged.parent.mkdir(parents=True)
+    canonical.parent.mkdir(parents=True)
+    staged.write_text("new\n")
+    canonical.write_text("old\n")
+    real_replace = os.replace
+    calls = 0
+
+    def fail_second_replace(source, destination):
+        nonlocal calls
+        calls += 1
+        if calls == 2:
+            raise OSError("injected staged install failure")
+        return real_replace(source, destination)
+
+    monkeypatch.setattr(os, "replace", fail_second_replace)
+
+    with pytest.raises(OSError, match="injected"):
+        publish_file(staged, canonical, archive, manifest)
+
+    assert canonical.read_text() == "old\n"
+    assert staged.read_text() == "new\n"
+    assert not archive.exists()
+    assert not manifest.exists()
+
+
+def test_publish_archives_old_and_installs_new_at_same_name(tmp_path):
+    """Successful publication must preserve the canonical basename and old bytes."""
+    staged = tmp_path / "stage/catalogue.csv"
+    canonical = tmp_path / "canonical/catalogue.csv"
+    archive = tmp_path / "archive/canonical/catalogue.csv"
+    manifest = tmp_path / "archive/manifest.json"
+    staged.parent.mkdir(parents=True)
+    canonical.parent.mkdir(parents=True)
+    staged.write_text("new\n")
+    canonical.write_text("old\n")
+
+    record = publish_file(staged, canonical, archive, manifest)
+
+    assert canonical.name == "catalogue.csv"
+    assert canonical.read_text() == "new\n"
+    assert archive.read_text() == "old\n"
+    assert record["canonical"] == str(canonical)
+    assert json.loads(manifest.read_text())["files"][str(canonical)]["status"] == "published"

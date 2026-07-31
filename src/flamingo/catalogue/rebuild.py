@@ -642,3 +642,144 @@ def derive_q_catalogues(
         "bytes": [path.stat().st_size for path in outputs],
         "sha256": [_sha256(path) for path in outputs],
     }
+
+
+def _columns_for_flavour(family: Family, flavour: str) -> tuple[str, ...]:
+    if flavour == "base":
+        return base_columns(family)
+    if flavour in {"q", "q_alpha"}:
+        return q_columns(family)
+    if flavour == "qmap":
+        return qmap_columns(family)
+    raise ValueError(f"unknown catalogue flavour: {flavour}")
+
+
+def _update_identity_digest(digest, frame: pd.DataFrame) -> None:
+    identity_columns = ("snap", "soap_index", "z", "x_Mpc", "y_Mpc", "z_Mpc")
+    hashes = pd.util.hash_pandas_object(
+        frame.loc[:, identity_columns], index=False
+    ).to_numpy(np.uint64)
+    digest.update(hashes.tobytes())
+
+
+def validate_catalogue(
+    path: Path,
+    target: CatalogueTarget,
+    flavour: str,
+    *,
+    chunk_size: int = 100_000,
+) -> dict[str, object]:
+    """Stream and validate one staged or canonical catalogue."""
+    if chunk_size <= 0:
+        raise ValueError("chunk_size must be positive")
+    path = Path(path)
+    expected = _columns_for_flavour(target.family, flavour)
+    identity_digest = hashlib.sha256()
+    selected_digest = hashlib.sha256()
+    rows = 0
+    selected_rows = 0
+    for chunk in pd.read_csv(
+        path,
+        comment="#",
+        chunksize=chunk_size,
+        float_precision="round_trip",
+    ):
+        if tuple(chunk.columns) != expected:
+            raise ValueError(f"{path}: schema does not match {flavour}/{target.family}")
+        numeric = chunk.select_dtypes(include=[np.number]).to_numpy()
+        if numeric.size and not np.all(np.isfinite(numeric)):
+            raise ValueError(f"{path}: non-finite numeric value")
+        z = chunk["z"].to_numpy(np.float64)
+        if not np.all((z >= 0.0) & (z < 3.0)):
+            raise ValueError(f"{path}: redshift outside [0, 3)")
+        mass = chunk["M_500c_Msun"].to_numpy(np.float64)
+        if flavour == "base":
+            if not np.all(mass >= 1.0e13):
+                raise ValueError(f"{path}: base mass below 1e13 Msun")
+            selected = mass > 5.0e13
+        else:
+            if not np.all(mass > 5.0e13):
+                raise ValueError(f"{path}: derived mass is not above 5e13 Msun")
+            selected = np.ones(len(chunk), dtype=bool)
+        if not np.all(chunk["R_500c_Mpc"].to_numpy(np.float64) > 0.0):
+            raise ValueError(f"{path}: non-positive R_500c_Mpc")
+        if flavour in {"q", "q_alpha"}:
+            q = chunk["q_from_mz"].to_numpy(np.float64)
+            if not np.all(q > 0.0):
+                raise ValueError(f"{path}: non-positive q_from_mz")
+        if flavour == "qmap":
+            if not np.all(chunk["theta_500_arcmin"].to_numpy() > 0.0):
+                raise ValueError(f"{path}: non-positive theta_500_arcmin")
+            if not np.all(chunk["sigma_Y500_arcmin2"].to_numpy() > 0.0):
+                raise ValueError(f"{path}: non-positive sigma_Y500_arcmin2")
+            if not np.all(chunk["npix_in_aperture"].to_numpy() >= 0):
+                raise ValueError(f"{path}: negative aperture pixel count")
+            if not np.all(chunk["q_from_aperture"].to_numpy() >= 0.0):
+                raise ValueError(f"{path}: negative q_from_aperture")
+        _update_identity_digest(identity_digest, chunk)
+        _update_identity_digest(selected_digest, chunk.loc[selected])
+        rows += len(chunk)
+        selected_rows += int(np.count_nonzero(selected))
+    if rows == 0:
+        raise ValueError(f"{path}: catalogue has no data rows")
+    return {
+        "path": str(path),
+        "target": target.key,
+        "flavour": flavour,
+        "rows": rows,
+        "selected_rows": selected_rows,
+        "identity_sha256": identity_digest.hexdigest(),
+        "selected_identity_sha256": selected_digest.hexdigest(),
+        "bytes": path.stat().st_size,
+        "sha256": _sha256(path),
+    }
+
+
+def publish_file(
+    staged: Path,
+    canonical: Path,
+    archive: Path,
+    manifest_path: Path,
+) -> dict[str, object]:
+    """Archive one predecessor and transactionally install its staged replacement."""
+    staged = Path(staged)
+    canonical = Path(canonical)
+    archive = Path(archive)
+    manifest_path = Path(manifest_path)
+    if not staged.is_file():
+        raise FileNotFoundError(f"missing staged file: {staged}")
+    if not canonical.is_file():
+        raise FileNotFoundError(f"missing canonical predecessor: {canonical}")
+    if archive.exists():
+        raise FileExistsError(f"archive entry already exists: {archive}")
+    archive.parent.mkdir(parents=True, exist_ok=True)
+    if manifest_path.exists():
+        with manifest_path.open() as handle:
+            manifest = json.load(handle)
+    else:
+        manifest = {"files": {}}
+    manifest.setdefault("files", {})
+    record = {
+        "status": "published",
+        "canonical": str(canonical),
+        "archive": str(archive),
+        "old_bytes": canonical.stat().st_size,
+        "old_sha256": _sha256(canonical),
+        "new_bytes": staged.stat().st_size,
+        "new_sha256": _sha256(staged),
+    }
+
+    os.replace(canonical, archive)
+    try:
+        os.replace(staged, canonical)
+    except BaseException:
+        os.replace(archive, canonical)
+        raise
+    try:
+        manifest["files"][str(canonical)] = record
+        _write_json_atomic(manifest_path, manifest)
+    except BaseException:
+        os.replace(canonical, staged)
+        os.replace(archive, canonical)
+        raise
+    return record
