@@ -2,6 +2,7 @@ from pathlib import Path
 
 import healpy as hp
 import numpy as np
+import pandas as pd
 
 from flamingo.catalogue.rebuild import (
     APERTURE_COLUMNS,
@@ -9,6 +10,7 @@ from flamingo.catalogue.rebuild import (
     CatalogueTarget,
     add_rotated_geometry,
     base_columns,
+    build_base_catalogue,
     build_snapshot_frame,
     catalogue_targets,
     q_columns,
@@ -97,11 +99,14 @@ class FakeSnapshotSource:
     def __init__(self, *, healthy_hint: bool = False):
         self.healthy_hint = healthy_hint
         self.full_identity_reads = 0
+        self.identity_reads = 0
+        self.property_rows = None
         self.soap_hbt = np.array([100, 200, 300])
         self.lightcone_hbt = np.array([300, 100, 300])
         self.hint = np.array([2, 0, 2]) if healthy_hint else np.array([0, 1, 0])
 
     def read_lightcone_identity(self, target, snap):
+        self.identity_reads += 1
         return self.lightcone_hbt.copy(), self.hint.copy()
 
     def read_soap_identity(self, target, snap, rows=None):
@@ -133,6 +138,19 @@ class FakeSnapshotSource:
         }
         return {name: values[rows] for name, values in fields.items()}
 
+    def read_soap_selection_fields(self, target, snap, rows):
+        fields = self.read_soap_fields(target, snap, rows)
+        return {name: fields[name] for name in ("is_central", "m500")}
+
+    def read_soap_property_fields(self, target, snap, rows):
+        self.property_rows = np.asarray(rows).copy()
+        fields = self.read_soap_fields(target, snap, rows)
+        return {
+            name: values
+            for name, values in fields.items()
+            if name not in {"is_central", "m500"}
+        }
+
 
 def _target(family="l1"):
     return CatalogueTarget(
@@ -152,6 +170,7 @@ def test_snapshot_frame_falls_back_from_stale_hint_and_pairs_current_soap():
     frame = build_snapshot_frame(source, _target("l1"), 75, 5.0e13)
 
     assert source.full_identity_reads == 1
+    assert source.property_rows.tolist() == [2]
     assert frame.columns.tolist() == [
         "snap",
         "soap_index",
@@ -239,8 +258,6 @@ def test_add_rotated_geometry_matches_official_inverse_rotator():
         "Y_5R500c_Mpc2": [3.5],
         "Y_5R500c_noAGN_Mpc2": [3.4],
     }
-    import pandas as pd
-
     frame = pd.DataFrame(frame)
     angles = np.array([[0.3], [0.4]])
 
@@ -254,3 +271,40 @@ def test_add_rotated_geometry_matches_official_inverse_rotator():
     assert np.isclose(output.loc[0, "theta_rot_rad"], expected_theta)
     assert np.isclose(output.loc[0, "phi_rot_rad"], expected_phi)
     assert np.isclose(output.loc[0, "x_rot_Mpc"], np.sin(expected_theta) * np.cos(expected_phi))
+
+
+def test_base_writer_resumes_from_verified_snapshot_parts(tmp_path):
+    """A retry must not redownload snapshots whose atomic parts already validate."""
+    source = FakeSnapshotSource(healthy_hint=True)
+    staged = tmp_path / "catalogues/base.csv"
+    target = _target("l2")
+
+    first = build_base_catalogue(
+        target,
+        staged,
+        source,
+        snaps=(75, 76),
+        shell_radii_mpc=np.array([20.0]),
+        angles=np.zeros((2, 1)),
+        mass_cut_msun=5.0e13,
+    )
+    parts = sorted((staged.parent / f".{staged.name}.parts").glob("snap_*.csv"))
+    part_bytes = [part.read_bytes() for part in parts]
+    staged.unlink()
+    source.identity_reads = 0
+
+    second = build_base_catalogue(
+        target,
+        staged,
+        source,
+        snaps=(75, 76),
+        shell_radii_mpc=np.array([20.0]),
+        angles=np.zeros((2, 1)),
+        mass_cut_msun=5.0e13,
+    )
+
+    assert first["rows"] == second["rows"] == 4
+    assert source.identity_reads == 0
+    assert [part.read_bytes() for part in parts] == part_bytes
+    assert staged.is_file()
+    assert pd.read_csv(staged, comment="#").columns.tolist() == list(base_columns("l2"))

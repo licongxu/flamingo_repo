@@ -1,9 +1,14 @@
 """Identity-safe FLAMINGO catalogue rebuild metadata and primitives."""
 from __future__ import annotations
 
+import hashlib
+import json
 from dataclasses import dataclass
+import os
 from pathlib import Path
+import shutil
 from typing import Literal
+import uuid
 
 import healpy as hp
 import numpy as np
@@ -239,15 +244,35 @@ def build_snapshot_frame(
     unique_soap_rows, inverse = np.unique(
         soap_rows_for_lightcone, return_inverse=True
     )
-    fields = {
+    selection_fields = {
         name: np.asarray(values)
-        for name, values in source.read_soap_fields(
+        for name, values in source.read_soap_selection_fields(
             target, snap, unique_soap_rows
         ).items()
     }
-    required = {
-        "is_central",
-        "m500",
+    selection_required = {"is_central", "m500"}
+    missing = sorted(selection_required.difference(selection_fields))
+    if missing:
+        raise ValueError(f"missing SOAP selection field(s): {', '.join(missing)}")
+    if any(
+        selection_fields[name].shape != unique_soap_rows.shape
+        for name in selection_required
+    ):
+        raise ValueError("SOAP selection field shape does not match requested rows")
+
+    selected_unique = np.asarray(selection_fields["is_central"], dtype=bool) & (
+        np.asarray(selection_fields["m500"], dtype=np.float64) * 1.0e10
+        >= mass_cut_msun
+    )
+    selected_soap_rows = unique_soap_rows[selected_unique]
+    selected_m500 = np.asarray(selection_fields["m500"])[selected_unique]
+    properties = {
+        name: np.asarray(values)
+        for name, values in source.read_soap_property_fields(
+            target, snap, selected_soap_rows
+        ).items()
+    }
+    property_required = {
         "m200c",
         "m200m",
         "r500",
@@ -255,16 +280,17 @@ def build_snapshot_frame(
         "r200m",
     }
     if target.family == "l1":
-        required.update({"y500", "y500_noagn", "y5r500", "y5r500_noagn"})
-    missing = sorted(required.difference(fields))
+        property_required.update(
+            {"y500", "y500_noagn", "y5r500", "y5r500_noagn"}
+        )
+    missing = sorted(property_required.difference(properties))
     if missing:
-        raise ValueError(f"missing SOAP field(s): {', '.join(missing)}")
-    if any(fields[name].shape != unique_soap_rows.shape for name in required):
-        raise ValueError("SOAP field shape does not match requested unique rows")
-
-    selected_unique = np.asarray(fields["is_central"], dtype=bool) & (
-        np.asarray(fields["m500"], dtype=np.float64) * 1.0e10 >= mass_cut_msun
-    )
+        raise ValueError(f"missing SOAP property field(s): {', '.join(missing)}")
+    if any(
+        properties[name].shape != selected_soap_rows.shape
+        for name in property_required
+    ):
+        raise ValueError("SOAP property field shape does not match selected rows")
     selected_lightcone = selected_unique[inverse]
     lightcone_rows = np.flatnonzero(selected_lightcone)
     if lightcone_rows.size == 0:
@@ -288,9 +314,9 @@ def build_snapshot_frame(
         return pd.DataFrame(columns=columns)
 
     matched_soap_rows = soap_rows_for_lightcone[lightcone_rows]
-    unique_lookup = np.searchsorted(unique_soap_rows, matched_soap_rows)
-    if not np.array_equal(unique_soap_rows[unique_lookup], matched_soap_rows):
-        raise RuntimeError("resolved SOAP row escaped the unique lookup")
+    selected_lookup = np.searchsorted(selected_soap_rows, matched_soap_rows)
+    if not np.array_equal(selected_soap_rows[selected_lookup], matched_soap_rows):
+        raise RuntimeError("resolved SOAP row escaped the selected lookup")
     scale_factor = 1.0 / (1.0 + redshift)
     frame_data = {
         "snap": np.full(redshift.size, snap, dtype=np.int32),
@@ -299,20 +325,20 @@ def build_snapshot_frame(
         "x_Mpc": position[:, 0],
         "y_Mpc": position[:, 1],
         "z_Mpc": position[:, 2],
-        "M_500c_Msun": fields["m500"][unique_lookup] * 1.0e10,
-        "M_200c_Msun": fields["m200c"][unique_lookup] * 1.0e10,
-        "M_200m_Msun": fields["m200m"][unique_lookup] * 1.0e10,
-        "R_500c_Mpc": fields["r500"][unique_lookup] * scale_factor,
-        "R_200c_Mpc": fields["r200c"][unique_lookup] * scale_factor,
-        "R_200m_Mpc": fields["r200m"][unique_lookup] * scale_factor,
+        "M_500c_Msun": selected_m500[selected_lookup] * 1.0e10,
+        "M_200c_Msun": properties["m200c"][selected_lookup] * 1.0e10,
+        "M_200m_Msun": properties["m200m"][selected_lookup] * 1.0e10,
+        "R_500c_Mpc": properties["r500"][selected_lookup] * scale_factor,
+        "R_200c_Mpc": properties["r200c"][selected_lookup] * scale_factor,
+        "R_200m_Mpc": properties["r200m"][selected_lookup] * scale_factor,
     }
     if target.family == "l1":
         frame_data.update(
             {
-                "Y_500c_Mpc2": fields["y500"][unique_lookup],
-                "Y_500c_noAGN_Mpc2": fields["y500_noagn"][unique_lookup],
-                "Y_5R500c_Mpc2": fields["y5r500"][unique_lookup],
-                "Y_5R500c_noAGN_Mpc2": fields["y5r500_noagn"][unique_lookup],
+                "Y_500c_Mpc2": properties["y500"][selected_lookup],
+                "Y_500c_noAGN_Mpc2": properties["y500_noagn"][selected_lookup],
+                "Y_5R500c_Mpc2": properties["y5r500"][selected_lookup],
+                "Y_5R500c_noAGN_Mpc2": properties["y5r500_noagn"][selected_lookup],
             }
         )
     return pd.DataFrame(frame_data, columns=columns)
@@ -374,3 +400,152 @@ def add_rotated_geometry(
     for name, values in geometry.items():
         output[name] = values
     return output.loc[:, base_columns(family)]
+
+
+def _sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for block in iter(lambda: handle.read(8 * 1024 * 1024), b""):
+            digest.update(block)
+    return digest.hexdigest()
+
+
+def _write_json_atomic(path: Path, payload: dict) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_name(f"{path.name}.tmp-{os.getpid()}-{uuid.uuid4().hex}")
+    try:
+        with temporary.open("x") as handle:
+            json.dump(payload, handle, indent=2, sort_keys=True)
+            handle.write("\n")
+        os.replace(temporary, path)
+    except BaseException:
+        temporary.unlink(missing_ok=True)
+        raise
+
+
+def _read_progress(path: Path, target: CatalogueTarget) -> dict:
+    if not path.exists():
+        return {"target": target.key, "snapshots": {}}
+    with path.open() as handle:
+        progress = json.load(handle)
+    if progress.get("target") != target.key:
+        raise ValueError(f"progress target mismatch: {path}")
+    if not isinstance(progress.get("snapshots"), dict):
+        raise ValueError(f"malformed snapshot progress: {path}")
+    return progress
+
+
+def _part_is_verified(path: Path, record: dict, columns: tuple[str, ...]) -> bool:
+    if not path.is_file() or path.stat().st_size != record.get("bytes"):
+        return False
+    if _sha256(path) != record.get("sha256"):
+        return False
+    observed = tuple(pd.read_csv(path, nrows=0).columns)
+    return observed == columns
+
+
+def _base_provenance(target: CatalogueTarget) -> str:
+    return "\n".join(
+        [
+            f"# FLAMINGO {target.variant} halo lightcone{target.lightcone} catalogue from hdfstream.",
+            "# Selection: current SOAP M_500c >= 1e13 Msun, IsCentral=1, 0 <= z < 3.",
+            "# Identity join: halo-lightcone InputHalos/HaloCatalogueIndex -> current SOAP InputHalos/HaloCatalogueIndex.",
+            "# InputHalos/SOAPIndex is retained only as an identity-verified row hint and is never a join key.",
+            "# Masses are physical Msun; radii and positions are physical/comoving Mpc as named.",
+            "# Rotated coordinates use the official yang26 per-shell frame matching the Compton-y map.",
+        ]
+    ) + "\n"
+
+
+def build_base_catalogue(
+    target: CatalogueTarget,
+    staged_path: Path,
+    source,
+    *,
+    snaps: tuple[int, ...],
+    shell_radii_mpc: np.ndarray,
+    angles: np.ndarray,
+    mass_cut_msun: float = 1.0e13,
+) -> dict[str, object]:
+    """Build a resumable staged base catalogue from atomic snapshot parts."""
+    staged_path = Path(staged_path)
+    staged_path.parent.mkdir(parents=True, exist_ok=True)
+    parts_dir = staged_path.parent / f".{staged_path.name}.parts"
+    parts_dir.mkdir(parents=True, exist_ok=True)
+    progress_path = staged_path.parent / f".{staged_path.name}.progress.json"
+    progress = _read_progress(progress_path, target)
+    columns = base_columns(target.family)
+
+    for snap in snaps:
+        key = f"{snap:04d}"
+        part = parts_dir / f"snap_{snap:04d}.csv"
+        record = progress["snapshots"].get(key, {})
+        if _part_is_verified(part, record, columns):
+            continue
+
+        frame = build_snapshot_frame(source, target, snap, mass_cut_msun)
+        frame = add_rotated_geometry(
+            frame, shell_radii_mpc, angles, target.family
+        )
+        numeric = frame.select_dtypes(include=[np.number]).to_numpy()
+        if numeric.size and not np.all(np.isfinite(numeric)):
+            raise ValueError(f"{target.key} snap {snap}: non-finite numeric value")
+        temporary = part.with_name(
+            f"{part.name}.tmp-{os.getpid()}-{uuid.uuid4().hex}"
+        )
+        try:
+            frame.to_csv(temporary, index=False, float_format="%.17g")
+            os.replace(temporary, part)
+        except BaseException:
+            temporary.unlink(missing_ok=True)
+            raise
+        progress["snapshots"][key] = {
+            "rows": int(len(frame)),
+            "bytes": part.stat().st_size,
+            "sha256": _sha256(part),
+        }
+        _write_json_atomic(progress_path, progress)
+
+    missing = [
+        snap
+        for snap in snaps
+        if not _part_is_verified(
+            parts_dir / f"snap_{snap:04d}.csv",
+            progress["snapshots"].get(f"{snap:04d}", {}),
+            columns,
+        )
+    ]
+    if missing:
+        raise RuntimeError(f"unverified snapshot parts: {missing}")
+
+    temporary = staged_path.with_name(
+        f"{staged_path.name}.tmp-{os.getpid()}-{uuid.uuid4().hex}"
+    )
+    try:
+        with temporary.open("x") as output:
+            output.write(_base_provenance(target))
+            first = True
+            for snap in snaps:
+                part = parts_dir / f"snap_{snap:04d}.csv"
+                with part.open() as input_handle:
+                    header = input_handle.readline()
+                    if first:
+                        output.write(header)
+                        first = False
+                    shutil.copyfileobj(input_handle, output, length=8 * 1024 * 1024)
+        os.replace(temporary, staged_path)
+    except BaseException:
+        temporary.unlink(missing_ok=True)
+        raise
+
+    rows = sum(
+        int(progress["snapshots"][f"{snap:04d}"]["rows"]) for snap in snaps
+    )
+    return {
+        "target": target.key,
+        "path": str(staged_path),
+        "rows": rows,
+        "bytes": staged_path.stat().st_size,
+        "sha256": _sha256(staged_path),
+        "progress": str(progress_path),
+    }
