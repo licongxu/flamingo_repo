@@ -108,17 +108,26 @@ def cat_file(stem: str) -> Path:
     return CAT_DIR / f"halo_catalogue_M500c_5e13_zlt3_{stem}_yang26rot_qfrommz_alpha_fixed_1p12.csv"
 
 
-def load_catalogue(path: Path) -> dict[str, np.ndarray]:
+def load_catalogue(
+    path: Path,
+    q_column: str = "q_from_mz",
+) -> dict[str, np.ndarray]:
     """Stream the catalogue; keep only what the masking step needs."""
     cols: dict[str, list[np.ndarray]] = {"theta": [], "phi": [], "t500": [], "q": [], "nat": []}
     n_rows = 0
     rng = np.random.default_rng(0)
+    requested_columns = [
+        q_column if column == "q_from_mz" else column for column in COLUMNS
+    ]
     for chunk in pd.read_csv(
-        path, comment="#", usecols=COLUMNS + SAMPLE_COLUMNS, chunksize=CHUNK
+        path,
+        comment="#",
+        usecols=requested_columns + SAMPLE_COLUMNS,
+        chunksize=CHUNK,
     ):
         cols["theta"].append(chunk["theta_rot_rad"].to_numpy(np.float64))
         cols["phi"].append(chunk["phi_rot_rad"].to_numpy(np.float64))
-        cols["q"].append(chunk["q_from_mz"].to_numpy(np.float64))
+        cols["q"].append(chunk[q_column].to_numpy(np.float64))
         cols["t500"].append(
             theta_500(chunk["R_500c_Mpc"].to_numpy(np.float64), chunk["z"].to_numpy(np.float64))
         )
