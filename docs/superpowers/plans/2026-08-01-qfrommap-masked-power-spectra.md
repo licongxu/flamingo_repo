@@ -18,9 +18,10 @@
 - L1 reads corrected staging catalogues; L2 reads audited canonical catalogues.
 - Hide GPUs and disable JAX preallocation.
 - Pilot runs serially with one map process and at most 8 OpenMP threads.
-- Production may use two map workers (16 OpenMP threads total) only if the
-  pilot peaks below 30 GiB RSS and the host remains lightly loaded; otherwise
-  it remains serial. Never exceed two map workers.
+- After the measured 20.7 GiB peak-RSS pilot and explicit approval for a
+  188 GiB memory ceiling, production may use eight map workers with eight
+  OpenMP threads each. The conservative peak estimate is 166 GiB and the CPU
+  cap is 64 of 96 physical cores.
 
 ---
 
@@ -100,7 +101,7 @@
 **Interfaces:**
 - Produces the complete matrix for 9 L1 maps, 8 L2 maps, 5 cuts, and 2 binnings.
 
-- [ ] **Step 1: Choose one or two production workers** from pilot peak RSS and current host load; cap each worker at eight OpenMP threads and never exceed two workers.
+- [ ] **Step 1: Choose production concurrency** from pilot peak RSS, current host load, and the approved 188 GiB memory ceiling; cap each worker at eight OpenMP threads and never exceed eight workers.
 - [ ] **Step 2: Start a resumable detached run** for the remaining eight L1 variants under that cap.
 - [ ] **Step 3: After L1 succeeds, run the remaining seven L2 lightcones** with the same cap.
 - [ ] **Step 4: Verify the expected 170 masked text files** exist (`17 maps * 5 cuts * 2 binnings`), are nonempty, finite, and have the expected 18 or 12 rows; verify metadata covers all 17 maps.

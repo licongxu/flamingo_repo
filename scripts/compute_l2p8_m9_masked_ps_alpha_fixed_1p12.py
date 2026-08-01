@@ -393,9 +393,9 @@ def main() -> None:
     parser.add_argument(
         "--workers",
         type=int,
-        choices=(1, 2),
+        choices=tuple(range(1, 9)),
         default=1,
-        help="parallel lightcones (hard-capped at 2 for host safety)",
+        help="parallel lightcones (maximum 8, one per lightcone)",
     )
     parser.add_argument(
         "--dry-run",

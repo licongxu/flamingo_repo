@@ -71,10 +71,11 @@ default behavior for reproducibility.
    natural coordinates. A failed rotation sanity check blocks that map.
 4. Require catalogue counts to match direct threshold counts and require all
    bandpowers/sky fractions to be finite and physical.
-5. Run the remaining eight L1 variants and seven L2p8 lightcones with at most
-   two map workers and eight OpenMP threads per worker. Use two workers only
-   when the serial pilot peaks below 30 GiB RSS and the host remains lightly
-   loaded; otherwise use one worker.
+5. After the measured 20.7 GiB peak-RSS pilot and explicit approval to use up
+   to half of the 376 GiB host, run with at most eight map workers and eight
+   OpenMP threads per worker. The conservative eight-worker estimate is
+   166 GiB, below the approved 188 GiB memory ceiling, and uses at most 64 of
+   96 physical cores.
 6. Verify the complete expected output matrix before plotting.
 7. Generate the two new comparison figures and visually inspect them.
 
