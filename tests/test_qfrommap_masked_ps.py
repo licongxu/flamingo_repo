@@ -70,3 +70,58 @@ def test_feedback_catalogue_loader_selects_requested_q_column(tmp_path):
 
     assert np.all(legacy["q"] == 3.0)
     assert np.all(aperture["q"] == 7.0)
+
+
+def test_l1_multi_q_paths_are_selection_tagged_and_use_corrected_catalogue():
+    module = _load_script(
+        "l1_multi_q_selection_test",
+        "scripts/compute_l1_m9_feedback_ratio_vs_q_bandpowers.py",
+    )
+    selection = resolve_q_selection("qfrommap")
+
+    catalogue = module.catalogue_path("L1_m9", selection)
+    output_18, output_log = module.out_paths(
+        "fiducial", "qgt5", selection.tag
+    )
+
+    assert catalogue == selection.l1_catalogue_dir / (
+        "halo_catalogue_M500c_5e13_zlt3_L1_m9_yang26rot_qfrommap.csv"
+    )
+    assert output_18.name == "Dl_yy_L1_m9_masked_qgt5_qfrommap_binned_18.txt"
+    assert output_log.name.endswith("qfrommap_logbins_dln0p4_lmax10000.txt")
+
+
+def test_l2_paths_are_selection_tagged_and_use_canonical_qfrommap_catalogue():
+    module = _load_script(
+        "l2_multi_q_selection_test",
+        "scripts/compute_l2p8_m9_masked_ps_alpha_fixed_1p12.py",
+    )
+    selection = resolve_q_selection("qfrommap")
+
+    catalogue = module.cat_file(3, selection)
+    output_18, output_log = module.masked_out_paths(3, "qgt5", selection.tag)
+
+    assert catalogue == selection.l2_root / "lightcone3/catalogues" / (
+        "halo_catalogue_M500c_5e13_zlt3_L2p8_m9_yang26rot_qfrommap.csv"
+    )
+    assert output_18.name == (
+        "Dl_yy_L2p8_m9_lc3_masked_qgt5_qfrommap_binned_18.txt"
+    )
+    assert output_log.name.endswith("qfrommap_logbins_dln0p4_lmax10000.txt")
+
+
+def test_qfrommap_defaults_exclude_legacy_q3_cut():
+    module = _load_script(
+        "l1_multi_q_default_cuts_test",
+        "scripts/compute_l1_m9_feedback_ratio_vs_q_bandpowers.py",
+    )
+
+    assert module.default_q_cuts("qfrommap") == [50.0, 20.0, 10.0, 5.0, 1.0]
+    assert module.default_q_cuts("qfrommz_alpha_fixed_1p12") == [
+        50.0,
+        20.0,
+        10.0,
+        5.0,
+        3.0,
+        1.0,
+    ]

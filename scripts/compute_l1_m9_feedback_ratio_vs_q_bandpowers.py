@@ -60,10 +60,25 @@ mod = importlib.util.module_from_spec(spec)
 sys.modules["feedback_bp"] = mod
 spec.loader.exec_module(mod)
 
+from flamingo.powerspectra.q_selection import (  # noqa: E402
+    QSelection,
+    resolve_q_selection,
+)
+
 # All nine prescriptions (same as paper feedback compute).
 VARIANTS = list(mod.VARIANTS)  # (name, map_stem, cat_stem)
 
-DEFAULT_Q_CUTS = [50.0, 20.0, 10.0, 5.0, 3.0, 1.0]
+LEGACY_Q_CUTS = [50.0, 20.0, 10.0, 5.0, 3.0, 1.0]
+QFROMMAP_Q_CUTS = [50.0, 20.0, 10.0, 5.0, 1.0]
+
+
+def default_q_cuts(selection_name: str) -> list[float]:
+    """Default thresholds for the requested catalogue selection."""
+    return list(
+        QFROMMAP_Q_CUTS
+        if selection_name == "qfrommap"
+        else LEGACY_Q_CUTS
+    )
 
 
 def cut_tag(q: float) -> str:
@@ -72,12 +87,24 @@ def cut_tag(q: float) -> str:
     return f"qgt{str(q).replace('.', 'p')}"
 
 
-def out_paths(variant: str, tag: str) -> tuple[Path, Path]:
+def catalogue_path(cat_stem: str, selection: QSelection) -> Path:
+    """Catalogue input for one L1 feedback prescription."""
+    return selection.l1_catalogue_dir / (
+        f"halo_catalogue_M500c_5e13_zlt3_{cat_stem}_yang26rot_"
+        f"{selection.tag}.csv"
+    )
+
+
+def out_paths(
+    variant: str,
+    tag: str,
+    selection_tag: str = mod.TAG,
+) -> tuple[Path, Path]:
     """Paper naming: fiducial uses L1_m9 without variant token."""
     if variant == "fiducial":
-        stem = f"Dl_yy_L1_m9_masked_{tag}_{mod.TAG}"
+        stem = f"Dl_yy_L1_m9_masked_{tag}_{selection_tag}"
     else:
-        stem = f"Dl_yy_L1_m9_{variant}_masked_{tag}_{mod.TAG}"
+        stem = f"Dl_yy_L1_m9_{variant}_masked_{tag}_{selection_tag}"
     return (
         OUT_DIR / f"{stem}_binned_18.txt",
         OUT_DIR / f"{stem}_logbins_dln0p4_lmax10000.txt",
@@ -113,12 +140,18 @@ def ensure_from_legacy(variant: str, tag: str) -> bool:
     return True
 
 
-def write_cut(variant: str, q_cut: float, dl18: np.ndarray, dl12: np.ndarray) -> None:
+def write_cut(
+    variant: str,
+    q_cut: float,
+    dl18: np.ndarray,
+    dl12: np.ndarray,
+    selection_tag: str = mod.TAG,
+) -> None:
     tag = cut_tag(q_cut)
-    p18, p12 = out_paths(variant, tag)
+    p18, p12 = out_paths(variant, tag, selection_tag)
     if variant == "fiducial":
         common = (
-            f"L1_m9 fiducial masked tSZ, q>{q_cut:g} ({mod.TAG}); "
+            f"L1_m9 fiducial masked tSZ, q>{q_cut:g} ({selection_tag}); "
             f"synthetic-data masking: r=max({mod.R_MULT:g}*theta500, 2x{mod.FWHM_ARCMIN:g}arcmin), "
             f"{mod.APOTYPE} apodization {mod.APOSIZE_DEG} deg, masked monopole subtracted, "
             f"NaMaster MASTER per-ell, pixwin deconvolved"
@@ -126,7 +159,7 @@ def write_cut(variant: str, q_cut: float, dl18: np.ndarray, dl12: np.ndarray) ->
     else:
         common = (
             f"L1_m9 {variant} lightcone-0 tSZ; HEALPix Nside=4096 pixel window deconvolved; "
-            f"masked q>{q_cut:g} ({mod.TAG}); r=max({mod.R_MULT:g}*theta500, 2x{mod.FWHM_ARCMIN:g}arcmin), "
+            f"masked q>{q_cut:g} ({selection_tag}); r=max({mod.R_MULT:g}*theta500, 2x{mod.FWHM_ARCMIN:g}arcmin), "
             f"{mod.APOTYPE} apodization {mod.APOSIZE_DEG} deg, masked monopole subtracted, "
             f"NaMaster MASTER per-ell (nlb=1, lmax={mod.LMAX})"
         )
@@ -149,16 +182,21 @@ def process_variant(
     cat_stem: str,
     q_cuts: list[float],
     force: bool,
+    selection: QSelection,
 ) -> dict:
     """Load one map+catalogue; compute any missing q cuts. Returns metadata."""
     t0 = time.time()
     needed: list[float] = []
     for q in q_cuts:
         tag = cut_tag(q)
-        p18, p12 = out_paths(variant, tag)
+        p18, p12 = out_paths(variant, tag, selection.tag)
         if not force and p18.is_file() and p12.is_file():
             continue
-        if not force and ensure_from_legacy(variant, tag):
+        if (
+            not force
+            and selection.tag == mod.TAG
+            and ensure_from_legacy(variant, tag)
+        ):
             continue
         needed.append(q)
 
@@ -182,12 +220,25 @@ def process_variant(
     nside = hp.npix2nside(ymap.size)
     if nside != 4096:
         raise RuntimeError(f"{variant}: expected nside=4096, got {nside}")
-    cat = mod.load_catalogue(mod.cat_file(cat_stem))
+    cat_path = catalogue_path(cat_stem, selection)
+    cat = mod.load_catalogue(cat_path, q_column=selection.q_column)
     qv, theta, phi, t500 = cat["q"], cat["theta"], cat["phi"], cat["t500"]
     print(
-        f"[{variant}] catalogue {qv.size:,} from {mod.cat_file(cat_stem).name}",
+        f"[{variant}] catalogue {qv.size:,} from {cat_path.name}",
         flush=True,
     )
+    sample = cat["nat_sample"]
+    r_nat = mod.rotation_sanity(ymap, sample[:, 0], sample[:, 1])
+    r_rot = mod.rotation_sanity(ymap, sample[:, 2], sample[:, 3])
+    print(
+        f"[{variant}] rotation sanity: rot={r_rot['ratio']:.2f}, "
+        f"nat={r_nat['ratio']:.2f}",
+        flush=True,
+    )
+    if r_rot["ratio"] <= r_nat["ratio"]:
+        raise RuntimeError(
+            f"{variant}: rotated positions do not trace tSZ peaks better than natural ones"
+        )
 
     for q_cut in needed:
         tag = cut_tag(q_cut)
@@ -209,7 +260,7 @@ def process_variant(
         del mask_apo
         dl18 = mod.bin_dl_18(ell, cl)
         dl12 = mod.bin_cl_log(ell, cl)
-        write_cut(variant, q_cut, dl18, dl12)
+        write_cut(variant, q_cut, dl18, dl12, selection.tag)
         dt = time.time() - t_cut
         meta["cuts"][tag] = {
             "q_cut": q_cut,
@@ -218,7 +269,7 @@ def process_variant(
             "f_sky_eff": f_sky_eff,
             "runtime_seconds": dt,
         }
-        p18, _ = out_paths(variant, tag)
+        p18, _ = out_paths(variant, tag, selection.tag)
         print(
             f"[{variant}] wrote {p18.name} in {dt/60:.1f} min "
             f"(elapsed { (time.time()-t0)/60:.1f} min)",
@@ -237,9 +288,16 @@ def main() -> None:
         "--q-cuts",
         type=float,
         nargs="+",
-        default=DEFAULT_Q_CUTS,
-        help="q thresholds (default: 50 20 10 5 3 1)",
+        default=None,
+        help="q thresholds (selection-specific default)",
     )
+    parser.add_argument(
+        "--selection",
+        choices=(mod.TAG, "qfrommap"),
+        default=mod.TAG,
+        help="catalogue q selection (default: legacy q-from-mass/redshift)",
+    )
+    parser.add_argument("--l1-catalogue-dir", type=Path)
     parser.add_argument(
         "--variants",
         nargs="+",
@@ -253,7 +311,16 @@ def main() -> None:
         help="parallel variant workers (default 1; try 3–4 with OMP_NUM_THREADS=8)",
     )
     parser.add_argument("--force", action="store_true", help="recompute even if present")
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="list inputs and outputs without reading maps",
+    )
     args = parser.parse_args()
+    selection = resolve_q_selection(
+        args.selection, l1_catalogue_dir=args.l1_catalogue_dir
+    )
+    q_cuts = args.q_cuts or default_q_cuts(args.selection)
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     selected = VARIANTS
@@ -264,16 +331,25 @@ def main() -> None:
         if missing:
             raise SystemExit(f"unknown variants: {sorted(missing)}")
 
+    if args.dry_run:
+        for variant, map_stem, cat_stem in selected:
+            print(f"{variant}: map={mod.map_file(map_stem)}")
+            print(f"  catalogue={catalogue_path(cat_stem, selection)}")
+            for q in q_cuts:
+                print(f"  outputs={out_paths(variant, cut_tag(q), selection.tag)}")
+        return
+
     # Pre-link any legacy qgt1/qgt5 into binned_bandpowers so workers skip them.
-    if not args.force:
+    if not args.force and selection.tag == mod.TAG:
         for variant, _, _ in selected:
-            for q in args.q_cuts:
+            for q in q_cuts:
                 ensure_from_legacy(variant, cut_tag(q))
 
     print(
         f"OUT_DIR={OUT_DIR}\n"
         f"variants={[v[0] for v in selected]}\n"
-        f"q_cuts={args.q_cuts}\n"
+        f"selection={selection.tag} q_column={selection.q_column}\n"
+        f"q_cuts={q_cuts}\n"
         f"workers={args.workers}  OMP_NUM_THREADS={os.environ.get('OMP_NUM_THREADS', 'unset')}",
         flush=True,
     )
@@ -283,13 +359,21 @@ def main() -> None:
     if args.workers <= 1:
         for variant, map_stem, cat_stem in selected:
             results.append(
-                process_variant(variant, map_stem, cat_stem, args.q_cuts, args.force)
+                process_variant(
+                    variant, map_stem, cat_stem, q_cuts, args.force, selection
+                )
             )
     else:
         with ProcessPoolExecutor(max_workers=args.workers) as pool:
             futs = {
                 pool.submit(
-                    process_variant, variant, map_stem, cat_stem, args.q_cuts, args.force
+                    process_variant,
+                    variant,
+                    map_stem,
+                    cat_stem,
+                    q_cuts,
+                    args.force,
+                    selection,
                 ): variant
                 for variant, map_stem, cat_stem in selected
             }
@@ -301,16 +385,19 @@ def main() -> None:
                     print(f"[{variant}] FAILED: {exc}", flush=True)
                     raise
 
-    meta_path = OUT_DIR / "L1_m9_feedback_multi_q_bandpowers_metadata.json"
+    meta_path = OUT_DIR / (
+        f"L1_m9_feedback_multi_q_bandpowers_{selection.tag}_metadata.json"
+    )
     payload = {
         "out_dir": str(OUT_DIR),
-        "catalogue_suffix": "_yang26rot_qfrommz_alpha_fixed_1p12.csv",
+        "catalogue_suffix": f"_yang26rot_{selection.tag}.csv",
+        "q_column": selection.q_column,
         "masking": {
             "radius": f"max({mod.R_MULT:g}*theta500, 2*FWHM), FWHM={mod.FWHM_ARCMIN:g} arcmin",
             "apodization": f"{mod.APOTYPE} {mod.APOSIZE_DEG} deg",
             "estimator": f"NaMaster MASTER, nlb=1, lmax={mod.LMAX}, no beam, pixwin deconvolved",
         },
-        "q_cuts": list(args.q_cuts),
+        "q_cuts": list(q_cuts),
         "workers": args.workers,
         "variants": {r["variant"]: r for r in results},
         "runtime_seconds": time.time() - t0,
