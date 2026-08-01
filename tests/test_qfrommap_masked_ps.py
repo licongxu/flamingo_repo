@@ -125,3 +125,22 @@ def test_qfrommap_defaults_exclude_legacy_q3_cut():
         3.0,
         1.0,
     ]
+
+
+def test_comparison_plot_uses_l2_lightcone0_qfrommap_product(tmp_path):
+    module = _load_script(
+        "masked_ps_plot_selection_test",
+        "scripts/plot_l1_l2p8_m9_masked_ps_comparison.py",
+    )
+
+    path = module._paths(
+        "L2p8_m9_lc0",
+        "qgt5",
+        log=False,
+        selection_tag="qfrommap",
+        data=tmp_path,
+    )
+
+    assert path == tmp_path / (
+        "Dl_yy_L2p8_m9_lc0_masked_qgt5_qfrommap_binned_18.txt"
+    )
