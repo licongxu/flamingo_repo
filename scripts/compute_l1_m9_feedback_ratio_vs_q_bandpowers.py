@@ -52,7 +52,8 @@ import pymaster as nmt
 
 REPO = Path(__file__).resolve().parents[1]
 FEEDBACK = REPO / "scripts" / "compute_l1_m9_feedback_bandpowers.py"
-OUT_DIR = REPO / "data_paper" / "binned_bandpowers"
+DATA_ROOT = Path(os.environ.get("FLAMINGO_ROOT", str(REPO)))
+OUT_DIR = DATA_ROOT / "data_paper" / "binned_bandpowers"
 LEGACY_FB = REPO / "data_paper" / "feedback_bandpower"
 
 spec = importlib.util.spec_from_file_location("feedback_bp", FEEDBACK)
