@@ -22,9 +22,11 @@ Run::
     python -m paper_results.figures            # all figures
     python -m paper_results.figures --figure fiducial
 """
+
 from __future__ import annotations
 
 import argparse
+import json
 
 import matplotlib
 
@@ -45,8 +47,36 @@ THEORY_ELL_RANGE = (100.0, 1.0e4)
 FEEDBACK_CUT = 5.0
 
 
+#: Published bandpower products: log bins of ``Delta ln ell = 0.4`` up to ``ell = 10^4``.
+BANDPOWER_SUFFIX = "logbins_dln0p4_lmax10000"
+
+#: Masking prescription tag of the published masked bandpowers.
+MASK_TAG = "qfrommz_alpha_fixed_1p12"
+OUTPUT_TAG = ""
+
+
+def _read_dl(path) -> tuple[np.ndarray, np.ndarray]:
+    """Read one ``ell_eff``/``1e12 D_ell`` bandpower file, returning raw ``D_ell``."""
+    if not path.exists():
+        raise FileNotFoundError(f"missing bandpower file {path}")
+    ell, dl_1e12 = np.loadtxt(path, unpack=True)
+    return ell, dl_1e12 * 1.0e-12
+
+
+def masked_bandpower_path(variant: str, tag: str, *, mask_tag: str | None = None):
+    """Return one L1 masked-bandpower path for a selection and feedback variant."""
+    mask_tag = MASK_TAG if mask_tag is None else mask_tag
+    token = "" if variant == config.FIDUCIAL else f"_{variant}"
+    return (
+        config.REPO
+        / "data_paper"
+        / "binned_bandpowers"
+        / f"Dl_yy_L1_m9{token}_masked_{tag}_{mask_tag}_{BANDPOWER_SUFFIX}.txt"
+    )
+
+
 def load(variant: str) -> dict:
-    """Load the bandpower file of one variant.
+    """Load the published bandpowers of one variant from ``data_paper/``.
 
     Parameters
     ----------
@@ -56,12 +86,58 @@ def load(variant: str) -> dict:
     Returns
     -------
     dict
-        Contents of ``results/bandpowers/<variant>.npz``.
+        ``ell``, ``dl_fullsky``, ``dl_masked`` (one row per cut, ordered as
+        :data:`config.Q_CUTS`), ``q_cuts``, ``n_masked`` and ``fsky``.
+        ``n_masked``/``fsky``/``q_cuts`` are only consumed by
+        :func:`figure_fiducial`, which loads :data:`config.FIDUCIAL`; the
+        per-cut mask metadata does not exist for the other variants and is
+        returned as ``nan`` there.
     """
-    path = config.BANDPOWERS / f"{variant}.npz"
-    if not path.exists():
-        raise FileNotFoundError(f"{path} missing; run `python -m paper_results.compute_ps` first")
-    return dict(np.load(path, allow_pickle=True))
+    root = config.REPO / "data_paper"
+    fiducial = variant == config.FIDUCIAL
+    # The fiducial run is spelled "fiducial" in the full-sky files and carries
+    # no variant token at all in the masked ones.
+    name = "fiducial" if fiducial else variant
+
+    ell, dl_fullsky = _read_dl(
+        root / "feedback_bandpower" / f"Dl_yy_L1_m9_{name}_fullsky_{BANDPOWER_SUFFIX}.txt"
+    )
+
+    dl_masked = []
+    for tag in config.CUT_TAGS:
+        _, dl = _read_dl(masked_bandpower_path(variant, tag))
+        dl_masked.append(dl)
+
+    n_masked = np.full(len(config.CUT_TAGS), np.nan)
+    fsky = np.full(len(config.CUT_TAGS), np.nan)
+    if fiducial:
+        if MASK_TAG == "qfrommap":
+            meta = json.loads(
+                (
+                    root
+                    / "binned_bandpowers"
+                    / "L1_m9_feedback_multi_q_bandpowers_qfrommap_metadata.json"
+                ).read_text()
+            )["variants"]["fiducial"]["cuts"]
+        else:
+            meta = json.loads(
+                (root / "binned_bandpowers" / f"L1_m9_masked_{MASK_TAG}_metadata.json").read_text()
+            )["cuts"]
+        n_masked = np.array(
+            [meta.get(tag, {}).get("n_masked", np.nan) for tag in config.CUT_TAGS],
+            float,
+        )
+        fsky = np.array([meta.get(tag, {}).get("f_sky_eff", np.nan) for tag in config.CUT_TAGS])
+
+    return dict(
+        variant=variant,
+        ell=ell,
+        dl_fullsky=dl_fullsky,
+        dl_masked=np.stack(dl_masked),
+        q_cuts=np.array(config.Q_CUTS),
+        n_masked=n_masked,
+        fsky=fsky,
+    )
 
 
 def _finish(ax, *, xlabel: bool) -> None:
@@ -83,7 +159,11 @@ def figure_fiducial() -> None:
     full = data["dl_fullsky"]
 
     fig, (ax, axr) = plt.subplots(
-        2, 1, figsize=(6.4, 6.4), sharex=True, height_ratios=[2.4, 1],
+        2,
+        1,
+        figsize=(6.4, 6.4),
+        sharex=True,
+        height_ratios=[2.4, 1],
         gridspec_kw=dict(hspace=0.06),
     )
 
@@ -92,7 +172,9 @@ def figure_fiducial() -> None:
     for cut, dl, n, f, color in zip(
         data["q_cuts"], data["dl_masked"], data["n_masked"], data["fsky"], colors
     ):
-        label = rf"$q>{cut:g}$  ($N={int(n):,}$, $f_{{\rm sky}}={f:.3f}$)"
+        label = rf"$q>{cut:g}$"
+        if np.isfinite(n) and np.isfinite(f):
+            label += rf"  ($N={int(n):,}$, $f_{{\rm sky}}={f:.3f}$)"
         ax.loglog(ell[inside], dl[inside], lw=1.5, color=color, label=label)
         axr.semilogx(ell[inside], (dl / full)[inside], lw=1.5, color=color)
 
@@ -109,7 +191,7 @@ def figure_fiducial() -> None:
     _finish(ax, xlabel=False)
     _finish(axr, xlabel=True)
 
-    _save(fig, "fiducial_masked_tsz_ps")
+    _save(fig, f"fiducial_masked_tsz_ps{OUTPUT_TAG}")
 
 
 def figure_feedback() -> None:
@@ -124,7 +206,11 @@ def figure_feedback() -> None:
         return d["dl_masked"][icut] if masked else d["dl_fullsky"]
 
     fig, axes = plt.subplots(
-        2, 2, figsize=(11.0, 6.6), sharex=True, height_ratios=[2.4, 1],
+        2,
+        2,
+        figsize=(11.0, 6.6),
+        sharex=True,
+        height_ratios=[2.4, 1],
         gridspec_kw=dict(hspace=0.06, wspace=0.22),
     )
     titles = ("unmasked (total tSZ)", rf"masked, $q>{FEEDBACK_CUT:g}$")
@@ -155,7 +241,7 @@ def figure_feedback() -> None:
         fontsize=12,
     )
 
-    _save(fig, "feedback_tsz_ps")
+    _save(fig, f"feedback_tsz_ps{OUTPUT_TAG}")
 
 
 def figure_theory() -> None:
@@ -170,19 +256,32 @@ def figure_theory() -> None:
 
     ell_th = np.geomspace(*THEORY_ELL_RANGE, 64)
     model = cl_yy(ell_th, B=config.THEORY_B)
-    dl = {key: dl_of_cl(ell_th, model[f"cl{suffix}"]) for key, suffix in
-          (("total", ""), ("1h", "_1h"), ("2h", "_2h"))}
+    dl = {
+        key: dl_of_cl(ell_th, model[f"cl{suffix}"])
+        for key, suffix in (("total", ""), ("1h", "_1h"), ("2h", "_2h"))
+    }
 
     fig, (ax, axr) = plt.subplots(
-        2, 1, figsize=(6.4, 7.4), sharex=True, height_ratios=[3.0, 1],
+        2,
+        1,
+        figsize=(6.4, 7.4),
+        sharex=True,
+        height_ratios=[3.0, 1],
         gridspec_kw=dict(hspace=0.06),
     )
 
     ax.loglog(ell[inside], measured[inside], "k-", lw=2.2, label="FLAMINGO L1_m9 map")
     # The 2-halo term is ~2% of the signal, so the total sits on top of the
     # 1-halo curve: draw it wide and pale so the 1-halo dashes stay visible.
-    ax.loglog(ell_th, dl["total"], color="#c0392b", lw=4.0, alpha=0.35,
-              label="halo model, 1h + 2h", solid_capstyle="round")
+    ax.loglog(
+        ell_th,
+        dl["total"],
+        color="#c0392b",
+        lw=4.0,
+        alpha=0.35,
+        label="halo model, 1h + 2h",
+        solid_capstyle="round",
+    )
     ax.loglog(ell_th, dl["1h"], color="#c0392b", lw=1.3, ls="--", label="1-halo")
     ax.loglog(ell_th, dl["2h"], color="#c0392b", lw=1.3, ls=":", label="2-halo")
 
@@ -190,7 +289,8 @@ def figure_theory() -> None:
     axr.semilogx(
         ell[inside],
         measured[inside] / np.interp(ell[inside], ell_th, dl["total"]),
-        "k-", lw=1.6,
+        "k-",
+        lw=1.6,
     )
     axr.axhline(1.0, color="#c0392b", lw=1.0)
     for band in (0.9, 1.1):
@@ -213,10 +313,14 @@ def figure_theory() -> None:
     axr.set_xlabel(r"multipole $\ell$")
 
     ax.text(
-        0.97, 0.05,
+        0.97,
+        0.05,
         rf"$M\in[10^{{{np.log10(M_GRID[0]):.0f}}},\,10^{{{np.log10(M_GRID[-1]):.0f}}}]\,M_\odot$,"
         rf"  $z\in[{Z_GRID[0]:g},\,{Z_GRID[-1]:g}]$",
-        transform=ax.transAxes, fontsize=8.5, color="0.35", ha="right",
+        transform=ax.transAxes,
+        fontsize=8.5,
+        color="0.35",
+        ha="right",
     )
 
     _save(fig, "fiducial_tsz_ps_vs_halo_model")
@@ -240,9 +344,13 @@ FIGURES = {
 
 
 def main() -> None:
+    global MASK_TAG, OUTPUT_TAG
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--figure", choices=sorted(FIGURES), action="append")
+    parser.add_argument("--selection", choices=(MASK_TAG, "qfrommap"), default=MASK_TAG)
     args = parser.parse_args()
+    MASK_TAG = args.selection
+    OUTPUT_TAG = "_qfrommap" if MASK_TAG == "qfrommap" else ""
 
     plt.rcParams.update({"font.size": 10, "text.usetex": False, "mathtext.fontset": "cm"})
     for name in args.figure or sorted(FIGURES):

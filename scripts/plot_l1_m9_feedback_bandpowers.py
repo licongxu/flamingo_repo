@@ -12,8 +12,10 @@ Run::
 
     python scripts/plot_l1_m9_feedback_bandpowers.py
 """
+
 from __future__ import annotations
 
+import argparse
 import json
 from pathlib import Path
 
@@ -25,6 +27,7 @@ import numpy as np
 
 REPO = Path(__file__).resolve().parents[1]
 DATA = REPO / "data_paper" / "feedback_bandpower"
+MASKED_DATA = REPO / "data_paper" / "binned_bandpowers"
 COV = REPO / "data_paper" / "covariance"
 FIGURES = REPO / "figures" / "feedback"
 TAG = "qfrommz_alpha_fixed_1p12"
@@ -54,15 +57,44 @@ LABELS = {
 }
 
 
-def _path(variant: str, *, masked: bool, log: bool) -> Path:
+def _path(
+    variant: str,
+    *,
+    masked: bool,
+    log: bool,
+    selection_tag: str | None = None,
+) -> Path:
+    selection_tag = TAG if selection_tag is None else selection_tag
     suffix = "logbins_dln0p4_lmax10000" if log else "binned_18"
-    kind = f"masked_{CUT_TAG}_{TAG}" if masked else "fullsky"
-    return DATA / f"Dl_yy_L1_m9_{variant}_{kind}_{suffix}.txt"
+    if not masked:
+        return DATA / f"Dl_yy_L1_m9_{variant}_fullsky_{suffix}.txt"
+    root = MASKED_DATA if selection_tag == "qfrommap" else DATA
+    token = "" if selection_tag == "qfrommap" and variant == "fiducial" else f"_{variant}"
+    return root / f"Dl_yy_L1_m9{token}_masked_{CUT_TAG}_{selection_tag}_{suffix}.txt"
 
 
 def _load(path: Path) -> tuple[np.ndarray, np.ndarray]:
     data = np.loadtxt(path)
     return data[:, 0], data[:, 1]
+
+
+def output_stem(*, log: bool, selection_tag: str | None = None) -> Path:
+    """Return a tagged output stem without changing legacy filenames."""
+    selection_tag = TAG if selection_tag is None else selection_tag
+    bin_tag = "logbins" if log else "binned_18"
+    suffix = "qfrommap_qgt5" if selection_tag == "qfrommap" else "alpha_fixed_1p12"
+    return FIGURES / f"l1_m9_feedback_ps_{bin_tag}_{suffix}"
+
+
+def covariance_note(selection_tag: str) -> str:
+    """Describe only covariance actually drawn for the selected mask."""
+    if selection_tag == "qfrommap":
+        return ""
+    return (
+        "\n"
+        r"errors: custom-GNFW $\alpha_{\rm SZ}=1.12$, $B=1.41$, "
+        r"best-fit $A_{\rm SZ}$ covariance"
+    )
 
 
 def _load_error_sigmas(*, log: bool) -> dict[bool, tuple[np.ndarray, np.ndarray]]:
@@ -184,12 +216,29 @@ def _figure(
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument("--selection", choices=(TAG, "qfrommap"), default=TAG)
+    args = parser.parse_args()
+    TAG = args.selection
     plt.rcParams.update({"font.size": 10, "text.usetex": False, "mathtext.fontset": "cm"})
 
-    meta = json.loads((DATA / "L1_m9_feedback_bandpowers_metadata.json").read_text())
+    if TAG == "qfrommap":
+        meta = json.loads(
+            (MASKED_DATA / "L1_m9_feedback_multi_q_bandpowers_qfrommap_metadata.json").read_text()
+        )
+        entries = {v: meta["variants"][v]["cuts"][CUT_TAG] for v in VARIANTS}
+        q_description = "empirical aperture q"
+        error_sigmas_18 = None
+        error_sigmas_log = None
+    else:
+        meta = json.loads((DATA / "L1_m9_feedback_bandpowers_metadata.json").read_text())
+        entries = {v: meta["variants"][v] for v in VARIANTS}
+        q_description = r"$q$ from $\alpha_{\rm SZ}=1.12$ best fit"
+        error_sigmas_18 = _load_error_sigmas(log=False)
+        error_sigmas_log = _load_error_sigmas(log=True)
     print("f_sky_eff per variant:")
     for variant in VARIANTS:
-        entry = meta["variants"][variant]
+        entry = entries[variant]
         print(f"  {variant:26s} N_masked={entry['n_masked']:5d}  f_sky={entry['f_sky_eff']:.4f}")
 
     _figure(
@@ -197,24 +246,18 @@ if __name__ == "__main__":
         ell_range=(10.0, 959.5),
         title=(
             "FLAMINGO L1_m9 feedback variants: tSZ power spectrum "
-            r"(18 Planck bins; $q$ from $\alpha_{\rm SZ}=1.12$ best fit)"
-            "\n"
-            r"errors: custom-GNFW $\alpha_{\rm SZ}=1.12$, $B=1.41$, "
-            r"best-fit $A_{\rm SZ}$ covariance"
+            f"(18 Planck bins; {q_description})" + covariance_note(TAG)
         ),
-        stem=FIGURES / "l1_m9_feedback_ps_binned_18_alpha_fixed_1p12",
-        error_sigmas=_load_error_sigmas(log=False),
+        stem=output_stem(log=False),
+        error_sigmas=error_sigmas_18,
     )
     _figure(
         log=True,
         ell_range=(100.0, 10000.0),
         title=(
             "FLAMINGO L1_m9 feedback variants: tSZ power spectrum "
-            r"($\Delta\ln\ell=0.4$ log bins; $q$ from $\alpha_{\rm SZ}=1.12$ best fit)"
-            "\n"
-            r"errors: custom-GNFW $\alpha_{\rm SZ}=1.12$, $B=1.41$, "
-            r"best-fit $A_{\rm SZ}$ covariance"
+            rf"($\Delta\ln\ell=0.4$ log bins; {q_description})" + covariance_note(TAG)
         ),
-        stem=FIGURES / "l1_m9_feedback_ps_logbins_alpha_fixed_1p12",
-        error_sigmas=_load_error_sigmas(log=True),
+        stem=output_stem(log=True),
+        error_sigmas=error_sigmas_log,
     )

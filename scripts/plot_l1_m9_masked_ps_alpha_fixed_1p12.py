@@ -8,8 +8,10 @@ Run::
 
     python scripts/plot_l1_m9_masked_ps_alpha_fixed_1p12.py
 """
+
 from __future__ import annotations
 
+import argparse
 import json
 from pathlib import Path
 
@@ -28,9 +30,7 @@ Q_CUTS = [50.0, 20.0, 10.0, 5.0]
 CUT_TAGS = ["qgt50", "qgt20", "qgt10", "qgt5"]
 
 FULLSKY_18 = DATA / "Dl_yy_L1_m9_fullsky_binned_18.txt"
-FULLSKY_LOG = (
-    DATA / "Dl_yy_L1_m9_fiducial_fullsky_logbins_dln0p4_lmax10000_pixwin_deconvolved.txt"
-)
+FULLSKY_LOG = DATA / "Dl_yy_L1_m9_fiducial_fullsky_logbins_dln0p4_lmax10000_pixwin_deconvolved.txt"
 META = DATA / f"L1_m9_masked_{TAG}_metadata.json"
 
 OUT_18 = FIGURES / "l1_m9_masked_ps_binned_18_alpha_fixed_1p12"
@@ -55,9 +55,10 @@ def _load_two_column(path: Path) -> tuple[np.ndarray, np.ndarray]:
     return data[:, 0], data[:, 1]
 
 
-def _masked_paths(tag: str, *, log: bool) -> Path:
+def _masked_paths(tag: str, *, log: bool, selection_tag: str | None = None) -> Path:
+    selection_tag = TAG if selection_tag is None else selection_tag
     suffix = "logbins_dln0p4_lmax10000" if log else "binned_18"
-    return DATA / f"Dl_yy_L1_m9_masked_{tag}_{TAG}_{suffix}.txt"
+    return DATA / f"Dl_yy_L1_m9_masked_{tag}_{selection_tag}_{suffix}.txt"
 
 
 def _save(fig: plt.Figure, stem: Path, *, dpi: int = 300) -> None:
@@ -102,13 +103,12 @@ def _plot(
     )
     for (cut, tag, ell, dl), color in zip(masked, colors):
         keep = (ell >= ell_range[0]) & (ell <= ell_range[1])
-        meta = masked_meta[tag]
-        # Compact math legend: q cut + N and f_sky in math mode (no prose title).
-        label = (
-            rf"$q>{cut:g}$"
-            rf"~($N={meta['n_masked']}$, "
-            rf"$f_{{\mathrm{{sky}}}}={meta['f_sky_eff']:.3f}$)"
-        )
+        meta = masked_meta.get(tag)
+        label = rf"$q>{cut:g}$"
+        if meta is not None:
+            label += (
+                rf"~($N={meta['n_masked']}$, " rf"$f_{{\mathrm{{sky}}}}={meta['f_sky_eff']:.3f}$)"
+            )
         ax.loglog(
             ell[keep],
             dl[keep],
@@ -144,9 +144,21 @@ def _plot(
 
 
 if __name__ == "__main__":
-    with META.open() as handle:
-        meta_doc = json.load(handle)
-    masked_meta = meta_doc["cuts"]
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument("--selection", choices=(TAG, "qfrommap"), default=TAG)
+    args = parser.parse_args()
+    TAG = args.selection
+    if TAG == "qfrommap":
+        Q_CUTS = [50.0, 20.0, 10.0, 5.0, 1.0]
+        CUT_TAGS = ["qgt50", "qgt20", "qgt10", "qgt5", "qgt1"]
+        meta_path = DATA / "L1_m9_feedback_multi_q_bandpowers_qfrommap_metadata.json"
+        with meta_path.open() as handle:
+            masked_meta = json.load(handle)["variants"]["fiducial"]["cuts"]
+        OUT_18 = FIGURES / "l1_m9_masked_ps_binned_18_qfrommap"
+        OUT_LOG = FIGURES / "l1_m9_masked_ps_logbins_qfrommap"
+    else:
+        with META.open() as handle:
+            masked_meta = json.load(handle)["cuts"]
 
     # Paper figure: 12 log bins, LaTeX, no title.
     plt.rcParams.update(PAPER_RC)

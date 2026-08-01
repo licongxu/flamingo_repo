@@ -7,8 +7,10 @@ Run::
 
     python scripts/plot_l1_m9_feedback_bandpowers_qgt1.py
 """
+
 from __future__ import annotations
 
+import argparse
 import json
 from pathlib import Path
 
@@ -20,6 +22,7 @@ import numpy as np
 
 REPO = Path(__file__).resolve().parents[1]
 DATA = REPO / "data_paper" / "feedback_bandpower"
+MASKED_DATA = REPO / "data_paper" / "binned_bandpowers"
 COV = REPO / "data_paper" / "covariance"
 FIGURES = REPO / "figures" / "feedback"
 TAG = "qfrommz_alpha_fixed_1p12"
@@ -50,10 +53,19 @@ LABELS = {
 }
 
 
-def _path(variant: str, *, masked: bool, log: bool) -> Path:
+def _path(
+    variant: str,
+    *,
+    masked: bool,
+    log: bool,
+    selection_tag: str | None = None,
+) -> Path:
+    selection_tag = TAG if selection_tag is None else selection_tag
     suffix = "logbins_dln0p4_lmax10000" if log else "binned_18"
     if masked:
-        return DATA / f"Dl_yy_L1_m9_{variant}_masked_{CUT_TAG}_{TAG}_{suffix}.txt"
+        root = MASKED_DATA if selection_tag == "qfrommap" else DATA
+        token = "" if selection_tag == "qfrommap" and variant == "fiducial" else f"_{variant}"
+        return root / f"Dl_yy_L1_m9{token}_masked_{CUT_TAG}_{selection_tag}_{suffix}.txt"
     return DATA / f"Dl_yy_L1_m9_{variant}_fullsky_{suffix}.txt"
 
 
@@ -181,28 +193,51 @@ def _figure(
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument("--selection", choices=(TAG, "qfrommap"), default=TAG)
+    args = parser.parse_args()
+    TAG = args.selection
     plt.rcParams.update({"font.size": 10, "text.usetex": False, "mathtext.fontset": "cm"})
 
-    meta_path = DATA / f"L1_m9_feedback_bandpowers_{CUT_TAG}_metadata.json"
+    if TAG == "qfrommap":
+        meta_path = MASKED_DATA / "L1_m9_feedback_multi_q_bandpowers_qfrommap_metadata.json"
+        output_tag = "qfrommap"
+        q_description = "empirical aperture q"
+        error_sigmas_18 = None
+        error_sigmas_log = None
+    else:
+        meta_path = DATA / f"L1_m9_feedback_bandpowers_{CUT_TAG}_metadata.json"
+        output_tag = "alpha_fixed_1p12"
+        q_description = r"$q$ from $\alpha_{\rm SZ}=1.12$ best fit"
+        error_sigmas_18 = _load_error_sigmas(log=False)
+        error_sigmas_log = _load_error_sigmas(log=True)
     if meta_path.exists():
         meta = json.loads(meta_path.read_text())
         print("f_sky_eff per variant:")
         for variant in VARIANTS:
             entry = meta["variants"][variant]
-            print(f"  {variant:26s} N_masked={entry['n_masked']:5d}  f_sky={entry['f_sky_eff']:.4f}")
+            if TAG == "qfrommap":
+                entry = entry["cuts"][CUT_TAG]
+            print(
+                f"  {variant:26s} N_masked={entry['n_masked']:5d}  f_sky={entry['f_sky_eff']:.4f}"
+            )
 
     _figure(
         log=False,
         ell_range=(10.0, 959.5),
         title=(
             "FLAMINGO L1_m9 feedback variants: tSZ power spectrum "
-            rf"(18 Planck bins; masked $q>{Q_CUT:g}$; $q$ from $\alpha_{{\rm SZ}}=1.12$ best fit)"
-            "\n"
-            r"errors: custom-GNFW $\alpha_{\rm SZ}=1.12$, $B=1.41$, "
-            r"best-fit $A_{\rm SZ}$ covariance"
+            rf"(18 Planck bins; masked $q>{Q_CUT:g}$; {q_description})"
+            + (
+                ""
+                if TAG == "qfrommap"
+                else "\n"
+                + r"errors: custom-GNFW $\alpha_{\rm SZ}=1.12$, $B=1.41$, "
+                + r"best-fit $A_{\rm SZ}$ covariance"
+            )
         ),
-        stem=FIGURES / "l1_m9_feedback_ps_binned_18_alpha_fixed_1p12_qgt1",
-        error_sigmas=_load_error_sigmas(log=False),
+        stem=FIGURES / f"l1_m9_feedback_ps_binned_18_{output_tag}_qgt1",
+        error_sigmas=error_sigmas_18,
     )
     _figure(
         log=True,
@@ -210,11 +245,15 @@ if __name__ == "__main__":
         title=(
             "FLAMINGO L1_m9 feedback variants: tSZ power spectrum "
             rf"($\Delta\ln\ell=0.4$ log bins; masked $q>{Q_CUT:g}$; "
-            r"$q$ from $\alpha_{\rm SZ}=1.12$ best fit)"
-            "\n"
-            r"errors: custom-GNFW $\alpha_{\rm SZ}=1.12$, $B=1.41$, "
-            r"best-fit $A_{\rm SZ}$ covariance"
+            f"{q_description})"
+            + (
+                ""
+                if TAG == "qfrommap"
+                else "\n"
+                + r"errors: custom-GNFW $\alpha_{\rm SZ}=1.12$, $B=1.41$, "
+                + r"best-fit $A_{\rm SZ}$ covariance"
+            )
         ),
-        stem=FIGURES / "l1_m9_feedback_ps_logbins_alpha_fixed_1p12_qgt1",
-        error_sigmas=_load_error_sigmas(log=True),
+        stem=FIGURES / f"l1_m9_feedback_ps_logbins_{output_tag}_qgt1",
+        error_sigmas=error_sigmas_log,
     )

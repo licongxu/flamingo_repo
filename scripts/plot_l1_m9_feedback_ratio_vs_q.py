@@ -19,8 +19,10 @@ Run::
 
     python scripts/plot_l1_m9_feedback_ratio_vs_q.py
 """
+
 from __future__ import annotations
 
+import argparse
 from pathlib import Path
 
 import matplotlib
@@ -37,6 +39,8 @@ DATA_FB = REPO / "data_paper" / "feedback_bandpower"
 COV = REPO / "data_paper" / "covariance"
 FIGURES = REPO / "figures" / "feedback"
 TAG = "qfrommz_alpha_fixed_1p12"
+OUTPUT_TAG = "alpha_fixed_1p12"
+SELECTION_DESCRIPTION = r"$\alpha_{\rm SZ}=1.12$"
 
 FIDUCIAL = "fiducial"
 DEFAULT_VARIANT = "fgas-8sigma"
@@ -93,8 +97,23 @@ def curve_label(kind: str | float) -> str:
     return rf"$q>{float(kind):g}$"
 
 
-def bandpower_path(variant: str, kind: str | float, *, log: bool) -> Path:
+def error_band_description(
+    kinds: tuple[tuple[str | float, str], ...] | None = None,
+) -> str:
+    """Human-readable list of uncertainty bands actually drawn."""
+    kinds = ERROR_BAND_KINDS if kinds is None else kinds
+    return " and ".join(label for _, label in kinds)
+
+
+def bandpower_path(
+    variant: str,
+    kind: str | float,
+    *,
+    log: bool,
+    selection_tag: str | None = None,
+) -> Path:
     """Path to paper bandpowers for full sky or a masked q cut."""
+    selection_tag = TAG if selection_tag is None else selection_tag
     suffix = "logbins_dln0p4_lmax10000" if log else "binned_18"
     if kind == "fullsky":
         if variant in ("fiducial", "L1_m9"):
@@ -111,8 +130,8 @@ def bandpower_path(variant: str, kind: str | float, *, log: bool) -> Path:
 
     tag = cut_tag(float(kind))
     if variant in ("fiducial", "L1_m9"):
-        return DATA / f"Dl_yy_L1_m9_masked_{tag}_{TAG}_{suffix}.txt"
-    return DATA / f"Dl_yy_L1_m9_{variant}_masked_{tag}_{TAG}_{suffix}.txt"
+        return DATA / f"Dl_yy_L1_m9_masked_{tag}_{selection_tag}_{suffix}.txt"
+    return DATA / f"Dl_yy_L1_m9_{variant}_masked_{tag}_{selection_tag}_{suffix}.txt"
 
 
 def fullsky_bandpower_path(*, log: bool) -> Path:
@@ -204,9 +223,7 @@ def relative_error_band(
     ell, dl_f = load_bandpowers(bandpower_path(FIDUCIAL, kind, log=log))
     sigma = load_sigma_1e12(kind, log=log)
     if sigma.shape != ell.shape:
-        raise ValueError(
-            f"sigma length {sigma.shape} != ell length {ell.shape} for {kind}"
-        )
+        raise ValueError(f"sigma length {sigma.shape} != ell length {ell.shape} for {kind}")
     return ell, sigma / dl_f
 
 
@@ -387,14 +404,12 @@ def plot_ratio_vs_q(
         ax.set_xlabel(r"multipole $\ell$")
         ax.set_ylabel(r"$D_\ell^{\rm variant} / D_\ell^{\rm fiducial}$")
         vlab = VARIANT_LABELS.get(variant, variant)
-        bin_note = (
-            r"12 log bins ($\Delta\ln\ell=0.4$)" if log else "18 Planck bins"
-        )
+        bin_note = r"12 log bins ($\Delta\ln\ell=0.4$)" if log else "18 Planck bins"
         ax.set_title(
             rf"FLAMINGO L1_m9: {vlab} / fiducial ratio vs sky cut"
             f"\n"
-            rf"({bin_note}; $\alpha_{{\rm SZ}}=1.12$; "
-            r"bands: full-sky and $q>5$ theory $1\sigma$ about 1)",
+            rf"({bin_note}; {SELECTION_DESCRIPTION}; "
+            rf"bands: {error_band_description()} theory $1\sigma$ about 1)",
             fontsize=10.5,
         )
         ax.legend(
@@ -406,7 +421,7 @@ def plot_ratio_vs_q(
         )
         if stem is None:
             bin_tag = "logbins" if log else "binned_18"
-            stem = FIGURES / f"l1_m9_{variant}_ratio_vs_q_{bin_tag}_alpha_fixed_1p12"
+            stem = FIGURES / f"l1_m9_{variant}_ratio_vs_q_{bin_tag}_{OUTPUT_TAG}"
         return _save(fig, stem)
     return None
 
@@ -488,7 +503,7 @@ def plot_all_feedback_ratio_vs_q(
     fig.suptitle(
         rf"FLAMINGO L1_m9 feedback / fiducial ratio vs sky cut ({bin_note})"
         "\n"
-        r"shaded bands about 1: full-sky and $q>5$ custom-GNFW theory $1\sigma$ "
+        rf"shaded bands about 1: {error_band_description()} custom-GNFW theory $1\sigma$ "
         r"($\sigma_D/D_\ell^{\rm fid}$); y-range from ratio curves",
         fontsize=11,
         y=1.01,
@@ -497,11 +512,20 @@ def plot_all_feedback_ratio_vs_q(
 
     if stem is None:
         bin_tag = "logbins" if log else "binned_18"
-        stem = FIGURES / f"l1_m9_all_feedback_ratio_vs_q_{bin_tag}_alpha_fixed_1p12"
+        stem = FIGURES / f"l1_m9_all_feedback_ratio_vs_q_{bin_tag}_{OUTPUT_TAG}"
     return _save(fig, stem)
 
 
 def main() -> None:
+    global ERROR_BAND_KINDS, OUTPUT_TAG, SELECTION_DESCRIPTION, TAG
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument("--selection", choices=(TAG, "qfrommap"), default=TAG)
+    args = parser.parse_args()
+    TAG = args.selection
+    if TAG == "qfrommap":
+        OUTPUT_TAG = "qfrommap"
+        SELECTION_DESCRIPTION = "empirical aperture q"
+        ERROR_BAND_KINDS = (("fullsky", "full sky"),)
     plt.rcParams.update(
         {
             "font.size": 10,
@@ -515,15 +539,17 @@ def main() -> None:
     print(f"cov:  {COV.relative_to(REPO)}", flush=True)
     print(f"variants: {FEEDBACK_VARIANTS}", flush=True)
     print(f"curves: {curves}", flush=True)
-    print("error bands about 1: fullsky, q>5", flush=True)
+    print(
+        "error bands about 1: " + ", ".join(str(kind) for kind, _ in ERROR_BAND_KINDS),
+        flush=True,
+    )
     print(f"dpi={DPI}, gridlines=off, ylim=from curves", flush=True)
 
     for kind in curves:
         for log in (False, True):
             bp = bandpower_path(DEFAULT_VARIANT, kind, log=log)
             print(
-                f"  bp={'ok' if bp.is_file() else 'MISSING'}  {kind} "
-                f"{'log' if log else '18'}",
+                f"  bp={'ok' if bp.is_file() else 'MISSING'}  {kind} " f"{'log' if log else '18'}",
                 flush=True,
             )
 
@@ -535,12 +561,8 @@ def main() -> None:
     plot_all_feedback_ratio_vs_q(
         q_cuts=curves, log=True, ell_range=(100.0, 10000.0), shared_ylim=False
     )
-    plot_ratio_vs_q(
-        DEFAULT_VARIANT, q_cuts=curves, log=False, ell_range=(10.0, 959.5)
-    )
-    plot_ratio_vs_q(
-        DEFAULT_VARIANT, q_cuts=curves, log=True, ell_range=(100.0, 10000.0)
-    )
+    plot_ratio_vs_q(DEFAULT_VARIANT, q_cuts=curves, log=False, ell_range=(10.0, 959.5))
+    plot_ratio_vs_q(DEFAULT_VARIANT, q_cuts=curves, log=True, ell_range=(100.0, 10000.0))
 
 
 if __name__ == "__main__":
