@@ -85,10 +85,11 @@
 - Produces ten masked spectra per map (five cuts times two binnings), metadata, and two pilot comparison figures.
 
 - [ ] **Step 1: Record idle baseline** with `ps`, `free -h`, and `nproc`; confirm no stale NaMaster jobs.
-- [ ] **Step 2: Run L1 fiducial serially** with `CUDA_VISIBLE_DEVICES=`, `JAX_PLATFORMS=cpu`, `XLA_PYTHON_CLIENT_PREALLOCATE=false`, `OMP_NUM_THREADS=8`, and `--workers 1`.
-- [ ] **Step 3: Check** all five masked counts against direct catalogue threshold counts, finite bandpowers, `0 < f_sky_eff <= f_sky_raw <= 1`, peak RSS, and runtime.
-- [ ] **Step 4: Run L2 lightcone0 serially** under the same resource limits and repeat validation.
-- [ ] **Step 5: Generate and visually inspect** the 18-bin and log-bin q-from-map pilot comparison figures.
+- [ ] **Step 2: Run rotation preflight on all 17 map/catalogue pairs** and require the yang26-rotated peak ratio to exceed the natural-coordinate ratio for every map.
+- [ ] **Step 3: Run L1 fiducial serially** with `CUDA_VISIBLE_DEVICES=`, `JAX_PLATFORMS=cpu`, `XLA_PYTHON_CLIENT_PREALLOCATE=false`, `OMP_NUM_THREADS=8`, and `--workers 1`.
+- [ ] **Step 4: Check** all five masked counts against direct catalogue threshold counts, finite bandpowers, `0 < f_sky_eff <= f_sky_raw <= 1`, peak RSS, and runtime.
+- [ ] **Step 5: Run L2 lightcone0 serially** under the same resource limits and repeat validation.
+- [ ] **Step 6: Generate and visually inspect** the 18-bin and log-bin q-from-map pilot comparison figures.
 
 ### Task 5: All-map production and final verification
 

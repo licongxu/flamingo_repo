@@ -66,14 +66,17 @@ default behavior for reproducibility.
 1. Unit-test selection-mode parsing, catalogue path resolution, q-column
    choice, and collision-free output names.
 2. Run an L1 fiducial plus L2p8 lightcone0 pilot for all five cuts.
-3. Require catalogue counts to match direct threshold counts and require all
+3. Before any NaMaster run, require every catalogue's yang26-rotated
+   coordinates to trace its paired map's tSZ peaks more strongly than the
+   natural coordinates. A failed rotation sanity check blocks that map.
+4. Require catalogue counts to match direct threshold counts and require all
    bandpowers/sky fractions to be finite and physical.
-4. Run the remaining eight L1 variants and seven L2p8 lightcones with at most
+5. Run the remaining eight L1 variants and seven L2p8 lightcones with at most
    two map workers and eight OpenMP threads per worker. Use two workers only
    when the serial pilot peaks below 30 GiB RSS and the host remains lightly
    loaded; otherwise use one worker.
-5. Verify the complete expected output matrix before plotting.
-6. Generate the two new comparison figures and visually inspect them.
+6. Verify the complete expected output matrix before plotting.
+7. Generate the two new comparison figures and visually inspect them.
 
 Failures leave completed q-from-map products resumable and never alter any
 q-from-mz product.
