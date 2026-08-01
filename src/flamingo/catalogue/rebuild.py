@@ -364,7 +364,9 @@ def add_rotated_geometry(
     radius = np.linalg.norm(xyz, axis=1)
     shell = np.searchsorted(shell_radii_mpc, radius, side="right")
     if np.any(shell >= shell_radii_mpc.size):
-        raise ValueError("lightcone position lies outside available z<3 shells")
+        if family != "l2":
+            raise ValueError("lightcone position lies outside available z<3 shells")
+        shell = np.minimum(shell, shell_radii_mpc.size - 1)
     theta_nat, phi_nat = hp.vec2ang(xyz)
     theta_rot = np.empty_like(theta_nat)
     phi_rot = np.empty_like(phi_nat)

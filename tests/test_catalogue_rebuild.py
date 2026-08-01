@@ -283,6 +283,36 @@ def test_add_rotated_geometry_matches_official_inverse_rotator():
     assert np.isclose(output.loc[0, "x_rot_Mpc"], np.sin(expected_theta) * np.cos(expected_phi))
 
 
+def test_l2_geometry_keeps_redshift_selected_halo_beyond_last_shell_edge():
+    """A z<3 L2 halo just outside the real-space edge belongs to shell 59."""
+    frame = pd.DataFrame(
+        {
+            "snap": [18],
+            "soap_index": [325509343],
+            "z": [2.999994277962287],
+            "x_Mpc": [2.0001],
+            "y_Mpc": [0.0],
+            "z_Mpc": [0.0],
+            "M_500c_Msun": [1.146e13],
+            "M_200c_Msun": [2.046e13],
+            "M_200m_Msun": [2.080e13],
+            "R_500c_Mpc": [0.1279296875],
+            "R_200c_Mpc": [0.210693359375],
+            "R_200m_Mpc": [0.214599609375],
+        }
+    )
+
+    output = add_rotated_geometry(
+        frame,
+        np.array([1.0, 2.0]),
+        np.zeros((2, 2)),
+        "l2",
+    )
+
+    assert output.loc[0, "shell_idx"] == 1
+    assert np.isclose(output.loc[0, "r_comoving_Mpc"], 2.0001)
+
+
 def test_base_writer_resumes_from_verified_snapshot_parts(tmp_path):
     """A retry must not redownload snapshots whose atomic parts already validate."""
     source = FakeSnapshotSource(healthy_hint=True)
