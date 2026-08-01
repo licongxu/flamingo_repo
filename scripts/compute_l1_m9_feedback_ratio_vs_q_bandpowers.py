@@ -405,7 +405,7 @@ def main() -> None:
     }
     with open(meta_path, "w") as handle:
         json.dump(payload, handle, indent=2)
-    print(f"\nwrote {meta_path.relative_to(REPO)}", flush=True)
+    print(f"\nwrote {meta_path}", flush=True)
     print(f"ALL DONE in {(time.time()-t0)/60:.1f} min", flush=True)
 
 
