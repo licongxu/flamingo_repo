@@ -68,8 +68,10 @@ default behavior for reproducibility.
 2. Run an L1 fiducial plus L2p8 lightcone0 pilot for all five cuts.
 3. Require catalogue counts to match direct threshold counts and require all
    bandpowers/sky fractions to be finite and physical.
-4. Run the remaining eight L1 variants and seven L2p8 lightcones with modest
-   process parallelism and bounded OpenMP threads.
+4. Run the remaining eight L1 variants and seven L2p8 lightcones with at most
+   two map workers and eight OpenMP threads per worker. Use two workers only
+   when the serial pilot peaks below 30 GiB RSS and the host remains lightly
+   loaded; otherwise use one worker.
 5. Verify the complete expected output matrix before plotting.
 6. Generate the two new comparison figures and visually inspect them.
 
