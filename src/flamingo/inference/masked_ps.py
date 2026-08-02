@@ -105,6 +105,7 @@ class MaskedTSZTheory(Theory):
         "A_SZ": None,
         "alpha_SZ": None,
         "sigma_lnY": None,
+        "B": None,
     }
 
     def get_requirements(self) -> dict:
@@ -195,48 +196,52 @@ class MaskedTSZTheory(Theory):
         profile = self._profile_cls(
             A_SZ=values["A_SZ"],
             alpha_SZ=values["alpha_SZ"],
-            B=B_HYDROSTATIC,
+            B=values["B"],
             **GNFW_SHAPE,
         )
         tracer = self._tracer_cls(profile=profile)
 
-        if self.q_cat is None:
-            cl_1h = halo_model.cl_1h(
-                tracer, None, self._ell, self._mass, self._redshift
+        q_cat = np.inf if self.q_cat is None else float(self.q_cat)
+        snr = build_snr_grid(
+            halo_model,
+            self._mass,
+            self._redshift,
+            values["A_SZ"],
+            values["alpha_SZ"],
+            values["B"],
+            coeff=self._noise_coeff,
+        )
+        masks = {
+            n: conditional_An_undetected(
+                snr,
+                sigma_lnY=values["sigma_lnY"],
+                q_cat=q_cat,
+                n_power=n,
+                n_grid=SCATTER_GRID,
+                nsig=SCATTER_NSIG,
             )
-            cl_2h = halo_model.cl_2h(
-                tracer, None, self._ell, self._mass, self._redshift
-            )
-        else:
-            snr = build_snr_grid(
-                halo_model,
-                self._mass,
-                self._redshift,
-                values["A_SZ"],
-                values["alpha_SZ"],
-                B_HYDROSTATIC,
-                coeff=self._noise_coeff,
-            )
-            masks = {
-                n: conditional_An_undetected(
-                    snr,
-                    sigma_lnY=values["sigma_lnY"],
-                    q_cat=float(self.q_cat),
-                    n_power=n,
-                    n_grid=SCATTER_GRID,
-                    nsig=SCATTER_NSIG,
-                )
-                for n in (1, 2)
-            }
-            # n_power=2 for the quadratic 1-halo term, n_power=1 for each of the
-            # two linear 2-halo brackets.
-            cl_1h = halo_model.cl_1h_masked(
-                tracer, None, self._ell, self._mass, self._redshift, masks[2],
-                k_damp=0.0,
-            )
-            cl_2h = halo_model.cl_2h_masked(
-                tracer, None, self._ell, self._mass, self._redshift, masks[1]
-            )
+            for n in (1, 2)
+        }
+        # n_power=2 for the quadratic 1-halo term, n_power=1 for each of the
+        # two linear 2-halo brackets. At q_cat=infinity these become the full
+        # lognormal scatter boosts rather than unity.
+        cl_1h = halo_model.cl_1h_masked(
+            tracer,
+            None,
+            self._ell,
+            self._mass,
+            self._redshift,
+            masks[2],
+            k_damp=0.0,
+        )
+        cl_2h = halo_model.cl_2h_masked(
+            tracer,
+            None,
+            self._ell,
+            self._mass,
+            self._redshift,
+            masks[1],
+        )
 
         ell = np.asarray(ELL_SMOOTH, dtype=float)
         prefactor = ell * (ell + 1.0) / (2.0 * np.pi)
