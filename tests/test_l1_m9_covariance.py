@@ -19,6 +19,47 @@ from scripts.compute_l1_m9_simplegnfw_covariance import (
     gaussian_covariance,
     validate_covariance,
 )
+from scripts.compute_l1_m9_customgnfw_bestfit_covariance import (
+    QFROMMAP_F_SKY,
+    build_covariance_18 as build_exact_covariance_18,
+)
+
+
+EXPECTED_QFROMMAP_F_SKY = {
+    "fullsky": 1.0,
+    "qgt50": 0.9972647840959187,
+    "qgt20": 0.9858059150434103,
+    "qgt10": 0.9435688947539681,
+    "qgt5": 0.8595492784996496,
+}
+
+
+def test_qfrommap_f_sky_values_are_exact():
+    assert QFROMMAP_F_SKY == EXPECTED_QFROMMAP_F_SKY
+
+
+def test_covariance_component_assembly_from_raw_spectrum():
+    ell = np.geomspace(9.0, 1085.0, 31)
+    cl_1h = 1.3e-12 * (ell / 80.0) ** -1.1
+    cl_2h = 0.2e-12 * (ell / 80.0) ** -1.7
+    tri_shape = (ell / 80.0) ** -0.9
+    raw_spectrum = {
+        "ell": ell,
+        "ell_tri": ell,
+        "cl_1h": cl_1h,
+        "cl_2h": cl_2h,
+        "cl_tri": 2e-27 * np.outer(tri_shape, tri_shape),
+    }
+
+    result = build_exact_covariance_18(raw_spectrum, 0.8)
+
+    np.testing.assert_allclose(
+        result["cov_full"],
+        result["cov_gaussian"] + result["cov_trispectrum"],
+        rtol=1e-14,
+        atol=0.0,
+    )
+    assert result["cov_full"].shape == (18, 18)
 
 
 def test_bin_dl_uniform_uses_both_inclusive_edges():
