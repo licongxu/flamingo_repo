@@ -14,36 +14,19 @@ from hmfast.halos.profiles import ParametricGNFWPressureProfile
 from hmfast.tracers import tSZTracer
 
 from ..catalogue.frame import D3A_COSMOLOGY
+from .bandpowers import ELL_MAX, ELL_MIN, bin_dl_uniform
 
 jax.config.update("jax_enable_x64", True)
 
 
-ELL_MIN = np.array(
-    [9, 12, 16, 21, 27, 35, 46, 60, 78, 102, 133, 173, 224, 292, 380, 494, 642, 835],
-    dtype=int,
-)
-ELL_MAX = np.array(
-    [12, 16, 21, 27, 35, 46, 60, 78, 102, 133, 173, 224, 292, 380, 494, 642, 835, 1085],
-    dtype=int,
-)
 ELL_SMOOTH = np.geomspace(9.0, 1085.0, 50)
 MASS_GRID = np.geomspace(1e11, 1e16, 64)
 REDSHIFT_GRID = np.geomspace(0.005, 3.0, 96)
-_BIN_WIDTH_MAX = int(np.max(ELL_MAX - ELL_MIN))
-_ELL_INTEGER = ELL_MIN[:, None] + np.arange(_BIN_WIDTH_MAX)[None, :]
-_ELL_MASK = _ELL_INTEGER < ELL_MAX[:, None]
 
 
 def _bin_dl(ell: np.ndarray, dl: np.ndarray) -> np.ndarray:
     """Uniformly average a smooth D_ell curve over the 18 integer-ell bins."""
-    sampled = np.empty(_ELL_INTEGER.shape, dtype=float)
-    for index in range(18):
-        sampled[index] = np.interp(
-            np.log(_ELL_INTEGER[index]),
-            np.log(ell),
-            dl,
-        )
-    return np.sum(sampled * _ELL_MASK, axis=1) / np.sum(_ELL_MASK, axis=1)
+    return bin_dl_uniform(ell, dl)
 
 
 def load_bandpower_likelihood(

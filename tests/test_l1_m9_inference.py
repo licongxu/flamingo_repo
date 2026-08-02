@@ -1,10 +1,19 @@
 import numpy as np
 
+from flamingo.inference.bandpowers import ELL_EFF
 from flamingo.inference.l1_m9 import (
     L1M9CustomGNFWTheory,
     gaussian_loglike,
     load_bandpower_likelihood,
 )
+
+
+def test_canonical_effective_ells_match_the_18_bin_fullsky_data():
+    observed_ell = np.loadtxt(
+        "data_paper/binned_bandpowers/Dl_yy_L1_m9_fullsky_binned_18.txt"
+    )[:, 0]
+
+    np.testing.assert_array_equal(ELL_EFF, observed_ell)
 
 
 def test_load_bandpower_likelihood_applies_data_scale(tmp_path):
