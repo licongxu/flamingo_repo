@@ -50,6 +50,15 @@ PAPER_RC = {
 }
 
 
+def selection_cuts(selection_tag: str) -> tuple[list[float], list[str]]:
+    if selection_tag == "qfrommap":
+        return (
+            [50.0, 20.0, 10.0, 6.0, 5.0, 3.0, 1.0],
+            ["qgt50", "qgt20", "qgt10", "qgt6", "qgt5", "qgt3", "qgt1"],
+        )
+    return Q_CUTS, CUT_TAGS
+
+
 def _load_two_column(path: Path) -> tuple[np.ndarray, np.ndarray]:
     data = np.loadtxt(path)
     return data[:, 0], data[:, 1]
@@ -149,8 +158,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     TAG = args.selection
     if TAG == "qfrommap":
-        Q_CUTS = [50.0, 20.0, 10.0, 5.0, 1.0]
-        CUT_TAGS = ["qgt50", "qgt20", "qgt10", "qgt5", "qgt1"]
+        Q_CUTS, CUT_TAGS = selection_cuts(TAG)
         meta_path = DATA / "L1_m9_feedback_multi_q_bandpowers_qfrommap_metadata.json"
         with meta_path.open() as handle:
             masked_meta = json.load(handle)["variants"]["fiducial"]["cuts"]

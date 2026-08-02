@@ -1,0 +1,14 @@
+# L1_m9 fgas+2sigma lightcone-0 tSZ; HEALPix Nside=4096 pixel window deconvolved; masked q>10 (qfrommap); r=max(4*theta500, 2x10arcmin), C2 apodization 0.25 deg, masked monopole subtracted, NaMaster MASTER per-ell (nlb=1, lmax=10000); uniform mean of C_ell in log bins, Delta ln ell = 0.4, ell_max = 10000
+# ell_eff  1e12_D_ell_yy
+1.005184e+02 3.686106e-02
+1.499558e+02 6.633518e-02
+2.237077e+02 1.135059e-01
+3.337327e+02 1.989799e-01
+4.978707e+02 3.350414e-01
+7.427358e+02 5.389265e-01
+1.108032e+03 8.192893e-01
+1.652989e+03 1.142788e+00
+2.465970e+03 1.437188e+00
+3.678794e+03 1.613537e+00
+5.488116e+03 1.580844e+00
+8.187308e+03 1.354318e+00

@@ -57,6 +57,20 @@ def test_legacy_null_test_cache_location_is_unchanged():
     )
 
 
+def test_null_test_plot_routes_qfrommap_products_without_overwriting_legacy():
+    module = _load_script("null_test_qfrommap_plot_test", "plot_masking_radius_null_test.py")
+
+    assert module.selection_data_dir("qfrommap") == REPO / (
+        "data_paper/masking_radius_null_test/qfrommap"
+    )
+    assert module.product_path("masking_radius_null_test", "qfrommap") == REPO / (
+        "figures/masking_radius_null_test/masking_radius_null_test_qfrommap"
+    )
+    assert module.product_path("masking_radius_null_test", "qfrommz_alpha_fixed_1p12") == REPO / (
+        "figures/masking_radius_null_test/masking_radius_null_test"
+    )
+
+
 def test_incremental_multi_q_metadata_preserves_existing_cuts():
     module = _load_script(
         "multi_q_metadata_merge_test",

@@ -1,0 +1,20 @@
+# L1_m9 fiducial masked tSZ, q>20 (qfrommap); synthetic-data masking: r=max(4*theta500, 2x10arcmin), C2 apodization 0.25 deg, masked monopole subtracted, NaMaster MASTER per-ell, pixwin deconvolved; uniform mean of D_ell over inclusive Planck bins
+# ell_eff  1e12_D_ell_yy
+1.000000e+01 2.407758e-03
+1.350000e+01 2.832707e-03
+1.800000e+01 4.959209e-03
+2.350000e+01 8.036349e-03
+3.050000e+01 1.001474e-02
+4.000000e+01 1.468386e-02
+5.250000e+01 2.458344e-02
+6.850000e+01 3.330418e-02
+8.950000e+01 5.005873e-02
+1.170000e+02 7.112323e-02
+1.525000e+02 1.021591e-01
+1.980000e+02 1.439101e-01
+2.575000e+02 1.976602e-01
+3.355000e+02 2.791149e-01
+4.365000e+02 3.758822e-01
+5.675000e+02 5.056075e-01
+7.380000e+02 6.535409e-01
+9.595000e+02 8.363668e-01

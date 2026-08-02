@@ -1,0 +1,21 @@
+{
+  "map": "/rds/rds-lxu/flamingo/L2p8_m9/lightcone0/healpix_map/y_unlensed_L2p8_m9_lc0.fits",
+  "catalogue": "/rds/rds-lxu/flamingo/L2p8_m9/lightcone0/catalogues/halo_catalogue_M500c_5e13_zlt3_L2p8_m9_yang26rot_qfrommap.csv",
+  "masking": {
+    "radius": "max(4*theta500, 2*FWHM), FWHM=10 arcmin",
+    "theta500": "R_500c/D_A(z), D3A cosmology",
+    "positions": "theta_rot_rad/phi_rot_rad (yang26-rotated frame)",
+    "apodization": "C2 0.25 deg",
+    "monopole": "mask-weighted, subtracted",
+    "estimator": "NaMaster MASTER, nlb=1, lmax=10000, no beam, pixwin deconvolved"
+  },
+  "cuts": {
+    "qgt6": {
+      "q_cut": 6.0,
+      "n_masked": 2218,
+      "f_sky_raw": 0.8752460678418478,
+      "f_sky_eff": 0.844671106711512,
+      "runtime_seconds": 774.3441481590271
+    }
+  }
+}

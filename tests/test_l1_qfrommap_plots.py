@@ -31,6 +31,18 @@ def test_fiducial_plot_selects_qfrommap_masked_bandpower():
     assert path == MASKED_DATA / "Dl_yy_L1_m9_masked_qgt5_qfrommap_binned_18.txt"
 
 
+def test_fiducial_qfrommap_plot_includes_completed_q3_and_q6_thresholds():
+    module = _load_script(
+        "l1_fiducial_qfrommap_thresholds_test",
+        "plot_l1_m9_masked_ps_alpha_fixed_1p12.py",
+    )
+
+    cuts, tags = module.selection_cuts("qfrommap")
+
+    assert cuts == [50.0, 20.0, 10.0, 6.0, 5.0, 3.0, 1.0]
+    assert tags == ["qgt50", "qgt20", "qgt10", "qgt6", "qgt5", "qgt3", "qgt1"]
+
+
 def test_feedback_q5_plot_reads_qfrommap_from_binned_bandpowers():
     module = _load_script(
         "l1_feedback_q5_qfrommap_plot_test",

@@ -1,0 +1,542 @@
+{
+  "out_dir": "/scratch/scratch-lxu/flamingo_repo/data_paper/binned_bandpowers",
+  "catalogue_suffix": "_yang26rot_qfrommap.csv",
+  "q_column": "q_from_aperture",
+  "masking": {
+    "radius": "max(4*theta500, 2*FWHM), FWHM=10 arcmin",
+    "apodization": "C2 0.25 deg",
+    "estimator": "NaMaster MASTER, nlb=1, lmax=10000, no beam, pixwin deconvolved"
+  },
+  "q_cuts": [
+    50.0,
+    20.0,
+    10.0,
+    5.0,
+    1.0,
+    6.0,
+    3.0
+  ],
+  "workers": 8,
+  "variants": {
+    "fiducial": {
+      "variant": "fiducial",
+      "needed": [
+        "qgt6",
+        "qgt3"
+      ],
+      "skipped": [],
+      "cuts": {
+        "qgt10": {
+          "q_cut": 10.0,
+          "n_masked": 589,
+          "f_sky_raw": 0.9548696577548981,
+          "f_sky_eff": 0.9435688947539681,
+          "runtime_seconds": 1243.702049255371
+        },
+        "qgt5": {
+          "q_cut": 5.0,
+          "n_masked": 3090,
+          "f_sky_raw": 0.8975157886743546,
+          "f_sky_eff": 0.8595492784996496,
+          "runtime_seconds": 1277.4340472221375
+        },
+        "qgt1": {
+          "q_cut": 1.0,
+          "n_masked": 57967,
+          "f_sky_raw": 0.558669924736023,
+          "f_sky_eff": 0.33811176410387817,
+          "runtime_seconds": 1083.0952687263489
+        },
+        "qgt6": {
+          "q_cut": 6.0,
+          "n_masked": 2121,
+          "f_sky_raw": 0.914206917087237,
+          "f_sky_eff": 0.8849783533460771,
+          "runtime_seconds": 1111.642293214798
+        },
+        "qgt3": {
+          "q_cut": 3.0,
+          "n_masked": 8715,
+          "f_sky_raw": 0.8354450464248657,
+          "f_sky_eff": 0.7559803576149596,
+          "runtime_seconds": 1198.739859342575
+        }
+      },
+      "runtime_seconds": 2317.498258829117
+    },
+    "fgas+2sigma": {
+      "variant": "fgas+2sigma",
+      "needed": [
+        "qgt6",
+        "qgt3"
+      ],
+      "skipped": [],
+      "cuts": {
+        "qgt20": {
+          "q_cut": 20.0,
+          "n_masked": 87,
+          "f_sky_raw": 0.9863882710536321,
+          "f_sky_eff": 0.983947928487614,
+          "runtime_seconds": 1260.7603969573975
+        },
+        "qgt10": {
+          "q_cut": 10.0,
+          "n_masked": 584,
+          "f_sky_raw": 0.9535732269287109,
+          "f_sky_eff": 0.9422147040179293,
+          "runtime_seconds": 1301.2589790821075
+        },
+        "qgt5": {
+          "q_cut": 5.0,
+          "n_masked": 3079,
+          "f_sky_raw": 0.8947121351957321,
+          "f_sky_eff": 0.8565494611966812,
+          "runtime_seconds": 1206.372546672821
+        },
+        "qgt1": {
+          "q_cut": 1.0,
+          "n_masked": 59181,
+          "f_sky_raw": 0.5501230855782827,
+          "f_sky_eff": 0.32982931957366846,
+          "runtime_seconds": 945.0905742645264
+        },
+        "qgt6": {
+          "q_cut": 6.0,
+          "n_masked": 2105,
+          "f_sky_raw": 0.9116790542999903,
+          "f_sky_eff": 0.8823966187212312,
+          "runtime_seconds": 1142.1159489154816
+        },
+        "qgt3": {
+          "q_cut": 3.0,
+          "n_masked": 8792,
+          "f_sky_raw": 0.830393115679423,
+          "f_sky_eff": 0.7501497795253469,
+          "runtime_seconds": 1216.9336202144623
+        }
+      },
+      "runtime_seconds": 2365.6008472442627
+    },
+    "Mstar-1sigma": {
+      "variant": "Mstar-1sigma",
+      "needed": [
+        "qgt6",
+        "qgt3"
+      ],
+      "skipped": [],
+      "cuts": {
+        "qgt50": {
+          "q_cut": 50.0,
+          "n_masked": 6,
+          "f_sky_raw": 0.9975640326738358,
+          "f_sky_eff": 0.9972588601522845,
+          "runtime_seconds": 1262.078279018402
+        },
+        "qgt20": {
+          "q_cut": 20.0,
+          "n_masked": 94,
+          "f_sky_raw": 0.9864373207092285,
+          "f_sky_eff": 0.9839058291306699,
+          "runtime_seconds": 1316.169312953949
+        },
+        "qgt10": {
+          "q_cut": 10.0,
+          "n_masked": 630,
+          "f_sky_raw": 0.9531913747390112,
+          "f_sky_eff": 0.9413591112227636,
+          "runtime_seconds": 1207.8170099258423
+        },
+        "qgt5": {
+          "q_cut": 5.0,
+          "n_masked": 3218,
+          "f_sky_raw": 0.8962262372175852,
+          "f_sky_eff": 0.8570962934500518,
+          "runtime_seconds": 1040.0511140823364
+        },
+        "qgt1": {
+          "q_cut": 1.0,
+          "n_masked": 59418,
+          "f_sky_raw": 0.5531826963027319,
+          "f_sky_eff": 0.3306592884956932,
+          "runtime_seconds": 957.5331857204437
+        },
+        "qgt6": {
+          "q_cut": 6.0,
+          "n_masked": 2218,
+          "f_sky_raw": 0.9118143767118454,
+          "f_sky_eff": 0.8815874489515595,
+          "runtime_seconds": 1094.6518759727478
+        },
+        "qgt3": {
+          "q_cut": 3.0,
+          "n_masked": 9042,
+          "f_sky_raw": 0.8330414543549219,
+          "f_sky_eff": 0.7513001036570173,
+          "runtime_seconds": 1142.368448972702
+        }
+      },
+      "runtime_seconds": 2244.230315208435
+    },
+    "fgas-2sigma": {
+      "variant": "fgas-2sigma",
+      "needed": [
+        "qgt6",
+        "qgt3"
+      ],
+      "skipped": [],
+      "cuts": {
+        "qgt50": {
+          "q_cut": 50.0,
+          "n_masked": 4,
+          "f_sky_raw": 0.997865026195844,
+          "f_sky_eff": 0.9976281186498337,
+          "runtime_seconds": 1271.0759973526
+        },
+        "qgt20": {
+          "q_cut": 20.0,
+          "n_masked": 88,
+          "f_sky_raw": 0.9881570736567179,
+          "f_sky_eff": 0.9858156201961782,
+          "runtime_seconds": 1307.7669672966003
+        },
+        "qgt10": {
+          "q_cut": 10.0,
+          "n_masked": 587,
+          "f_sky_raw": 0.9567287762959799,
+          "f_sky_eff": 0.945639755370241,
+          "runtime_seconds": 1212.47740483284
+        },
+        "qgt5": {
+          "q_cut": 5.0,
+          "n_masked": 3002,
+          "f_sky_raw": 0.9006725351015726,
+          "f_sky_eff": 0.8635562452933723,
+          "runtime_seconds": 1042.1909346580505
+        },
+        "qgt1": {
+          "q_cut": 1.0,
+          "n_masked": 55698,
+          "f_sky_raw": 0.5701349178949991,
+          "f_sky_eff": 0.35064873493867393,
+          "runtime_seconds": 985.115932226181
+        },
+        "qgt6": {
+          "q_cut": 6.0,
+          "n_masked": 2075,
+          "f_sky_raw": 0.9167087823152542,
+          "f_sky_eff": 0.8880897498683075,
+          "runtime_seconds": 1137.933537721634
+        },
+        "qgt3": {
+          "q_cut": 3.0,
+          "n_masked": 8468,
+          "f_sky_raw": 0.8403522620598475,
+          "f_sky_eff": 0.7626858805326063,
+          "runtime_seconds": 1219.749719619751
+        }
+      },
+      "runtime_seconds": 2364.7557048797607
+    },
+    "Jet": {
+      "variant": "Jet",
+      "needed": [
+        "qgt6",
+        "qgt3"
+      ],
+      "skipped": [],
+      "cuts": {
+        "qgt50": {
+          "q_cut": 50.0,
+          "n_masked": 4,
+          "f_sky_raw": 0.9978862504164377,
+          "f_sky_eff": 0.9976499443744422,
+          "runtime_seconds": 1270.3532786369324
+        },
+        "qgt20": {
+          "q_cut": 20.0,
+          "n_masked": 78,
+          "f_sky_raw": 0.9887244254350662,
+          "f_sky_eff": 0.9866019292523002,
+          "runtime_seconds": 1316.3575387001038
+        },
+        "qgt10": {
+          "q_cut": 10.0,
+          "n_masked": 523,
+          "f_sky_raw": 0.9577930470307668,
+          "f_sky_eff": 0.947483939169432,
+          "runtime_seconds": 1211.860910654068
+        },
+        "qgt5": {
+          "q_cut": 5.0,
+          "n_masked": 2841,
+          "f_sky_raw": 0.9016634970903397,
+          "f_sky_eff": 0.8659875781114502,
+          "runtime_seconds": 1022.5262596607208
+        },
+        "qgt1": {
+          "q_cut": 1.0,
+          "n_masked": 53773,
+          "f_sky_raw": 0.5756050695975622,
+          "f_sky_eff": 0.35928409525965965,
+          "runtime_seconds": 1002.3613517284393
+        },
+        "qgt6": {
+          "q_cut": 6.0,
+          "n_masked": 1961,
+          "f_sky_raw": 0.9172752847274145,
+          "f_sky_eff": 0.8897528175676519,
+          "runtime_seconds": 1115.3972434997559
+        },
+        "qgt3": {
+          "q_cut": 3.0,
+          "n_masked": 8037,
+          "f_sky_raw": 0.8412232200304667,
+          "f_sky_eff": 0.7660758536529574,
+          "runtime_seconds": 1172.4317128658295
+        }
+      },
+      "runtime_seconds": 2293.3376049995422
+    },
+    "fgas-8sigma": {
+      "variant": "fgas-8sigma",
+      "needed": [
+        "qgt6",
+        "qgt3"
+      ],
+      "skipped": [],
+      "cuts": {
+        "qgt50": {
+          "q_cut": 50.0,
+          "n_masked": 5,
+          "f_sky_raw": 0.9977004031340281,
+          "f_sky_eff": 0.9974259578425161,
+          "runtime_seconds": 1264.0991532802582
+        },
+        "qgt20": {
+          "q_cut": 20.0,
+          "n_masked": 82,
+          "f_sky_raw": 0.9887170245250066,
+          "f_sky_eff": 0.9865425382583167,
+          "runtime_seconds": 1310.4923219680786
+        },
+        "qgt10": {
+          "q_cut": 10.0,
+          "n_masked": 553,
+          "f_sky_raw": 0.9600868374109268,
+          "f_sky_eff": 0.9496729348008633,
+          "runtime_seconds": 1213.645342350006
+        },
+        "qgt5": {
+          "q_cut": 5.0,
+          "n_masked": 2750,
+          "f_sky_raw": 0.909397155046463,
+          "f_sky_eff": 0.8750191395980487,
+          "runtime_seconds": 1034.443926334381
+        },
+        "qgt1": {
+          "q_cut": 1.0,
+          "n_masked": 49014,
+          "f_sky_raw": 0.6052420288324356,
+          "f_sky_eff": 0.39244064150427244,
+          "runtime_seconds": 1003.0765018463135
+        },
+        "qgt6": {
+          "q_cut": 6.0,
+          "n_masked": 1888,
+          "f_sky_raw": 0.92509925365448,
+          "f_sky_eff": 0.8988827432334362,
+          "runtime_seconds": 1134.4611933231354
+        },
+        "qgt3": {
+          "q_cut": 3.0,
+          "n_masked": 7641,
+          "f_sky_raw": 0.8540058135986328,
+          "f_sky_eff": 0.7821299120750643,
+          "runtime_seconds": 1225.165517091751
+        }
+      },
+      "runtime_seconds": 2372.773590564728
+    },
+    "Jet_fgas-4sigma": {
+      "variant": "Jet_fgas-4sigma",
+      "needed": [
+        "qgt6",
+        "qgt3"
+      ],
+      "skipped": [],
+      "cuts": {
+        "qgt50": {
+          "q_cut": 50.0,
+          "n_masked": 6,
+          "f_sky_raw": 0.9976028700669607,
+          "f_sky_eff": 0.997299992476211,
+          "runtime_seconds": 1270.4346163272858
+        },
+        "qgt20": {
+          "q_cut": 20.0,
+          "n_masked": 85,
+          "f_sky_raw": 0.9884800165891647,
+          "f_sky_eff": 0.9862088793306077,
+          "runtime_seconds": 1314.6005778312683
+        },
+        "qgt10": {
+          "q_cut": 10.0,
+          "n_masked": 569,
+          "f_sky_raw": 0.9574615210294724,
+          "f_sky_eff": 0.9465751390354568,
+          "runtime_seconds": 1215.47918176651
+        },
+        "qgt5": {
+          "q_cut": 5.0,
+          "n_masked": 2884,
+          "f_sky_raw": 0.9049225548903147,
+          "f_sky_eff": 0.8690947337341434,
+          "runtime_seconds": 1032.8582918643951
+        },
+        "qgt1": {
+          "q_cut": 1.0,
+          "n_masked": 52304,
+          "f_sky_raw": 0.5882546106974283,
+          "f_sky_eff": 0.3712401753614974,
+          "runtime_seconds": 1003.4714162349701
+        },
+        "qgt6": {
+          "q_cut": 6.0,
+          "n_masked": 1989,
+          "f_sky_raw": 0.919960285226504,
+          "f_sky_eff": 0.8923403017872564,
+          "runtime_seconds": 1129.0994744300842
+        },
+        "qgt3": {
+          "q_cut": 3.0,
+          "n_masked": 8136,
+          "f_sky_raw": 0.8464750448862711,
+          "f_sky_eff": 0.7708336133036567,
+          "runtime_seconds": 1208.9488308429718
+        }
+      },
+      "runtime_seconds": 2344.9243535995483
+    },
+    "fgas-4sigma": {
+      "variant": "fgas-4sigma",
+      "needed": [
+        "qgt6",
+        "qgt3"
+      ],
+      "skipped": [],
+      "cuts": {
+        "qgt50": {
+          "q_cut": 50.0,
+          "n_masked": 6,
+          "f_sky_raw": 0.9975821077823639,
+          "f_sky_eff": 0.9972782943526938,
+          "runtime_seconds": 1265.5658373832703
+        },
+        "qgt20": {
+          "q_cut": 20.0,
+          "n_masked": 86,
+          "f_sky_raw": 0.9883197794357935,
+          "f_sky_eff": 0.9860542198820181,
+          "runtime_seconds": 1322.3476905822754
+        },
+        "qgt10": {
+          "q_cut": 10.0,
+          "n_masked": 575,
+          "f_sky_raw": 0.9579150676727295,
+          "f_sky_eff": 0.9470620037109215,
+          "runtime_seconds": 1204.8114676475525
+        },
+        "qgt5": {
+          "q_cut": 5.0,
+          "n_masked": 2908,
+          "f_sky_raw": 0.9043306608994802,
+          "f_sky_eff": 0.8682942778031553,
+          "runtime_seconds": 1033.2957792282104
+        },
+        "qgt1": {
+          "q_cut": 1.0,
+          "n_masked": 53101,
+          "f_sky_raw": 0.58377372721831,
+          "f_sky_eff": 0.36656843643457426,
+          "runtime_seconds": 1014.1893036365509
+        },
+        "qgt6": {
+          "q_cut": 6.0,
+          "n_masked": 2013,
+          "f_sky_raw": 0.9199743916591009,
+          "f_sky_eff": 0.8922683855329114,
+          "runtime_seconds": 1134.5945761203766
+        },
+        "qgt3": {
+          "q_cut": 3.0,
+          "n_masked": 8205,
+          "f_sky_raw": 0.8457450568675995,
+          "f_sky_eff": 0.770037372845309,
+          "runtime_seconds": 1213.990121126175
+        }
+      },
+      "runtime_seconds": 2361.806036710739
+    },
+    "Mstar-1sigma_fgas-4sigma": {
+      "variant": "Mstar-1sigma_fgas-4sigma",
+      "needed": [
+        "qgt6",
+        "qgt3"
+      ],
+      "skipped": [],
+      "cuts": {
+        "qgt50": {
+          "q_cut": 50.0,
+          "n_masked": 7,
+          "f_sky_raw": 0.9973339388767878,
+          "f_sky_eff": 0.9969859184020794,
+          "runtime_seconds": 811.0715427398682
+        },
+        "qgt20": {
+          "q_cut": 20.0,
+          "n_masked": 94,
+          "f_sky_raw": 0.9878569593032202,
+          "f_sky_eff": 0.9854272247978693,
+          "runtime_seconds": 714.9736249446869
+        },
+        "qgt10": {
+          "q_cut": 10.0,
+          "n_masked": 609,
+          "f_sky_raw": 0.9565247992674509,
+          "f_sky_eff": 0.9451726239085422,
+          "runtime_seconds": 838.7822158336639
+        },
+        "qgt5": {
+          "q_cut": 5.0,
+          "n_masked": 3051,
+          "f_sky_raw": 0.9027302662531534,
+          "f_sky_eff": 0.8653940350680834,
+          "runtime_seconds": 602.1728076934814
+        },
+        "qgt1": {
+          "q_cut": 1.0,
+          "n_masked": 54872,
+          "f_sky_raw": 0.5766575982173284,
+          "f_sky_eff": 0.3571140217857643,
+          "runtime_seconds": 580.3981218338013
+        },
+        "qgt6": {
+          "q_cut": 6.0,
+          "n_masked": 2116,
+          "f_sky_raw": 0.917997419834137,
+          "f_sky_eff": 0.8891139435200115,
+          "runtime_seconds": 829.201568365097
+        },
+        "qgt3": {
+          "q_cut": 3.0,
+          "n_masked": 8558,
+          "f_sky_raw": 0.8428897857666016,
+          "f_sky_eff": 0.7646846622129119,
+          "runtime_seconds": 807.5520417690277
+        }
+      },
+      "runtime_seconds": 1643.1701409816742
+    }
+  },
+  "runtime_seconds": 3887.685406923294
+}

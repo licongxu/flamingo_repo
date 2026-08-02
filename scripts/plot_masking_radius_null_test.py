@@ -31,6 +31,7 @@ Run::
 """
 from __future__ import annotations
 
+import argparse
 from pathlib import Path
 
 import matplotlib
@@ -40,10 +41,13 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 REPO = Path(__file__).resolve().parents[1]
-DATA = REPO / "data_paper" / "masking_radius_null_test"
+DATA_ROOT = REPO / "data_paper" / "masking_radius_null_test"
+DATA = DATA_ROOT
 FIGURES = REPO / "figures" / "masking_radius_null_test"
+LEGACY_TAG = "qfrommz_alpha_fixed_1p12"
+SELECTION_TAG = LEGACY_TAG
 
-VARIANTS = ["L1_m9", "L2p8_m9"]
+VARIANTS = ["L1_m9"]
 Q_CUTS = [20.0, 10.0, 5.0, 1.0]
 R_MULTS = [0.5, 1.0, 1.5, 2.0, 3.0, 4.0, 5.0, 6.0, 8.0]
 
@@ -56,6 +60,15 @@ ELL_SHOW = [0, 3, 6, 9, 11]
 
 #: Radii at which the residual systematic is tabulated against R = 4.
 R_TABLE = [5.0, 6.0, 8.0]
+
+
+def selection_data_dir(selection_tag: str) -> Path:
+    return DATA_ROOT / "qfrommap" if selection_tag == "qfrommap" else DATA_ROOT
+
+
+def product_path(stem: str, selection_tag: str) -> Path:
+    suffix = "_qfrommap" if selection_tag == "qfrommap" else ""
+    return FIGURES / f"{stem}{suffix}"
 
 
 def radius_tag(r_mult: float) -> str:
@@ -153,7 +166,7 @@ def figure_residual(sweeps: dict) -> None:
         xy=(R_PRODUCTION, 0.08), xytext=(R_PRODUCTION + 0.4, 0.08),
         fontsize=7, color="0.4",
     )
-    _save(fig, FIGURES / "masking_radius_null_test")
+    _save(fig, product_path("masking_radius_null_test", SELECTION_TAG))
 
 
 def figure_convergence(sweeps: dict) -> None:
@@ -185,7 +198,7 @@ def figure_convergence(sweeps: dict) -> None:
             )
             if i == 0 and j == 0:
                 ax.legend(fontsize=7, loc="lower left", frameon=False)
-    _save(fig, FIGURES / "masking_radius_convergence")
+    _save(fig, product_path("masking_radius_convergence", SELECTION_TAG))
 
 
 def figure_random_control(sweeps: dict, controls: dict) -> None:
@@ -227,7 +240,7 @@ def figure_random_control(sweeps: dict, controls: dict) -> None:
     axes[-1].plot([], [], "s--", color="0.4", label="random positions")
     axes[-1].legend(fontsize=7, loc="lower left", frameon=False)
     fig.suptitle("Masking-radius null test: random-position control", y=1.0)
-    _save(fig, FIGURES / "masking_radius_random_control")
+    _save(fig, product_path("masking_radius_random_control", SELECTION_TAG))
 
 
 def export_datapoints(sweeps: dict, controls: dict) -> None:
@@ -323,6 +336,13 @@ def write_table(sweeps: dict) -> None:
 
 
 def main() -> None:
+    global DATA, SELECTION_TAG
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument("--selection", choices=(LEGACY_TAG, "qfrommap"), default=LEGACY_TAG)
+    args = parser.parse_args()
+    SELECTION_TAG = args.selection
+    DATA = selection_data_dir(SELECTION_TAG)
+
     sweeps = {
         (v, cut): load_sweep(v, cut) for v in VARIANTS for cut in Q_CUTS
     }
