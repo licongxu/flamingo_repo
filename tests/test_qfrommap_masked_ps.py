@@ -144,3 +144,29 @@ def test_comparison_plot_uses_l2_lightcone0_qfrommap_product(tmp_path):
     assert path == tmp_path / (
         "Dl_yy_L2p8_m9_lc0_masked_qgt5_qfrommap_binned_18.txt"
     )
+
+
+def test_standalone_l2_plot_routes_qfrommap_to_lightcone0(tmp_path):
+    module = _load_script(
+        "standalone_l2_qfrommap_input_test",
+        "scripts/plot_l2p8_m9_masked_ps_alpha_fixed_1p12.py",
+    )
+
+    path = module._masked_paths(
+        "qgt5", log=False, selection_tag="qfrommap", data=tmp_path
+    )
+
+    assert path == tmp_path / (
+        "Dl_yy_L2p8_m9_lc0_masked_qgt5_qfrommap_binned_18.txt"
+    )
+
+
+def test_standalone_l2_plot_tags_qfrommap_output():
+    module = _load_script(
+        "standalone_l2_qfrommap_output_test",
+        "scripts/plot_l2p8_m9_masked_ps_alpha_fixed_1p12.py",
+    )
+
+    assert module.output_stem(log=True, selection_tag="qfrommap").name == (
+        "l2p8_m9_masked_ps_logbins_qfrommap"
+    )

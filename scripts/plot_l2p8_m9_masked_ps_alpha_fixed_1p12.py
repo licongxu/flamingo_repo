@@ -6,6 +6,7 @@ Run::
 """
 from __future__ import annotations
 
+import argparse
 import json
 from pathlib import Path
 
@@ -39,9 +40,22 @@ def _load_two_column(path: Path) -> tuple[np.ndarray, np.ndarray]:
     return data[:, 0], data[:, 1]
 
 
-def _masked_paths(tag: str, *, log: bool) -> Path:
+def _masked_paths(
+    tag: str,
+    *,
+    log: bool,
+    selection_tag: str = TAG,
+    data: Path = DATA,
+) -> Path:
     suffix = "logbins_dln0p4_lmax10000" if log else "binned_18"
-    return DATA / f"Dl_yy_{VARIANT}_masked_{tag}_{TAG}_{suffix}.txt"
+    variant = f"{VARIANT}_lc0" if selection_tag == "qfrommap" else VARIANT
+    return data / f"Dl_yy_{variant}_masked_{tag}_{selection_tag}_{suffix}.txt"
+
+
+def output_stem(*, log: bool, selection_tag: str = TAG) -> Path:
+    bin_tag = "logbins" if log else "binned_18"
+    suffix = "qfrommap" if selection_tag == "qfrommap" else "alpha_fixed_1p12"
+    return FIGURES / f"l2p8_m9_masked_ps_{bin_tag}_{suffix}"
 
 
 def _save(fig: plt.Figure, stem: Path) -> None:
@@ -111,16 +125,32 @@ def _plot(
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument("--selection", choices=(TAG, "qfrommap"), default=TAG)
+    args = parser.parse_args()
+    selection_tag = args.selection
     plt.rcParams.update({"font.size": 10, "text.usetex": False, "mathtext.fontset": "cm"})
 
-    with META.open() as handle:
+    meta_path = (
+        DATA / "L2p8_m9_lc0_masked_qfrommap_metadata.json"
+        if selection_tag == "qfrommap"
+        else META
+    )
+    with meta_path.open() as handle:
         meta_doc = json.load(handle)
     masked_meta = meta_doc["cuts"]
+    q_description = (
+        "empirical aperture q"
+        if selection_tag == "qfrommap"
+        else r"$\alpha_{\rm SZ}=1.12$ best-fit $q$"
+    )
 
     ell18, dl18_full = _load_two_column(FULLSKY_18)
     masked18 = []
     for cut, tag in zip(Q_CUTS, CUT_TAGS):
-        ell, dl = _load_two_column(_masked_paths(tag, log=False))
+        ell, dl = _load_two_column(
+            _masked_paths(tag, log=False, selection_tag=selection_tag)
+        )
         masked18.append((cut, tag, ell, dl))
     _plot(
         ell18,
@@ -129,16 +159,18 @@ if __name__ == "__main__":
         ell_range=(10.0, 959.5),
         title=(
             "FLAMINGO L2p8_m9 fiducial (lc0): masked tSZ power spectrum "
-            r"($\alpha_{\rm SZ}=1.12$ best-fit $q$, 18 Planck bins)"
+            f"({q_description}, 18 Planck bins)"
         ),
-        stem=OUT_18,
+        stem=output_stem(log=False, selection_tag=selection_tag),
         masked_meta=masked_meta,
     )
 
     ell_log, dl_log_full = _load_two_column(FULLSKY_LOG)
     masked_log = []
     for cut, tag in zip(Q_CUTS, CUT_TAGS):
-        ell, dl = _load_two_column(_masked_paths(tag, log=True))
+        ell, dl = _load_two_column(
+            _masked_paths(tag, log=True, selection_tag=selection_tag)
+        )
         masked_log.append((cut, tag, ell, dl))
     _plot(
         ell_log,
@@ -147,8 +179,8 @@ if __name__ == "__main__":
         ell_range=(100.0, 10000.0),
         title=(
             "FLAMINGO L2p8_m9 fiducial (lc0): masked tSZ power spectrum "
-            r"($\alpha_{\rm SZ}=1.12$ best-fit $q$, $\Delta\ln\ell=0.4$ log bins)"
+            f"({q_description}, $\\Delta\\ln\\ell=0.4$ log bins)"
         ),
-        stem=OUT_LOG,
+        stem=output_stem(log=True, selection_tag=selection_tag),
         masked_meta=masked_meta,
     )
