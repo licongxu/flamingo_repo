@@ -71,3 +71,26 @@ def test_converged_artifacts_reject_covariance_at_a_different_amplitude(
 
     with pytest.raises(ValueError, match="A_SZ"):
         runner.load_converged_artifacts()
+
+
+def test_preflight_can_be_written_to_a_case_isolated_path(tmp_path, monkeypatch):
+    covariance = tmp_path / "cov.npy"
+    covariance.touch()
+    artifacts = {
+        "A_SZ": -4.1075073,
+        "covariance_paths": {case: covariance for case in runner.CASES},
+        "metadata": {"A_SZ": -4.1075073},
+        "summary": {"final_metadata_path": str(tmp_path / "metadata.json")},
+    }
+    output_file = tmp_path / "qgt50" / "preflight.json"
+    monkeypatch.setattr(runner, "gpu_devices", lambda: ["cuda:0"])
+
+    runner.write_preflight(
+        ("qgt50",),
+        artifacts,
+        output_file=output_file,
+    )
+
+    assert output_file.is_file()
+    written = json.loads(output_file.read_text())
+    assert set(written["cases"]) == {"qgt50"}

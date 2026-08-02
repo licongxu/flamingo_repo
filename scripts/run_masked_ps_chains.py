@@ -222,7 +222,12 @@ def gpu_devices() -> list[str]:
     return [str(device) for device in devices]
 
 
-def write_preflight(cases: tuple[str, ...], artifacts: dict) -> dict:
+def write_preflight(
+    cases: tuple[str, ...],
+    artifacts: dict,
+    *,
+    output_file: Path = PREFLIGHT_FILE,
+) -> dict:
     """Resolve and record every production input before sampling."""
     resolved = {}
     for case in cases:
@@ -242,8 +247,8 @@ def write_preflight(cases: tuple[str, ...], artifacts: dict) -> dict:
         "cases": resolved,
         "params": parameters(artifacts["A_SZ"]),
     }
-    CHAINS.mkdir(parents=True, exist_ok=True)
-    PREFLIGHT_FILE.write_text(json.dumps(preflight, indent=2, sort_keys=True) + "\n")
+    output_file.parent.mkdir(parents=True, exist_ok=True)
+    output_file.write_text(json.dumps(preflight, indent=2, sort_keys=True) + "\n")
     return preflight
 
 
@@ -259,7 +264,16 @@ def main(argv: list[str] | None = None) -> None:
     args = parse_args(argv)
     selected_cases = tuple(args.case or CASES)
     artifacts = load_converged_artifacts()
-    preflight = write_preflight(selected_cases, artifacts)
+    output_file = (
+        PREFLIGHT_FILE
+        if args.dry_run or len(selected_cases) != 1
+        else CHAINS / selected_cases[0] / "preflight.json"
+    )
+    preflight = write_preflight(
+        selected_cases,
+        artifacts,
+        output_file=output_file,
+    )
     if args.dry_run:
         print(json.dumps(preflight, indent=2, sort_keys=True))
         return
