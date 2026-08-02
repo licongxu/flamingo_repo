@@ -16,11 +16,30 @@ import pandas as pd
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "src"))
 
-CATALOGUE = Path(
-    "/rds/rds-lxu/flamingo/L2p8_m9/lightcone0/catalogues/"
-    "halo_catalogue_M500c_5e13_zlt3_L2p8_m9_yang26rot_qfrommap.csv"
-)
+L2_ROOT = Path("/rds/rds-lxu/flamingo/L2p8_m9")
 COLUMN = "Y_5R500c_Mpc2"
+
+
+def _validate_lightcone(lightcone: int) -> int:
+    if isinstance(lightcone, bool) or not isinstance(lightcone, int) or not 0 <= lightcone <= 7:
+        raise ValueError("lightcone must be in 0..7")
+    return lightcone
+
+
+def catalogue_path(lightcone: int) -> Path:
+    lightcone = _validate_lightcone(lightcone)
+    return L2_ROOT / (
+        f"lightcone{lightcone}/catalogues/"
+        "halo_catalogue_M500c_5e13_zlt3_L2p8_m9_yang26rot_qfrommap.csv"
+    )
+
+
+def target_key(lightcone: int) -> str:
+    lightcone = _validate_lightcone(lightcone)
+    return f"L2p8_m9/lightcone{lightcone}"
+
+
+CATALOGUE = catalogue_path(0)
 
 
 def _split_newline(line: str) -> tuple[str, str]:
@@ -135,15 +154,15 @@ def read_backfill_for_validation(path: Path) -> pd.DataFrame:
     )
 
 
-def fetch_y5r500(identities: pd.DataFrame) -> np.ndarray:
-    """Fetch row-aligned L2 lightcone0 SOAP values by stable identity."""
+def fetch_y5r500(identities: pd.DataFrame, lightcone: int = 0) -> np.ndarray:
+    """Fetch row-aligned L2 SOAP values by stable identity."""
     from flamingo.catalogue.portal import HdfstreamSnapshotSource, SOAP_FIELDS
     from flamingo.catalogue.rebuild import catalogue_targets
 
     target = next(
         target
         for target in catalogue_targets(Path("/rds/rds-lxu/flamingo"))
-        if target.key == "L2p8_m9/lightcone0"
+        if target.key == target_key(lightcone)
     )
     source = HdfstreamSnapshotSource()
     values = np.empty(len(identities), dtype=np.float64)
@@ -158,7 +177,7 @@ def fetch_y5r500(identities: pd.DataFrame) -> np.ndarray:
     return values
 
 
-def backfill(catalogue: Path) -> dict[str, object]:
+def backfill(catalogue: Path, lightcone: int = 0) -> dict[str, object]:
     catalogue = Path(catalogue)
     header = pd.read_csv(catalogue, comment="#", nrows=0)
     if COLUMN in header.columns:
@@ -171,7 +190,7 @@ def backfill(catalogue: Path) -> dict[str, object]:
     )
     before_identity = identity_digest(identities)
     print(f"loaded {len(identities):,} identities", flush=True)
-    values = fetch_y5r500(identities)
+    values = fetch_y5r500(identities, lightcone)
 
     temporary = catalogue.with_name(
         f".{catalogue.name}.y5r500-tmp-{os.getpid()}-{uuid.uuid4().hex}"
@@ -207,9 +226,11 @@ def backfill(catalogue: Path) -> dict[str, object]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--catalogue", type=Path, default=CATALOGUE)
+    parser.add_argument("--lightcone", type=int, choices=range(8), default=0)
+    parser.add_argument("--catalogue", type=Path)
     args = parser.parse_args()
-    summary = backfill(args.catalogue)
+    catalogue = args.catalogue or catalogue_path(args.lightcone)
+    summary = backfill(catalogue, args.lightcone)
     for key, value in summary.items():
         print(f"{key}={value}")
     return 0
