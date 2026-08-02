@@ -8,6 +8,7 @@ Run::
     python scripts/compute_masked_ps_qgt6.py L1_m9
     python scripts/compute_masked_ps_qgt6.py L2p8_m9
 """
+
 from __future__ import annotations
 
 import argparse
@@ -15,7 +16,10 @@ import importlib.util
 import sys
 from pathlib import Path
 
+from flamingo.powerspectra.q_selection import QSelection, resolve_q_selection
+
 REPO = Path(__file__).resolve().parents[1]
+TAG = "qfrommz_alpha_fixed_1p12"
 
 
 def _load_module(name: str, path: Path):
@@ -26,11 +30,36 @@ def _load_module(name: str, path: Path):
     return mod
 
 
-def run_variant(variant: str) -> None:
+def input_paths(variant: str, selection: QSelection) -> tuple[Path, Path]:
+    """Map and catalogue paths for the requested q selection."""
     if variant == "L1_m9":
-        mod = _load_module("l1_masked", REPO / "scripts/compute_l1_m9_masked_ps_alpha_fixed_1p12.py")
+        return (
+            Path("/rds/rds-lxu/flamingo/L1_m9/maps/y_unlensed_L1_m9_lc0_nside4096.fits"),
+            selection.l1_catalogue_dir
+            / ("halo_catalogue_M500c_5e13_zlt3_L1_m9_yang26rot_" f"{selection.tag}.csv"),
+        )
+    if variant == "L2p8_m9":
+        return (
+            selection.l2_root / "lightcone0/healpix_map/y_unlensed_L2p8_m9_lc0.fits",
+            selection.l2_root
+            / "lightcone0/catalogues"
+            / ("halo_catalogue_M500c_5e13_zlt3_L2p8_m9_yang26rot_" f"{selection.tag}.csv"),
+        )
+    raise ValueError(f"unknown variant {variant!r}")
+
+
+def run_variant(variant: str, selection: QSelection) -> None:
+    if variant == "L1_m9":
+        mod = _load_module(
+            "l1_masked", REPO / "scripts/compute_l1_m9_masked_ps_alpha_fixed_1p12.py"
+        )
+        map_path, cat_path = input_paths(variant, selection)
     elif variant == "L2p8_m9":
-        mod = _load_module("l2p8_masked", REPO / "scripts/compute_l2p8_m9_masked_ps_alpha_fixed_1p12.py")
+        mod = _load_module(
+            "l2p8_masked", REPO / "scripts/compute_l2p8_m9_masked_ps_alpha_fixed_1p12.py"
+        )
+        # That module is per-lightcone; the whole-box L2p8 products use lightcone 0.
+        map_path, cat_path = input_paths(variant, selection)
     else:
         raise ValueError(f"unknown variant {variant!r}")
 
@@ -46,9 +75,16 @@ def run_variant(variant: str) -> None:
     cut, tag = 6.0, "qgt6"
     print(f"=== {variant}: q>{cut:g} only ===", flush=True)
 
-    ymap = hp.read_map(mod.MAP_FILE, dtype=np.float64)
+    ymap = hp.read_map(map_path, dtype=np.float64)
     nside = hp.npix2nside(ymap.size)
-    cat = mod.load_catalogue()
+    if variant == "L1_m9":
+        loader = _load_module(
+            "l1_feedback_loader",
+            REPO / "scripts/compute_l1_m9_feedback_bandpowers.py",
+        )
+        cat = loader.load_catalogue(cat_path, q_column=selection.q_column)
+    else:
+        cat = mod.load_catalogue(cat_path, q_column=selection.q_column)
     q, theta, phi, t500 = cat["q"], cat["theta"], cat["phi"], cat["t500"]
     print(f"  nside={nside}, {q.size:,} halos", flush=True)
 
@@ -73,36 +109,36 @@ def run_variant(variant: str) -> None:
     ell_log, dl12 = mod.bin_cl_log(ell, cl_masked)
 
     header18 = (
-        f"{variant} fiducial masked tSZ, q>{cut:g} ({mod.TAG}); synthetic-data masking: "
+        f"{variant} fiducial masked tSZ, q>{cut:g} ({selection.tag}); synthetic-data masking: "
         f"r=max(4*theta500, 2x10arcmin), {mod.APOTYPE} apodization {mod.APOSIZE_DEG} deg, "
         "masked monopole subtracted, NaMaster MASTER per-ell, pixwin deconvolved; "
         "uniform mean over inclusive Planck bins\nell_eff  1e12_D_ell_yy"
     )
     header12 = (
-        f"{variant} fiducial masked tSZ, q>{cut:g} ({mod.TAG}); same masking as the binned_18 "
+        f"{variant} fiducial masked tSZ, q>{cut:g} ({selection.tag}); same masking as the binned_18 "
         f"file; Delta ln ell = {mod.DLN_ELL}; ell_max = {mod.LMAX}; "
         f"HEALPix Nside={nside} pixel window deconvolved\nell_eff  1e12_D_ell_yy"
     )
     mod.write_bandpowers(
-        mod.OUT_DIR / f"Dl_yy_{variant}_masked_{tag}_{mod.TAG}_binned_18.txt",
+        mod.OUT_DIR / f"Dl_yy_{variant}_masked_{tag}_{selection.tag}_binned_18.txt",
         mod.ELL_EFF,
         dl18 * 1e12,
         header18,
     )
     mod.write_bandpowers(
-        mod.OUT_DIR / f"Dl_yy_{variant}_masked_{tag}_{mod.TAG}_logbins_dln0p4_lmax10000.txt",
+        mod.OUT_DIR / f"Dl_yy_{variant}_masked_{tag}_{selection.tag}_logbins_dln0p4_lmax10000.txt",
         ell_log,
         dl12 * 1e12,
         header12,
     )
 
-    meta_path = mod.OUT_DIR / f"{variant}_masked_{mod.TAG}_metadata.json"
+    meta_path = mod.OUT_DIR / f"{variant}_masked_{selection.tag}_metadata.json"
     if meta_path.exists():
         meta = json.loads(meta_path.read_text())
     else:
         meta = {
-            "map": str(mod.MAP_FILE),
-            "catalogue": str(mod.CAT_FILE),
+            "map": str(map_path),
+            "catalogue": str(cat_path),
             "masking": {
                 "radius": "max(4*theta500, 2*FWHM), FWHM=10 arcmin",
                 "theta500": "R_500c/D_A(z), D3A cosmology",
@@ -128,8 +164,9 @@ def run_variant(variant: str) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("variant", choices=["L1_m9", "L2p8_m9"])
+    parser.add_argument("--selection", choices=(TAG, "qfrommap"), default=TAG)
     args = parser.parse_args()
-    run_variant(args.variant)
+    run_variant(args.variant, resolve_q_selection(args.selection))
 
 
 if __name__ == "__main__":

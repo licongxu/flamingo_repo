@@ -34,6 +34,7 @@ Run::
     python scripts/masking_radius_null_test.py --variant L1_m9
     python scripts/masking_radius_null_test.py --variant L2p8_m9
 """
+
 from __future__ import annotations
 
 import argparse
@@ -53,6 +54,10 @@ sys.path.insert(0, str(REPO / "src"))
 
 from flamingo.catalogue import theta_500  # noqa: E402
 from flamingo.catalogue.frame import rotation_sanity  # noqa: E402
+from flamingo.powerspectra.q_selection import (  # noqa: E402
+    QSelection,
+    resolve_q_selection,
+)
 
 # --- Inputs -----------------------------------------------------------------
 
@@ -96,15 +101,31 @@ APOSIZE_DEG = 0.25
 APOTYPE = "C2"
 LMAX = 10000
 
-ELL_MIN = np.array(
-    [9, 12, 16, 21, 27, 35, 46, 60, 78, 102, 133, 173, 224, 292, 380, 494, 642, 835]
-)
+ELL_MIN = np.array([9, 12, 16, 21, 27, 35, 46, 60, 78, 102, 133, 173, 224, 292, 380, 494, 642, 835])
 ELL_MAX = np.array(
     [12, 16, 21, 27, 35, 46, 60, 78, 102, 133, 173, 224, 292, 380, 494, 642, 835, 1085]
 )
 ELL_EFF = np.array(
-    [10.0, 13.5, 18.0, 23.5, 30.5, 40.0, 52.5, 68.5, 89.5, 117.0, 152.5, 198.0,
-     257.5, 335.5, 436.5, 567.5, 738.0, 959.5]
+    [
+        10.0,
+        13.5,
+        18.0,
+        23.5,
+        30.5,
+        40.0,
+        52.5,
+        68.5,
+        89.5,
+        117.0,
+        152.5,
+        198.0,
+        257.5,
+        335.5,
+        436.5,
+        567.5,
+        738.0,
+        959.5,
+    ]
 )
 N_LOG_BINS = 12
 DLN_ELL = 0.4
@@ -115,17 +136,41 @@ COLUMNS = ["z", "R_500c_Mpc", "theta_rot_rad", "phi_rot_rad", "q_from_mz"]
 SAMPLE_COLUMNS = ["theta_nat_rad", "phi_nat_rad"]
 
 
-def load_catalogue(cat_file: Path) -> dict[str, np.ndarray]:
+def q_column(selection_tag: str) -> str:
+    return "q_from_aperture" if selection_tag == "qfrommap" else "q_from_mz"
+
+
+def catalogue_path(variant: str, selection: QSelection) -> Path:
+    if variant == "L1_m9":
+        return selection.l1_catalogue_dir / (
+            "halo_catalogue_M500c_5e13_zlt3_L1_m9_yang26rot_" f"{selection.tag}.csv"
+        )
+    return (
+        selection.l2_root
+        / "lightcone0/catalogues"
+        / ("halo_catalogue_M500c_5e13_zlt3_L2p8_m9_yang26rot_" f"{selection.tag}.csv")
+    )
+
+
+def selection_output_dir(selection_tag: str) -> Path:
+    return OUT_DIR / "qfrommap" if selection_tag == "qfrommap" else OUT_DIR
+
+
+def load_catalogue(cat_file: Path, q_column_name: str = "q_from_mz") -> dict[str, np.ndarray]:
     """Stream the catalogue; keep only what the masking step needs."""
     cols: dict[str, list[np.ndarray]] = {"theta": [], "phi": [], "t500": [], "q": [], "nat": []}
     n_rows = 0
     rng = np.random.default_rng(0)
+    requested_columns = [q_column_name if column == "q_from_mz" else column for column in COLUMNS]
     for chunk in pd.read_csv(
-        cat_file, comment="#", usecols=COLUMNS + SAMPLE_COLUMNS, chunksize=CHUNK
+        cat_file,
+        comment="#",
+        usecols=requested_columns + SAMPLE_COLUMNS,
+        chunksize=CHUNK,
     ):
         cols["theta"].append(chunk["theta_rot_rad"].to_numpy(np.float64))
         cols["phi"].append(chunk["phi_rot_rad"].to_numpy(np.float64))
-        cols["q"].append(chunk["q_from_mz"].to_numpy(np.float64))
+        cols["q"].append(chunk[q_column_name].to_numpy(np.float64))
         cols["t500"].append(
             theta_500(chunk["R_500c_Mpc"].to_numpy(np.float64), chunk["z"].to_numpy(np.float64))
         )
@@ -154,9 +199,7 @@ def binary_disc_mask(
     return mask
 
 
-def decoupled_cl_per_ell(
-    ymap: np.ndarray, mask_apo: np.ndarray, pixwin2: np.ndarray
-) -> np.ndarray:
+def decoupled_cl_per_ell(ymap: np.ndarray, mask_apo: np.ndarray, pixwin2: np.ndarray) -> np.ndarray:
     """Pixwin-corrected decoupled C_ell at every ell=2..LMAX (NaMaster MASTER)."""
     w = mask_apo
     m = ymap - float(np.sum(w * ymap) / np.sum(w))
@@ -194,12 +237,19 @@ def bin_cl_log(ell: np.ndarray, cl: np.ndarray) -> tuple[np.ndarray, np.ndarray]
     return centres, centres * (centres + 1.0) * out / (2.0 * np.pi)
 
 
-def point_path(variant: str, cut: float, r_mult: float) -> Path:
+def point_path(
+    variant: str,
+    cut: float,
+    r_mult: float,
+    *,
+    selection_tag: str = TAG,
+) -> Path:
     """Cache file for one ``(q_cut, r_mult)`` point of the sweep."""
+    output_dir = selection_output_dir(selection_tag)
     if r_mult == 0.0:
-        return OUT_DIR / f"{variant}_unmasked.npz"
+        return output_dir / f"{variant}_unmasked.npz"
     radius_tag = f"r{r_mult:g}".replace(".", "p")
-    return OUT_DIR / f"{variant}_qgt{cut:g}_{radius_tag}.npz"
+    return output_dir / f"{variant}_qgt{cut:g}_{radius_tag}.npz"
 
 
 def run_point(
@@ -212,10 +262,11 @@ def run_point(
     cut: float,
     r_mult: float,
     *,
+    selection_tag: str = TAG,
     force: bool = False,
 ) -> dict:
     """Measure the bandpowers for one detection threshold and masking radius."""
-    out = point_path(variant, cut, r_mult)
+    out = point_path(variant, cut, r_mult, selection_tag=selection_tag)
     if out.exists() and not force:
         print(f"  cached {out.name}", flush=True)
         return dict(np.load(out))
@@ -268,23 +319,30 @@ def run_point(
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--variant", required=True, choices=sorted(VARIANTS))
+    parser.add_argument("--selection", choices=(TAG, "qfrommap"), default=TAG)
     parser.add_argument(
-        "--q-cut", type=float, action="append", dest="q_cuts",
+        "--q-cut",
+        type=float,
+        action="append",
+        dest="q_cuts",
         help="restrict the sweep to this q threshold (repeatable); default all of Q_CUTS",
     )
     parser.add_argument("--force", action="store_true", help="ignore cached points")
     args = parser.parse_args()
 
     variant = args.variant
+    selection = resolve_q_selection(args.selection)
     q_cuts = args.q_cuts or Q_CUTS
     spec = VARIANTS[variant]
     t0 = time.time()
-    OUT_DIR.mkdir(parents=True, exist_ok=True)
+    output_dir = selection_output_dir(selection.tag)
+    output_dir.mkdir(parents=True, exist_ok=True)
 
     print(f"=== {variant}: map + catalogue ===", flush=True)
     ymap = hp.read_map(spec["map"], dtype=np.float64)
     nside = hp.npix2nside(ymap.size)
-    cat = load_catalogue(spec["catalogue"])
+    cat_path = catalogue_path(variant, selection)
+    cat = load_catalogue(cat_path, q_column(selection.tag))
     print(f"  nside={nside}, {cat['q'].size:,} halos, mean y={ymap.mean():.3e}", flush=True)
 
     sample = cat["nat_sample"]
@@ -301,7 +359,16 @@ def main() -> None:
     ell = np.arange(LMAX + 1, dtype=float)
 
     unmasked = run_point(
-        variant, ymap, nside, pixwin2, ell, cat, np.nan, 0.0, force=args.force
+        variant,
+        ymap,
+        nside,
+        pixwin2,
+        ell,
+        cat,
+        np.nan,
+        0.0,
+        selection_tag=selection.tag,
+        force=args.force,
     )
     stored = np.loadtxt(BANDPOWERS / spec["fullsky_18"])[:, 1]
     max_dev = float(np.max(np.abs(np.asarray(unmasked["dl_18"]) / stored - 1.0)))
@@ -313,13 +380,26 @@ def main() -> None:
         for r_mult in R_MULTS:
             if r_mult == 0.0:
                 continue
-            run_point(variant, ymap, nside, pixwin2, ell, cat, cut, r_mult, force=args.force)
+            run_point(
+                variant,
+                ymap,
+                nside,
+                pixwin2,
+                ell,
+                cat,
+                cut,
+                r_mult,
+                selection_tag=selection.tag,
+                force=args.force,
+            )
             print(f"  [{time.time() - t0:.0f}s elapsed]", flush=True)
 
     meta = {
         "variant": variant,
         "map": str(spec["map"]),
-        "catalogue": str(spec["catalogue"]),
+        "catalogue": str(cat_path),
+        "selection": selection.tag,
+        "q_column": selection.q_column,
         "q_cuts": q_cuts,
         "r_mults": R_MULTS,
         "masking": {
@@ -336,7 +416,7 @@ def main() -> None:
     # Suffix the metadata file when the sweep was split across processes by
     # q-cut, so concurrent runs don't clobber each other's summary.
     suffix = "" if args.q_cuts is None else "_" + "_".join(f"q{c:g}" for c in q_cuts)
-    with open(OUT_DIR / f"{variant}_null_test_metadata{suffix}.json", "w") as handle:
+    with open(output_dir / f"{variant}_null_test_metadata{suffix}.json", "w") as handle:
         json.dump(meta, handle, indent=2)
     print(f"done ({time.time() - t0:.0f}s)", flush=True)
 

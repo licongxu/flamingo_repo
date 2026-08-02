@@ -28,9 +28,11 @@ Run::
     export OMP_NUM_THREADS=8
     python scripts/compute_l1_m9_feedback_ratio_vs_q_bandpowers.py --workers 4
 """
+
 from __future__ import annotations
 
 import argparse
+import copy
 import importlib.util
 import json
 import os
@@ -75,11 +77,7 @@ QFROMMAP_Q_CUTS = [50.0, 20.0, 10.0, 5.0, 1.0]
 
 def default_q_cuts(selection_name: str) -> list[float]:
     """Default thresholds for the requested catalogue selection."""
-    return list(
-        QFROMMAP_Q_CUTS
-        if selection_name == "qfrommap"
-        else LEGACY_Q_CUTS
-    )
+    return list(QFROMMAP_Q_CUTS if selection_name == "qfrommap" else LEGACY_Q_CUTS)
 
 
 def cut_tag(q: float) -> str:
@@ -88,11 +86,34 @@ def cut_tag(q: float) -> str:
     return f"qgt{str(q).replace('.', 'p')}"
 
 
+def merge_metadata_payload(existing: dict, incremental: dict) -> dict:
+    """Merge an incremental cut run without discarding earlier metadata."""
+    merged = copy.deepcopy(existing)
+    merged.update(
+        {key: value for key, value in incremental.items() if key not in {"q_cuts", "variants"}}
+    )
+    merged["q_cuts"] = list(existing.get("q_cuts", []))
+    for cut in incremental.get("q_cuts", []):
+        if cut not in merged["q_cuts"]:
+            merged["q_cuts"].append(cut)
+
+    variants = copy.deepcopy(existing.get("variants", {}))
+    for name, current in incremental.get("variants", {}).items():
+        prior = variants.get(name, {})
+        combined = {**prior, **current}
+        combined["cuts"] = {
+            **prior.get("cuts", {}),
+            **current.get("cuts", {}),
+        }
+        variants[name] = combined
+    merged["variants"] = variants
+    return merged
+
+
 def catalogue_path(cat_stem: str, selection: QSelection) -> Path:
     """Catalogue input for one L1 feedback prescription."""
     return selection.l1_catalogue_dir / (
-        f"halo_catalogue_M500c_5e13_zlt3_{cat_stem}_yang26rot_"
-        f"{selection.tag}.csv"
+        f"halo_catalogue_M500c_5e13_zlt3_{cat_stem}_yang26rot_" f"{selection.tag}.csv"
     )
 
 
@@ -169,12 +190,8 @@ def write_cut(
         f"uniform mean of C_ell in log bins, Delta ln ell = {mod.DLN_ELL}, ell_max = {mod.LMAX}"
     )
     cols = "ell_eff  1e12_D_ell_yy"
-    mod.write_bandpowers(
-        p18, mod.ELL_EFF, dl18 * 1e12, f"{common}; {bin18_note}\n{cols}"
-    )
-    mod.write_bandpowers(
-        p12, mod.LOG_CENTRES, dl12 * 1e12, f"{common}; {bin12_note}\n{cols}"
-    )
+    mod.write_bandpowers(p18, mod.ELL_EFF, dl18 * 1e12, f"{common}; {bin18_note}\n{cols}")
+    mod.write_bandpowers(p12, mod.LOG_CENTRES, dl12 * 1e12, f"{common}; {bin12_note}\n{cols}")
 
 
 def process_variant(
@@ -193,11 +210,7 @@ def process_variant(
         p18, p12 = out_paths(variant, tag, selection.tag)
         if not force and p18.is_file() and p12.is_file():
             continue
-        if (
-            not force
-            and selection.tag == mod.TAG
-            and ensure_from_legacy(variant, tag)
-        ):
+        if not force and selection.tag == mod.TAG and ensure_from_legacy(variant, tag):
             continue
         needed.append(q)
 
@@ -232,8 +245,7 @@ def process_variant(
     r_nat = mod.rotation_sanity(ymap, sample[:, 0], sample[:, 1])
     r_rot = mod.rotation_sanity(ymap, sample[:, 2], sample[:, 3])
     print(
-        f"[{variant}] rotation sanity: rot={r_rot['ratio']:.2f}, "
-        f"nat={r_nat['ratio']:.2f}",
+        f"[{variant}] rotation sanity: rot={r_rot['ratio']:.2f}, " f"nat={r_nat['ratio']:.2f}",
         flush=True,
     )
     if r_rot["ratio"] <= r_nat["ratio"]:
@@ -318,9 +330,7 @@ def main() -> None:
         help="list inputs and outputs without reading maps",
     )
     args = parser.parse_args()
-    selection = resolve_q_selection(
-        args.selection, l1_catalogue_dir=args.l1_catalogue_dir
-    )
+    selection = resolve_q_selection(args.selection, l1_catalogue_dir=args.l1_catalogue_dir)
     q_cuts = args.q_cuts or default_q_cuts(args.selection)
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -360,9 +370,7 @@ def main() -> None:
     if args.workers <= 1:
         for variant, map_stem, cat_stem in selected:
             results.append(
-                process_variant(
-                    variant, map_stem, cat_stem, q_cuts, args.force, selection
-                )
+                process_variant(variant, map_stem, cat_stem, q_cuts, args.force, selection)
             )
     else:
         with ProcessPoolExecutor(max_workers=args.workers) as pool:
@@ -386,9 +394,7 @@ def main() -> None:
                     print(f"[{variant}] FAILED: {exc}", flush=True)
                     raise
 
-    meta_path = OUT_DIR / (
-        f"L1_m9_feedback_multi_q_bandpowers_{selection.tag}_metadata.json"
-    )
+    meta_path = OUT_DIR / (f"L1_m9_feedback_multi_q_bandpowers_{selection.tag}_metadata.json")
     payload = {
         "out_dir": str(OUT_DIR),
         "catalogue_suffix": f"_yang26rot_{selection.tag}.csv",
@@ -403,6 +409,9 @@ def main() -> None:
         "variants": {r["variant"]: r for r in results},
         "runtime_seconds": time.time() - t0,
     }
+    if meta_path.exists():
+        with open(meta_path) as handle:
+            payload = merge_metadata_payload(json.load(handle), payload)
     with open(meta_path, "w") as handle:
         json.dump(payload, handle, indent=2)
     print(f"\nwrote {meta_path}", flush=True)
