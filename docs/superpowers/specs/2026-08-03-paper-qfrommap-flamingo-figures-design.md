@@ -101,14 +101,17 @@ spectra-only `2 x 2` figure.
 Regenerate the eight-panel feedback-ratio figure using
 `scripts/plot_l1_m9_feedback_ratio_vs_q.py --selection qfrommap`.
 
+- Use the 18 inclusive Planck-style multipole bins, not the logarithmic bins.
 - Show full sky, `q > 20`, `q > 10`, and `q > 5` curves.
 - Use `_qfrommap` products for all masked curves.
-- Show only the full-sky custom-GNFW relative-error band because no matching
-  masked-selection covariance is defined for the `_qfrommap` case.
+- Show both custom-GNFW relative-error bands about unity: the full-sky band
+  and the `q > 5` band.
+- Load the `q > 5` band from the previously computed theory covariance,
+  `data_paper/covariance/cov_full_L1_m9_customgnfw_bestfit_masked_qgt5_Dl_yy_binned_18.npy`.
 - Remove the diagnostic figure-level title and subtitle.
 - Ensure the top row, panel titles, axes, and bottom legend are not cropped.
 - Write
-  `l1_m9_all_feedback_ratio_vs_q_logbins_qfrommap_lmax10000.{pdf,png}`.
+  `l1_m9_all_feedback_ratio_vs_q_binned_18_qfrommap.{pdf,png}`.
 
 ## Publication styling
 
@@ -145,7 +148,8 @@ Update `main.tex` as follows:
 - Rewrite the feedback-spectrum caption around the `2 x 2` panel ordering,
   remove its ratio-panel description, and remove its theory-covariance
   error-bar claim.
-- State that the threshold-response shaded band is full-sky only.
+- Retain and verify the feedback-ratio caption statement that the shaded
+  relative-error bands are for full sky and `q > 5`.
 
 Copy the three generated PDF and PNG pairs into the paper `figs/` directory
 without deleting or overwriting legacy non-`qfrommap` assets.
