@@ -177,6 +177,7 @@ def build_info(
     *,
     rminus1: float = 0.01,
     artifacts: dict | None = None,
+    covmat_file: Path | None = None,
 ) -> dict:
     """Assemble one resolved Cobaya configuration from converged artifacts."""
     artifacts = load_converged_artifacts() if artifacts is None else artifacts
@@ -184,6 +185,22 @@ def build_info(
     for path in (data, covariance):
         if not path.is_file():
             raise FileNotFoundError(path)
+    mcmc = {
+        "Rminus1_stop": rminus1,
+        "drag": False,
+        "proposal_scale": 1.2,
+        "learn_every": 40,
+        "learn_proposal": True,
+        "learn_proposal_Rminus1_max": 100.0,
+        "learn_proposal_Rminus1_max_early": 100.0,
+        "max_tries": 100000,
+        "burn_in": 50,
+    }
+    if covmat_file is not None:
+        covmat_file = Path(covmat_file).resolve()
+        if not covmat_file.is_file():
+            raise FileNotFoundError(covmat_file)
+        mcmc["covmat"] = str(covmat_file)
     return {
         "output": str(CHAINS / case / "chain"),
         "likelihood": {
@@ -197,17 +214,7 @@ def build_info(
             "flamingo.inference.masked_ps.MaskedTSZTheory": {"q_cat": CASES[case]}
         },
         "params": parameters(artifacts["A_SZ"]),
-        "sampler": {
-            "mcmc": {
-                "Rminus1_stop": rminus1,
-                "drag": False,
-                "proposal_scale": 1.2,
-                "learn_every": 40,
-                "learn_proposal": True,
-                "max_tries": 100000,
-                "burn_in": 50,
-            }
-        },
+        "sampler": {"mcmc": mcmc},
         "timing": True,
         "resume": True,
     }
@@ -227,17 +234,19 @@ def write_preflight(
     artifacts: dict,
     *,
     output_file: Path = PREFLIGHT_FILE,
+    covmat_file: Path | None = None,
 ) -> dict:
     """Resolve and record every production input before sampling."""
     resolved = {}
     for case in cases:
-        info = build_info(case, artifacts=artifacts)
+        info = build_info(case, artifacts=artifacts, covmat_file=covmat_file)
         likelihood = next(iter(info["likelihood"].values()))
         resolved[case] = {
             "q_cat": CASES[case],
             "data_file": likelihood["data_file"],
             "covariance_file": likelihood["covariance_file"],
             "output": info["output"],
+            "proposal_covmat": info["sampler"]["mcmc"].get("covmat"),
         }
     preflight = {
         "jax_devices": gpu_devices(),
@@ -257,6 +266,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--case", action="append", choices=tuple(CASES))
     parser.add_argument("--Rminus1-stop", type=float, default=0.01)
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--covmat", type=Path)
     return parser.parse_args(argv)
 
 
@@ -273,6 +283,7 @@ def main(argv: list[str] | None = None) -> None:
         selected_cases,
         artifacts,
         output_file=output_file,
+        covmat_file=args.covmat,
     )
     if args.dry_run:
         print(json.dumps(preflight, indent=2, sort_keys=True))
@@ -284,7 +295,14 @@ def main(argv: list[str] | None = None) -> None:
     for case in selected_cases:
         print(f"\n=== {case} (q_cat={CASES[case]}) ===", flush=True)
         (CHAINS / case).mkdir(parents=True, exist_ok=True)
-        run(build_info(case, rminus1=args.Rminus1_stop, artifacts=artifacts))
+        run(
+            build_info(
+                case,
+                rminus1=args.Rminus1_stop,
+                artifacts=artifacts,
+                covmat_file=args.covmat,
+            )
+        )
 
 
 if __name__ == "__main__":

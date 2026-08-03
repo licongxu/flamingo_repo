@@ -31,6 +31,9 @@ def test_infinite_q_moment_matches_lognormal_limit(n_power, exponent):
 def test_fullsky_none_matches_infinite_threshold_with_scatter():
     assert jax.devices()[0].platform == "gpu"
     theory = MaskedTSZTheory()
+    theory._profile_cls = lambda **kwargs: pytest.fail(
+        "evaluate_bandpowers rebuilt the expensive pressure-profile transform"
+    )
     values = {
         "H0": 68.1,
         "omega_cdm": 0.11872788986038219,

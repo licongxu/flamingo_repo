@@ -94,3 +94,24 @@ def test_preflight_can_be_written_to_a_case_isolated_path(tmp_path, monkeypatch)
     assert output_file.is_file()
     written = json.loads(output_file.read_text())
     assert set(written["cases"]) == {"qgt50"}
+
+
+def test_science_chain_can_use_a_learned_proposal_covariance(tmp_path):
+    covariance = tmp_path / "likelihood_cov.npy"
+    covariance.touch()
+    proposal_covariance = tmp_path / "proposal.covmat"
+    proposal_covariance.write_text("# H0\n1.0\n")
+    artifacts = {
+        "A_SZ": -4.1075073,
+        "covariance_paths": {case: covariance for case in runner.CASES},
+    }
+
+    info = runner.build_info(
+        "fullsky",
+        artifacts=artifacts,
+        covmat_file=proposal_covariance,
+    )
+
+    assert info["sampler"]["mcmc"]["covmat"] == str(proposal_covariance.resolve())
+    assert info["sampler"]["mcmc"]["learn_proposal_Rminus1_max"] == 100.0
+    assert info["sampler"]["mcmc"]["learn_proposal_Rminus1_max_early"] == 100.0

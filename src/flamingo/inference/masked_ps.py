@@ -128,6 +128,14 @@ class MaskedTSZTheory(Theory):
         self._profile_cls = ParametricGNFWPressureProfile
         self._tracer_cls = tSZTracer
 
+        self._profile_seed = ParametricGNFWPressureProfile(
+            A_SZ=-4.1,
+            alpha_SZ=1.12,
+            B=B_HYDROSTATIC,
+            **GNFW_SHAPE,
+        )
+        self._tracer_seed = tSZTracer(profile=self._profile_seed)
+
         self._cosmology_seed = Cosmology(emulator_set="lcdm:v1")
         # Touch the emulator once so the first likelihood call is not charged
         # with the load.
@@ -193,13 +201,12 @@ class MaskedTSZTheory(Theory):
             values["sigma_8"],
         )
         halo_model = self._halo_model_seed.update(cosmology=cosmology)
-        profile = self._profile_cls(
+        profile = self._profile_seed.update(
             A_SZ=values["A_SZ"],
             alpha_SZ=values["alpha_SZ"],
             B=values["B"],
-            **GNFW_SHAPE,
         )
-        tracer = self._tracer_cls(profile=profile)
+        tracer = self._tracer_seed.update(profile=profile)
 
         q_cat = np.inf if self.q_cat is None else float(self.q_cat)
         snr = build_snr_grid(
