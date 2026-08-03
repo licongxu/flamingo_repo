@@ -95,7 +95,7 @@ def test_feedback_q5_plot_reads_qfrommap_from_binned_bandpowers():
     assert path == MASKED_DATA / "Dl_yy_L1_m9_Jet_masked_qgt5_qfrommap_binned_18.txt"
 
 
-def test_feedback_q5_output_stem_preserves_legacy_name_and_tags_qfrommap():
+def test_feedback_output_stem_preserves_legacy_name_and_tags_multiq_qfrommap():
     module = _load_script(
         "l1_feedback_q5_output_stem_test",
         "plot_l1_m9_feedback_bandpowers.py",
@@ -103,10 +103,62 @@ def test_feedback_q5_output_stem_preserves_legacy_name_and_tags_qfrommap():
 
     assert module.output_stem(log=False).name == ("l1_m9_feedback_ps_binned_18_alpha_fixed_1p12")
     assert module.output_stem(log=True, selection_tag="qfrommap").name == (
-        "l1_m9_feedback_ps_logbins_qfrommap_qgt5"
+        "l1_m9_feedback_ps_logbins_multiq_qfrommap"
     )
     assert module.covariance_note("qfrommap") == ""
     assert "covariance" in module.covariance_note("qfrommz_alpha_fixed_1p12")
+
+
+def test_feedback_multiq_plot_routes_all_masked_panels_to_qfrommap():
+    module = _load_script(
+        "l1_feedback_multiq_qfrommap_plot_test",
+        "plot_l1_m9_feedback_bandpowers.py",
+    )
+
+    assert module.PANEL_CUTS == (
+        ("full sky", None),
+        (r"$q>20$", "qgt20"),
+        (r"$q>10$", "qgt10"),
+        (r"$q>5$", "qgt5"),
+    )
+    assert module._path(
+        "Jet",
+        masked=True,
+        log=True,
+        selection_tag="qfrommap",
+        cut_tag="qgt20",
+    ) == MASKED_DATA / (
+        "Dl_yy_L1_m9_Jet_masked_qgt20_qfrommap_"
+        "logbins_dln0p4_lmax10000.txt"
+    )
+    assert module.output_stem(log=True, selection_tag="qfrommap").name == (
+        "l1_m9_feedback_ps_logbins_multiq_qfrommap"
+    )
+
+
+def test_feedback_multiq_figure_has_four_spectra_panels_and_no_main_title():
+    module = _load_script(
+        "l1_feedback_multiq_qfrommap_layout_test",
+        "plot_l1_m9_feedback_bandpowers.py",
+    )
+
+    fig = module.build_figure(
+        log=True,
+        ell_range=(100.0, 10000.0),
+        selection_tag="qfrommap",
+    )
+    try:
+        assert len(fig.axes) == 4
+        assert [ax.get_title() for ax in fig.axes] == [
+            "full sky",
+            "$q>20$",
+            "$q>10$",
+            "$q>5$",
+        ]
+        assert fig._suptitle is None
+        assert [len(ax.lines) for ax in fig.axes] == [9, 9, 9, 9]
+    finally:
+        module.plt.close(fig)
 
 
 def test_feedback_q1_plot_reads_qfrommap_from_binned_bandpowers():
