@@ -43,6 +43,47 @@ def test_fiducial_qfrommap_plot_includes_completed_q3_and_q6_thresholds():
     assert tags == ["qgt50", "qgt20", "qgt10", "qgt6", "qgt5", "qgt3", "qgt1"]
 
 
+def test_combined_fiducial_planck_plot_routes_masked_curves_to_qfrommap():
+    module = _load_script(
+        "combined_fiducial_planck_qfrommap_path_test",
+        "plot_flamingo_planck_tszps.py",
+    )
+
+    assert module._bin18_path(
+        "L1_m9", masked=True, selection_tag="qfrommap"
+    ) == MASKED_DATA / "Dl_yy_L1_m9_masked_qgt6_qfrommap_binned_18.txt"
+    assert module.output_stem("qfrommap").name == (
+        "l1_m9_fiducial_masking_planck_qfrommap"
+    )
+
+
+def test_combined_fiducial_planck_figure_has_two_title_free_spectra_panels():
+    module = _load_script(
+        "combined_fiducial_planck_qfrommap_layout_test",
+        "plot_flamingo_planck_tszps.py",
+    )
+
+    fig = module.build_figure()
+    try:
+        assert len(fig.axes) == 2
+        assert [ax.get_title() for ax in fig.axes] == ["", ""]
+        assert fig.axes[0].get_legend_handles_labels()[1] == [
+            "full sky",
+            "$q>50$",
+            "$q>20$",
+            r"$q>10$ ($N=589$, $f_{\rm sky}=0.944$)",
+            r"$q>5$ ($N=3,090$, $f_{\rm sky}=0.860$)",
+        ]
+        assert [text.get_text() for text in fig.axes[1].get_legend().get_texts()] == [
+            "FLAMINGO full sky",
+            "Bolliet et al. (2018)",
+            "$q>6$ FLAMINGO",
+            "Rotti et al. (2021)",
+        ]
+    finally:
+        module.plt.close(fig)
+
+
 def test_feedback_q5_plot_reads_qfrommap_from_binned_bandpowers():
     module = _load_script(
         "l1_feedback_q5_qfrommap_plot_test",
