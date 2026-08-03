@@ -78,18 +78,23 @@ PDF and PNG outputs are produced.
 
 ## Figure 2: baryonic-feedback spectra
 
-Regenerate the full-sky versus `q > 5` feedback comparison using
-`scripts/plot_l1_m9_feedback_bandpowers.py --selection qfrommap`.
+Regenerate the feedback comparison using
+`scripts/plot_l1_m9_feedback_bandpowers.py --selection qfrommap` as a
+spectra-only `2 x 2` figure.
 
-- Retain the two-column layout: full sky on the left and `q > 5` on the right.
-- Retain the upper spectra and lower variant/fiducial ratios.
+- Top left: full-sky spectra.
+- Top right: spectra after masking clusters with `q > 20`.
+- Bottom left: spectra after masking clusters with `q > 10`.
+- Bottom right: spectra after masking clusters with `q > 5`.
+- Show the fiducial model and all eight feedback variants in every panel.
 - Use `_qfrommap` products for every masked curve.
+- Do not include variant/fiducial ratio panels.
 - Do not show theory-covariance error bars that are not defined for the
-  `_qfrommap` selection.
-- Remove diagnostic selection descriptions and the figure-level title; the
-  paper caption supplies this information.
+  `_qfrommap` selections.
+- Remove diagnostic selection descriptions and the figure-level title; retain
+  only the four short panel headings needed to identify each sky cut.
 - Write the explicitly tagged output
-  `l1_m9_feedback_ps_logbins_qfrommap_qgt5.{pdf,png}`.
+  `l1_m9_feedback_ps_logbins_multiq_qfrommap.{pdf,png}`.
 
 ## Figure 3: feedback response versus masking threshold
 
@@ -137,8 +142,10 @@ Update `main.tex` as follows:
   the right panel.
 - Replace the two feedback figure filenames with their explicit `_qfrommap`
   filenames.
-- Remove the feedback-caption claim about masked theory-covariance error bars
-  and state that the threshold-response shaded band is full-sky only.
+- Rewrite the feedback-spectrum caption around the `2 x 2` panel ordering,
+  remove its ratio-panel description, and remove its theory-covariance
+  error-bar claim.
+- State that the threshold-response shaded band is full-sky only.
 
 Copy the three generated PDF and PNG pairs into the paper `figs/` directory
 without deleting or overwriting legacy non-`qfrommap` assets.
