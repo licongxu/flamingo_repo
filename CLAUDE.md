@@ -1,25 +1,36 @@
 # CLAUDE.md
 
-**Rule of reply:** Always say "HONEY" to me before you reply
+Project context and behavioral guidelines for agents working in this repo.
 
-**Python environment:** In this repo, always use venv before running any code or commands:
+## Project context
 
-```bash
-source /scratch/scratch-lxu/venv/cmbagent_env/bin/activate
-```
+- **Branch:** `baryon_dmb` — baryonic feedback / DMB work, synced from `paper-results`.
+- **Rule of reply:** Always say "HONEY" to me before you reply
+- **Python environment:** Before anything else — running Python, tests, benchmarks, or notebooks — activate:
+  ```bash
+  source /scratch/scratch-lxu/venv/cmbagent_env/bin/activate
+  ```
+- **Theory computation:** All theory calculations live in the `hmfast` package.
+- **Mass units:** Use physical mass units, `M_sun`, not `M_sun/h`.
+- **Cobaya reference theory:** Reference theory files are in `/home/lxu/scratch/tsz_cnc_paper_plots/chains`.
+- **Paper reference:** The paper reference location is `/home/lxu/scratch/tsz_cnc_paper_plots/6a4738926d5991d919e1a0c8`.
+- **Backend packages:** Baryon/DMB backend development lives on the `baryon_dmb` branch in:
+  - `/home/lxu/scratch/agent_dev/auto_research_agent/hmfast` — halo-model theory
+  - `/home/lxu/scratch/agent_dev/auto_research_agent/cosmocnc_jax` — CNC likelihood
+- **Reference papers:** `ref_papers/` contains key literature for baryonic feedback / DMB work. Read and cite these when relevant to paper drafts, methods, or validation.
+  - `ref_papers/dmb_galclusters.pdf` — To et al. (2024), *Deciphering baryonic feedback with galaxy clusters*
+  - `ref_papers/dmb_galclusters_act.pdf` — Dalal et al. (2026), *Deciphering Baryonic Feedback from ACT tSZ Galaxy Clusters*
+  - `ref_papers/GODMAX.pdf` — GODMAX paper (*Gas thermODynamics and Matter distribution using jAX*)
 
-**Theory computation:** All theory calculations live in the `hmfast` package.
+---
 
-**Mass units:** Use physical mass units, `M_sun`, not `M_sun/h`.
+## Behavioral guidelines
 
-**Cobaya reference theory:** Reference theory files are in `/home/lxu/scratch/tsz_cnc_paper_plots/chains`.
-
-**Paper reference:** The paper reference location is `/home/lxu/scratch/tsz_cnc_paper_plots/6a4738926d5991d919e1a0c8`.
-
+Guidelines to reduce common LLM coding mistakes. Merge with project-specific instructions as needed.
 
 **Tradeoff:** These guidelines bias toward caution over speed. For trivial tasks, use judgment.
 
-## 1. Think Before Coding
+### 1. Think Before Coding
 
 **Don't assume. Don't hide confusion. Surface tradeoffs.**
 
@@ -29,7 +40,7 @@ Before implementing:
 - If a simpler approach exists, say so. Push back when warranted.
 - If something is unclear, stop. Name what's confusing. Ask.
 
-## 2. Simplicity First
+### 2. Simplicity First
 
 **Minimum code that solves the problem. Nothing speculative.**
 
@@ -41,7 +52,7 @@ Before implementing:
 
 Ask yourself: "Would a senior engineer say this is overcomplicated?" If yes, simplify.
 
-## 3. Surgical Changes
+### 3. Surgical Changes
 
 **Touch only what you must. Clean up only your own mess.**
 
@@ -57,7 +68,7 @@ When your changes create orphans:
 
 The test: Every changed line should trace directly to the user's request.
 
-## 4. Goal-Driven Execution
+### 4. Goal-Driven Execution
 
 **Define success criteria. Loop until verified.**
 
