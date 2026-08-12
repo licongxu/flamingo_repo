@@ -118,6 +118,10 @@ def test_separate_figures_group_all_nine_marginals():
         assert fig_z.axes[0].get_xlabel() == r"$z$"
         assert fig_q.axes[0].get_ylabel() == fig_z.axes[0].get_ylabel() == r"$N$"
         assert fig_q.axes[0].xaxis.label.get_usetex()
+        q_bars = fig_q.axes[0].patches
+        assert q_bars[5].get_alpha() == 1.0
+        assert all(bar.get_alpha() == 0.68 for bar in q_bars[:5])
+        assert all(bar.get_alpha() == 0.68 for bar in q_bars[10:])
         labels = [
             text.get_text() for text in fig_q.axes[0].get_legend().get_texts()
         ]

@@ -139,6 +139,7 @@ def build_figure(
             width=widths,
             align="edge",
             color=COLORS[variant],
+            alpha=1.0 if variant == "L1_m9" else 0.68,
             edgecolor="white",
             linewidth=0.35,
             label=legend_label(variant, int(histograms[variant].sum())),
