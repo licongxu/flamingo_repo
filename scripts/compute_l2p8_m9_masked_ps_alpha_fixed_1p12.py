@@ -37,6 +37,14 @@ sys.path.insert(0, str(REPO / "src"))
 
 from flamingo.catalogue import theta_500  # noqa: E402
 from flamingo.catalogue.frame import rotation_sanity  # noqa: E402
+from flamingo.masking import disc_mask  # noqa: E402
+from flamingo.powerspectra.bandpowers import (  # noqa: E402
+    PLANCK_ELL_EFF,
+    bin_log_dl,
+    bin_planck_dl,
+    write_bandpowers,
+)
+from flamingo.powerspectra.namaster import decoupled_cl_per_ell  # noqa: E402
 from flamingo.powerspectra.q_selection import (  # noqa: E402
     QSelection,
     resolve_q_selection,
@@ -111,19 +119,7 @@ APOSIZE_DEG = 0.25
 APOTYPE = "C2"
 
 LMAX = 10000
-ELL_MIN = np.array(
-    [9, 12, 16, 21, 27, 35, 46, 60, 78, 102, 133, 173, 224, 292, 380, 494, 642, 835]
-)
-ELL_MAX = np.array(
-    [12, 16, 21, 27, 35, 46, 60, 78, 102, 133, 173, 224, 292, 380, 494, 642, 835, 1085]
-)
-ELL_EFF = np.array(
-    [10.0, 13.5, 18.0, 23.5, 30.5, 40.0, 52.5, 68.5, 89.5, 117.0, 152.5, 198.0,
-     257.5, 335.5, 436.5, 567.5, 738.0, 959.5]
-)
-N_LOG_BINS = 12
 DLN_ELL = 0.4
-LOG_EDGES = LMAX * np.exp(-N_LOG_BINS * DLN_ELL) * np.exp(DLN_ELL * np.arange(N_LOG_BINS + 1))
 
 CHUNK = 1_000_000
 COLUMNS = ["z", "R_500c_Mpc", "theta_rot_rad", "phi_rot_rad", "q_from_mz"]
@@ -168,51 +164,6 @@ def load_catalogue(
     return out
 
 
-def binary_disc_mask(nside: int, theta: np.ndarray, phi: np.ndarray, radius: np.ndarray) -> np.ndarray:
-    mask = np.ones(hp.nside2npix(nside), dtype=np.float64)
-    for th, ph, rr in zip(theta, phi, radius):
-        mask[hp.query_disc(nside, hp.ang2vec(th, ph), float(rr))] = 0.0
-    return mask
-
-
-def decoupled_cl_per_ell(ymap: np.ndarray, mask_apo: np.ndarray, pixwin2: np.ndarray) -> np.ndarray:
-    w = mask_apo
-    m = ymap - float(np.sum(w * ymap) / np.sum(w))
-    field = nmt.NmtField(w, [m], lmax=LMAX)
-    bins = nmt.NmtBin.from_lmax_linear(LMAX, nlb=1)
-    workspace = nmt.NmtWorkspace()
-    workspace.compute_coupling_matrix(field, field, bins)
-    cl = workspace.decouple_cell(nmt.compute_coupled_cell(field, field))[0]
-    ell_eff = bins.get_effective_ells().astype(int)
-    cl_full = np.full(LMAX + 1, np.nan)
-    cl_full[ell_eff] = cl
-    return cl_full / pixwin2
-
-
-def bin_dl_18(ell: np.ndarray, cl: np.ndarray) -> np.ndarray:
-    dl = ell * (ell + 1.0) * cl / (2.0 * np.pi)
-    out = np.full(18, np.nan)
-    for i in range(18):
-        inside = (ell >= ELL_MIN[i]) & (ell <= ELL_MAX[i])
-        out[i] = np.nanmean(dl[inside])
-    return out
-
-
-def bin_cl_log(ell: np.ndarray, cl: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
-    centres = np.sqrt(LOG_EDGES[:-1] * LOG_EDGES[1:])
-    out = np.empty(N_LOG_BINS)
-    for i, (lo, hi) in enumerate(zip(LOG_EDGES[:-1], LOG_EDGES[1:])):
-        inside = (ell >= lo) & (ell <= hi) if i == N_LOG_BINS - 1 else (ell >= lo) & (ell < hi)
-        if not np.any(inside):
-            raise ValueError(f"log bin [{lo}, {hi}] is empty")
-        out[i] = np.nanmean(cl[inside])
-    return centres, centres * (centres + 1.0) * out / (2.0 * np.pi)
-
-
-def write_bandpowers(path: Path, ell: np.ndarray, dl_1e12: np.ndarray, header: str) -> None:
-    np.savetxt(path, np.column_stack([ell, dl_1e12]), fmt="%.6e", header=header)
-
-
 def process_lightcone(
     lightcone: int,
     selection: QSelection = DEFAULT_SELECTION,
@@ -249,20 +200,20 @@ def process_lightcone(
     max_dev = None
     if selection.tag == TAG:
         print("=== unit-mask validation vs stored full-sky 18-bin ===", flush=True)
-        cl_unit = decoupled_cl_per_ell(ymap, np.ones_like(ymap), pixwin2)
-        dl18_unit = bin_dl_18(ell, cl_unit)
+        cl_unit = decoupled_cl_per_ell(ymap, np.ones_like(ymap), pixwin2, lmax=LMAX)
+        dl18_unit = bin_planck_dl(ell, cl_unit)
         if lightcone == 0 and FULLSKY_18_LC0.is_file():
             stored = np.loadtxt(FULLSKY_18_LC0)[:, 1]
             max_dev = float(np.max(np.abs(dl18_unit * 1e12 / stored - 1.0)))
             print(f"  NaMaster unit mask vs stored anafast: max|frac diff| = {max_dev:.3e}", flush=True)
         write_bandpowers(
             OUT_DIR / f"Dl_yy_{name}_fullsky_binned_18.txt",
-            ELL_EFF,
+            PLANCK_ELL_EFF,
             dl18_unit * 1e12,
             header=f"{name} full-sky tSZ; NaMaster unit mask, pixwin deconvolved\nell_eff  1e12_D_ell_yy",
         )
 
-        ell_log, dl12_fullsky = bin_cl_log(ell, cl_unit)
+        ell_log, dl12_fullsky = bin_log_dl(ell, cl_unit)
         write_bandpowers(
             OUT_DIR / f"Dl_yy_{name}_fullsky_logbins_dln0p4_lmax10000.txt",
             ell_log,
@@ -280,7 +231,7 @@ def process_lightcone(
 
     metadata: dict[str, dict] = {}
     dl18_all, dl12_all = [], []
-    ell_log = np.sqrt(LOG_EDGES[:-1] * LOG_EDGES[1:])
+    ell_log, _ = bin_log_dl(ell, np.ones_like(ell))
     for cut, tag in zip(Q_CUTS, CUT_TAGS):
         output_18, output_log = masked_out_paths(
             lightcone, tag, selection.tag
@@ -297,7 +248,7 @@ def process_lightcone(
             f"(radius floor {np.rad2deg(mask_floor) * 60:.0f} arcmin) ===",
             flush=True,
         )
-        mask_bin = binary_disc_mask(nside, theta[keep], phi[keep], radius)
+        mask_bin = disc_mask(nside, theta[keep], phi[keep], radius, inclusive=False)
         f_sky_raw = float(mask_bin.mean())
         mask_apo = nmt.mask_apodization(mask_bin, APOSIZE_DEG, apotype=APOTYPE)
         f_sky_eff = float(np.mean(mask_apo**2))
@@ -307,10 +258,10 @@ def process_lightcone(
             flush=True,
         )
 
-        cl_masked = decoupled_cl_per_ell(ymap, mask_apo, pixwin2)
+        cl_masked = decoupled_cl_per_ell(ymap, mask_apo, pixwin2, lmax=LMAX)
         del mask_apo
-        dl18 = bin_dl_18(ell, cl_masked)
-        ell_log, dl12 = bin_cl_log(ell, cl_masked)
+        dl18 = bin_planck_dl(ell, cl_masked)
+        ell_log, dl12 = bin_log_dl(ell, cl_masked)
         dl18_all.append(dl18)
         dl12_all.append(dl12)
 
@@ -327,7 +278,7 @@ def process_lightcone(
         )
         write_bandpowers(
             output_18,
-            ELL_EFF,
+            PLANCK_ELL_EFF,
             dl18 * 1e12,
             header18,
         )
@@ -347,7 +298,7 @@ def process_lightcone(
 
     np.savez(
         OUT_DIR / f"{name}_masked_{selection.tag}.npz",
-        ell_eff_18=ELL_EFF,
+        ell_eff_18=PLANCK_ELL_EFF,
         dl_18=np.stack(dl18_all),
         ell_log=ell_log,
         dl_12=np.stack(dl12_all),

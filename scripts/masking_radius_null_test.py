@@ -54,6 +54,13 @@ sys.path.insert(0, str(REPO / "src"))
 
 from flamingo.catalogue import theta_500  # noqa: E402
 from flamingo.catalogue.frame import rotation_sanity  # noqa: E402
+from flamingo.masking import disc_mask  # noqa: E402
+from flamingo.powerspectra.bandpowers import (  # noqa: E402
+    PLANCK_ELL_EFF,
+    bin_log_dl,
+    bin_planck_dl,
+)
+from flamingo.powerspectra.namaster import decoupled_cl_per_ell  # noqa: E402
 from flamingo.powerspectra.q_selection import (  # noqa: E402
     QSelection,
     resolve_q_selection,
@@ -100,36 +107,6 @@ R_MULTS = [0.0, 0.5, 1.0, 1.5, 2.0, 3.0, 4.0, 5.0, 6.0, 8.0]
 APOSIZE_DEG = 0.25
 APOTYPE = "C2"
 LMAX = 10000
-
-ELL_MIN = np.array([9, 12, 16, 21, 27, 35, 46, 60, 78, 102, 133, 173, 224, 292, 380, 494, 642, 835])
-ELL_MAX = np.array(
-    [12, 16, 21, 27, 35, 46, 60, 78, 102, 133, 173, 224, 292, 380, 494, 642, 835, 1085]
-)
-ELL_EFF = np.array(
-    [
-        10.0,
-        13.5,
-        18.0,
-        23.5,
-        30.5,
-        40.0,
-        52.5,
-        68.5,
-        89.5,
-        117.0,
-        152.5,
-        198.0,
-        257.5,
-        335.5,
-        436.5,
-        567.5,
-        738.0,
-        959.5,
-    ]
-)
-N_LOG_BINS = 12
-DLN_ELL = 0.4
-LOG_EDGES = LMAX * np.exp(-N_LOG_BINS * DLN_ELL) * np.exp(DLN_ELL * np.arange(N_LOG_BINS + 1))
 
 CHUNK = 1_000_000
 COLUMNS = ["z", "R_500c_Mpc", "theta_rot_rad", "phi_rot_rad", "q_from_mz"]
@@ -189,54 +166,6 @@ def load_catalogue(cat_file: Path, q_column_name: str = "q_from_mz") -> dict[str
     return out
 
 
-def binary_disc_mask(
-    nside: int, theta: np.ndarray, phi: np.ndarray, radius: np.ndarray
-) -> np.ndarray:
-    """Binary mask, 0 inside discs -- production convention (query_disc defaults)."""
-    mask = np.ones(hp.nside2npix(nside), dtype=np.float64)
-    for th, ph, rr in zip(theta, phi, radius):
-        mask[hp.query_disc(nside, hp.ang2vec(th, ph), float(rr))] = 0.0
-    return mask
-
-
-def decoupled_cl_per_ell(ymap: np.ndarray, mask_apo: np.ndarray, pixwin2: np.ndarray) -> np.ndarray:
-    """Pixwin-corrected decoupled C_ell at every ell=2..LMAX (NaMaster MASTER)."""
-    w = mask_apo
-    m = ymap - float(np.sum(w * ymap) / np.sum(w))
-    field = nmt.NmtField(w, [m], lmax=LMAX)
-    bins = nmt.NmtBin.from_lmax_linear(LMAX, nlb=1)
-    workspace = nmt.NmtWorkspace()
-    workspace.compute_coupling_matrix(field, field, bins)
-    cl = workspace.decouple_cell(nmt.compute_coupled_cell(field, field))[0]
-
-    ell_eff = bins.get_effective_ells().astype(int)
-    cl_full = np.full(LMAX + 1, np.nan)
-    cl_full[ell_eff] = cl
-    return cl_full / pixwin2
-
-
-def bin_dl_18(ell: np.ndarray, cl: np.ndarray) -> np.ndarray:
-    """Uniform mean of D_ell over the inclusive Planck bins."""
-    dl = ell * (ell + 1.0) * cl / (2.0 * np.pi)
-    out = np.full(18, np.nan)
-    for i in range(18):
-        inside = (ell >= ELL_MIN[i]) & (ell <= ELL_MAX[i])
-        out[i] = np.nanmean(dl[inside])
-    return out
-
-
-def bin_cl_log(ell: np.ndarray, cl: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
-    """Uniform mean of C_ell in left-inclusive log bins, D_ell at geometric centres."""
-    centres = np.sqrt(LOG_EDGES[:-1] * LOG_EDGES[1:])
-    out = np.empty(N_LOG_BINS)
-    for i, (lo, hi) in enumerate(zip(LOG_EDGES[:-1], LOG_EDGES[1:])):
-        inside = (ell >= lo) & (ell <= hi) if i == N_LOG_BINS - 1 else (ell >= lo) & (ell < hi)
-        if not np.any(inside):
-            raise ValueError(f"log bin [{lo}, {hi}] is empty")
-        out[i] = np.nanmean(cl[inside])
-    return centres, centres * (centres + 1.0) * out / (2.0 * np.pi)
-
-
 def point_path(
     variant: str,
     cut: float,
@@ -280,8 +209,12 @@ def run_point(
         keep = cat["q"] > cut
         n_masked = int(keep.sum())
         print(f"=== q>{cut:g}, r={r_mult:g}*theta500: {n_masked:,} halos ===", flush=True)
-        mask_bin = binary_disc_mask(
-            nside, cat["theta"][keep], cat["phi"][keep], r_mult * cat["t500"][keep]
+        mask_bin = disc_mask(
+            nside,
+            cat["theta"][keep],
+            cat["phi"][keep],
+            r_mult * cat["t500"][keep],
+            inclusive=False,
         )
         f_sky_raw = float(mask_bin.mean())
         mask_apo = nmt.mask_apodization(mask_bin, APOSIZE_DEG, apotype=APOTYPE)
@@ -292,10 +225,10 @@ def run_point(
             flush=True,
         )
 
-    cl = decoupled_cl_per_ell(ymap, mask_apo, pixwin2)
+    cl = decoupled_cl_per_ell(ymap, mask_apo, pixwin2, lmax=LMAX)
     del mask_apo
-    dl_18 = bin_dl_18(ell, cl)
-    ell_log, dl_12 = bin_cl_log(ell, cl)
+    dl_18 = bin_planck_dl(ell, cl)
+    ell_log, dl_12 = bin_log_dl(ell, cl)
 
     result = dict(
         variant=variant,
@@ -304,7 +237,7 @@ def run_point(
         n_masked=n_masked,
         f_sky_raw=f_sky_raw,
         f_sky_eff=f_sky_eff,
-        ell_18=ELL_EFF,
+        ell_18=PLANCK_ELL_EFF,
         dl_18=dl_18 * 1e12,
         ell_log=ell_log,
         dl_12=dl_12 * 1e12,
