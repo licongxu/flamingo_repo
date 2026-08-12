@@ -2,16 +2,42 @@
 
 from __future__ import annotations
 
+import sys
 from pathlib import Path
 
+import matplotlib
+
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-from paper_results.config import CAT_DIR, VARIANTS
+REPO = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(REPO))
+
+from paper_results.config import (
+    CAT_DIR,
+    COLORS,
+    FIGURES_FEEDBACK,
+    LABELS,
+    VARIANTS,
+)
 
 Q_COLUMN = "q_from_aperture"
 Z_EDGES = np.linspace(0.005, 1.0, 11)
 Q_EDGES = np.geomspace(5.0, 40.0, 6)
+
+PAPER_RC = {
+    "text.usetex": True,
+    "font.family": "serif",
+    "font.size": 13,
+    "axes.labelsize": 15,
+    "xtick.labelsize": 12,
+    "ytick.labelsize": 12,
+    "legend.fontsize": 10,
+    "mathtext.fontset": "cm",
+    "text.latex.preamble": r"\usepackage{amsmath}",
+}
 
 
 def catalogue_path(variant: str) -> Path:
@@ -45,3 +71,116 @@ def bin_cnc(path: Path, chunksize: int = 1_000_000) -> np.ndarray:
 def load_histograms() -> dict[str, np.ndarray]:
     """Load the joint histogram for every L1_m9 feedback prescription."""
     return {variant: bin_cnc(catalogue_path(variant)) for variant in VARIANTS}
+
+
+def output_stem(marginal: str) -> Path:
+    """Return the explicit q-from-map output stem for one marginal."""
+    token = {"q": "Nq", "z": "Nz"}[marginal]
+    return FIGURES_FEEDBACK / f"l1_m9_cnc_binned_{token}_qgt5_feedback_qfrommap"
+
+
+def legend_label(variant: str, total: int) -> str:
+    """Return a TeX-safe feedback label with its total cluster count."""
+    label = LABELS[variant].replace("L1_m9", r"L1\_m9")
+    formatted_total = f"{total:,d}".replace(",", "{,}")
+    return rf"{label} ($N={formatted_total}$)"
+
+
+def _grouped_bar_geometry(
+    edges: np.ndarray,
+    series_index: int,
+    n_series: int,
+    *,
+    log_x: bool,
+) -> tuple[np.ndarray, np.ndarray]:
+    """Return left edges and widths for one series within every bin."""
+    coordinates = np.log(edges) if log_x else edges
+    bin_widths = np.diff(coordinates)
+    bar_widths = 0.9 * bin_widths / n_series
+    left = coordinates[:-1] + 0.05 * bin_widths + series_index * bar_widths
+    right = left + bar_widths
+    if log_x:
+        left = np.exp(left)
+        right = np.exp(right)
+    return left, right - left
+
+
+def build_figure(
+    histograms: dict[str, np.ndarray],
+    marginal: str,
+) -> plt.Figure:
+    """Build one standalone marginal-count figure."""
+    if marginal == "q":
+        edges = Q_EDGES
+        sum_axis = 0
+        xlabel = r"$q$"
+        log_x = True
+    elif marginal == "z":
+        edges = Z_EDGES
+        sum_axis = 1
+        xlabel = r"$z$"
+        log_x = False
+    else:
+        raise ValueError(f"unknown marginal: {marginal}")
+
+    plt.rcParams.update(PAPER_RC)
+    fig, ax = plt.subplots(figsize=(10.0, 5.8))
+    for index, variant in enumerate(VARIANTS):
+        counts = histograms[variant].sum(axis=sum_axis)
+        left, widths = _grouped_bar_geometry(
+            edges,
+            index,
+            len(VARIANTS),
+            log_x=log_x,
+        )
+        ax.bar(
+            left,
+            counts,
+            width=widths,
+            align="edge",
+            color=COLORS[variant],
+            edgecolor="white",
+            linewidth=0.35,
+            label=legend_label(variant, int(histograms[variant].sum())),
+        )
+
+    if log_x:
+        ax.set_xscale("log")
+    ax.set_xlim(edges[0], edges[-1])
+    ax.set_ylim(bottom=0.0)
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(r"$N$")
+    ax.grid(False)
+    ax.legend(
+        loc="lower center",
+        bbox_to_anchor=(0.5, 1.02),
+        frameon=False,
+        ncol=3,
+        fontsize=9,
+        columnspacing=1.2,
+        handlelength=1.5,
+    )
+    fig.subplots_adjust(left=0.10, right=0.98, bottom=0.14, top=0.66)
+    return fig
+
+
+def save_figure(fig: plt.Figure, stem: Path) -> None:
+    """Write one figure as PNG and PDF."""
+    stem.parent.mkdir(parents=True, exist_ok=True)
+    for suffix in ("png", "pdf"):
+        output = stem.with_suffix(f".{suffix}")
+        fig.savefig(output, dpi=300, bbox_inches="tight")
+        print(f"wrote {output}", flush=True)
+    plt.close(fig)
+
+
+def main() -> None:
+    histograms = load_histograms()
+    for variant, counts in histograms.items():
+        print(f"{variant}: N={int(counts.sum()):,d}", flush=True)
+    for marginal in ("q", "z"):
+        save_figure(build_figure(histograms, marginal), output_stem(marginal))
+
+
+if __name__ == "__main__":
+    main()

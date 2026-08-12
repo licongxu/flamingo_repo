@@ -47,17 +47,19 @@ are already stored on disk and the histogram is inexpensive to reproduce.
 
 ## Figures
 
-Create two separate step-histogram figures under `figures/feedback/`, each in
-PNG and PDF form:
+Create two separate grouped-bar histogram figures under `figures/feedback/`,
+each in PNG and PDF form:
 
 - `l1_m9_cnc_binned_Nq_qgt5_feedback_qfrommap.{png,pdf}`;
 - `l1_m9_cnc_binned_Nz_qgt5_feedback_qfrommap.{png,pdf}`.
 
-Overlay all nine feedback prescriptions in each figure. Use a logarithmic
-horizontal axis for `N(q)` and a linear horizontal axis for `N(z)`. Use count
-`N` on the vertical axes, no grid or diagnostic subtitle, and a compact legend
-with the established feedback labels. The figures should follow the existing
-paper plotting style and remain readable with nine curves.
+Divide every `q` or `z` bin into nine adjacent bars, one per feedback
+prescription, so no series overlaps another. Use equal visual sub-bin widths
+on the logarithmic `q` axis. Use a logarithmic horizontal axis for `N(q)` and a
+linear horizontal axis for `N(z)`. Label the axes only `$q$`, `$z$`, and `$N$`,
+with `text.usetex = True`. Place a compact legend above the data and append the
+total number of selected clusters to every feedback label. Use no grid, title,
+or diagnostic subtitle.
 
 ## Implementation and verification
 
@@ -73,6 +75,7 @@ Tests will verify:
 2. the exact redshift and detection-significance edges are used;
 3. both marginals equal the corresponding sums of a known 2D histogram;
 4. boundary and out-of-range objects are handled consistently;
-5. both explicit q-from-map output stems are used;
-6. the production script renders both PNG and PDF figures from the stored
+5. grouped bars, TeX labels, and per-prescription catalogue totals are used;
+6. both explicit q-from-map output stems are used;
+7. the production script renders both PNG and PDF figures from the stored
    catalogues without missing inputs.
