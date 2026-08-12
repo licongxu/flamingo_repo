@@ -88,6 +88,9 @@ def test_output_stems_are_explicit_qfrommap_names():
     assert module.output_stem("z").name == (
         "l1_m9_cnc_binned_Nz_qgt5_feedback_qfrommap"
     )
+    assert module.output_stem("qz").name == (
+        "l1_m9_cnc_binned_Nq_Nz_qgt5_feedback_qfrommap"
+    )
 
 
 def test_legend_label_uses_latex_and_includes_catalogue_total():
@@ -133,3 +136,23 @@ def test_separate_figures_group_all_nine_marginals():
     finally:
         module.plt.close(fig_q)
         module.plt.close(fig_z)
+
+
+def test_combined_paper_figure_has_two_marginal_panels_and_one_legend():
+    module = _load_script()
+    histograms = {
+        variant: np.full((10, 5), index + 1, dtype=int)
+        for index, variant in enumerate(module.VARIANTS)
+    }
+
+    fig = module.build_combined_figure(histograms)
+
+    try:
+        assert np.allclose(fig.get_size_inches(), [7.1, 4.2])
+        assert len(fig.axes) == 2
+        assert fig.axes[0].get_xlabel() == r"$q$"
+        assert fig.axes[1].get_xlabel() == r"$z$"
+        assert len(fig.legends) == 1
+        assert len(fig.legends[0].get_texts()) == 9
+    finally:
+        module.plt.close(fig)

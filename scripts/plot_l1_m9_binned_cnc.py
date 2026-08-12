@@ -9,6 +9,7 @@ import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+import matplotlib.ticker as mticker
 import numpy as np
 import pandas as pd
 
@@ -75,7 +76,7 @@ def load_histograms() -> dict[str, np.ndarray]:
 
 def output_stem(marginal: str) -> Path:
     """Return the explicit q-from-map output stem for one marginal."""
-    token = {"q": "Nq", "z": "Nz"}[marginal]
+    token = {"q": "Nq", "z": "Nz", "qz": "Nq_Nz"}[marginal]
     return FIGURES_FEEDBACK / f"l1_m9_cnc_binned_{token}_qgt5_feedback_qfrommap"
 
 
@@ -105,11 +106,12 @@ def _grouped_bar_geometry(
     return left, right - left
 
 
-def build_figure(
+def _draw_marginal(
+    ax: plt.Axes,
     histograms: dict[str, np.ndarray],
     marginal: str,
-) -> plt.Figure:
-    """Build one standalone marginal-count figure."""
+) -> None:
+    """Draw one grouped-bar marginal on an existing axis."""
     if marginal == "q":
         edges = Q_EDGES
         sum_axis = 0
@@ -123,8 +125,6 @@ def build_figure(
     else:
         raise ValueError(f"unknown marginal: {marginal}")
 
-    plt.rcParams.update(PAPER_RC)
-    fig, ax = plt.subplots(figsize=(7.1, 5.4))
     for index, variant in enumerate(VARIANTS):
         counts = histograms[variant].sum(axis=sum_axis)
         left, widths = _grouped_bar_geometry(
@@ -147,11 +147,23 @@ def build_figure(
 
     if log_x:
         ax.set_xscale("log")
+        ax.set_xticks([5.0, 10.0, 20.0, 40.0], labels=[r"$5$", r"$10$", r"$20$", r"$40$"])
+        ax.xaxis.set_minor_locator(mticker.NullLocator())
     ax.set_xlim(edges[0], edges[-1])
     ax.set_ylim(bottom=0.0)
     ax.set_xlabel(xlabel)
     ax.set_ylabel(r"$N$")
     ax.grid(False)
+
+
+def build_figure(
+    histograms: dict[str, np.ndarray],
+    marginal: str,
+) -> plt.Figure:
+    """Build one standalone marginal-count figure."""
+    plt.rcParams.update(PAPER_RC)
+    fig, ax = plt.subplots(figsize=(7.1, 5.4))
+    _draw_marginal(ax, histograms, marginal)
     ax.legend(
         loc="lower center",
         bbox_to_anchor=(0.5, 1.02),
@@ -163,6 +175,32 @@ def build_figure(
         handletextpad=0.45,
     )
     fig.subplots_adjust(left=0.11, right=0.98, bottom=0.13, top=0.70)
+    return fig
+
+
+def build_combined_figure(histograms: dict[str, np.ndarray]) -> plt.Figure:
+    """Build the paper-ready ``N(q)`` and ``N(z)`` two-panel figure."""
+    plt.rcParams.update(PAPER_RC)
+    fig, axes = plt.subplots(1, 2, figsize=(7.1, 4.2))
+    _draw_marginal(axes[0], histograms, "q")
+    _draw_marginal(axes[1], histograms, "z")
+    axes[1].set_ylabel("")
+    axes[0].text(0.03, 0.94, r"\textbf{(a)}", transform=axes[0].transAxes)
+    axes[1].text(0.03, 0.94, r"\textbf{(b)}", transform=axes[1].transAxes)
+    handles, labels = axes[0].get_legend_handles_labels()
+    fig.legend(
+        handles,
+        labels,
+        loc="lower center",
+        bbox_to_anchor=(0.5, 0.79),
+        frameon=False,
+        ncol=3,
+        fontsize=7.2,
+        columnspacing=0.8,
+        handlelength=1.2,
+        handletextpad=0.45,
+    )
+    fig.subplots_adjust(left=0.09, right=0.98, bottom=0.14, top=0.72, wspace=0.25)
     return fig
 
 
@@ -182,6 +220,7 @@ def main() -> None:
         print(f"{variant}: N={int(counts.sum()):,d}", flush=True)
     for marginal in ("q", "z"):
         save_figure(build_figure(histograms, marginal), output_stem(marginal))
+    save_figure(build_combined_figure(histograms), output_stem("qz"))
 
 
 if __name__ == "__main__":
