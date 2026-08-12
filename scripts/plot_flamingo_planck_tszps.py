@@ -43,7 +43,21 @@ PLANCK_MASKED = TOPOSZ / (
 N_PLANCK_BINS = 18
 ELL_PLANCK_MAX = 959.5
 ELL_XMIN = 10.0
-ELL_XMAX = 1.0e4
+ELL_XMIN_LEFT = 100.0
+
+
+def _ell_xmax() -> float:
+    """Upper multipole limit from all log-bin curves shown in the figure."""
+    max_ell = 0.0
+    paths = [
+        _logbin_path("L1_m9", masked=False),
+        _logbin_path("L1_m9", masked=True),
+        *(_masked_logbin_path(cut_tag) for _, cut_tag in LEFT_CUTS),
+    ]
+    for path in paths:
+        ell, _ = _load(path)
+        max_ell = max(max_ell, float(ell.max()))
+    return max_ell
 
 PAPER_RC = {
     "text.usetex": True,
@@ -130,10 +144,11 @@ def _save(fig: plt.Figure, stem: Path) -> None:
 
 def build_figure() -> plt.Figure:
     plt.rcParams.update(PAPER_RC)
+    ell_xmax = _ell_xmax()
     fig, (ax_left, ax_right) = plt.subplots(1, 2, figsize=(11.8, 4.8))
 
     ell_full_log, dl_full_log = _load(_logbin_path("L1_m9", masked=False))
-    keep_full_log = (ell_full_log >= 100.0) & (ell_full_log <= ELL_XMAX)
+    keep_full_log = (ell_full_log >= ELL_XMIN_LEFT) & (ell_full_log <= ell_xmax)
     ax_left.loglog(
         ell_full_log[keep_full_log],
         dl_full_log[keep_full_log],
@@ -146,7 +161,7 @@ def build_figure() -> plt.Figure:
     metadata = json.loads(META.read_text())["variants"]["fiducial"]["cuts"]
     for (cut, cut_tag), color in zip(LEFT_CUTS, cut_colors):
         ell, dl = _load(_masked_logbin_path(cut_tag))
-        keep = (ell >= 100.0) & (ell <= ELL_XMAX)
+        keep = (ell >= ELL_XMIN_LEFT) & (ell <= ell_xmax)
         label = rf"$q>{cut:g}$"
         entry = metadata.get(cut_tag)
         if entry:
@@ -159,7 +174,7 @@ def build_figure() -> plt.Figure:
     masked_color = "#D55E00"
 
     ell_full, dl_full = _hybrid_curve("L1_m9", masked=False)
-    keep_full = (ell_full >= ELL_XMIN) & (ell_full <= ELL_XMAX)
+    keep_full = (ell_full >= ELL_XMIN) & (ell_full <= ell_xmax)
     (full_line,) = ax_right.loglog(
         ell_full[keep_full],
         dl_full[keep_full],
@@ -184,7 +199,7 @@ def build_figure() -> plt.Figure:
     )
 
     ell_masked, dl_masked = _hybrid_curve("L1_m9", masked=True)
-    keep_masked = (ell_masked >= ELL_XMIN) & (ell_masked <= ELL_XMAX)
+    keep_masked = (ell_masked >= ELL_XMIN) & (ell_masked <= ell_xmax)
     (masked_line,) = ax_right.loglog(
         ell_masked[keep_masked],
         dl_masked[keep_masked],
@@ -209,10 +224,10 @@ def build_figure() -> plt.Figure:
         zorder=5,
     )
 
-    for panel, xmin in ((ax_left, 100.0), (ax_right, ELL_XMIN)):
+    for panel, xmin in ((ax_left, ELL_XMIN_LEFT), (ax_right, ELL_XMIN)):
         panel.set_xscale("log")
         panel.set_yscale("log")
-        panel.set_xlim(xmin, ELL_XMAX)
+        panel.set_xlim(xmin, ell_xmax)
         panel.set_ylim(5.0e-3, 3.0)
         panel.set_xlabel(r"$\ell$")
         panel.grid(False)

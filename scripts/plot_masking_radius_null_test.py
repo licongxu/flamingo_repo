@@ -49,17 +49,31 @@ SELECTION_TAG = LEGACY_TAG
 
 VARIANTS = ["L1_m9"]
 Q_CUTS = [20.0, 10.0, 5.0, 1.0]
+Q_CUTS_PLOT = [20.0, 10.0, 5.0]
 R_MULTS = [0.5, 1.0, 1.5, 2.0, 3.0, 4.0, 5.0, 6.0, 8.0]
 
 #: Production masking radius, in units of theta_500.
 R_PRODUCTION = 4.0
 
 #: Log-bin indices shown as individual curves (of the 12 bins, centres
-#: ~100, 150, 224, 334, 497, 741, 1106, 1650, 2461, 3671, 5476, 8168).
-ELL_SHOW = [0, 3, 6, 9, 11]
+#: ~101, 224, 498, 743, 1108, 1653, 2466; stop below ell ~ 3000).
+ELL_SHOW = [0, 2, 4, 6, 8]
 
 #: Radii at which the residual systematic is tabulated against R = 4.
 R_TABLE = [5.0, 6.0, 8.0]
+
+PAPER_RC = {
+    "text.usetex": True,
+    "font.family": "serif",
+    "font.size": 13,
+    "axes.labelsize": 15,
+    "xtick.labelsize": 12,
+    "ytick.labelsize": 12,
+    "legend.fontsize": 10,
+    "text.latex.preamble": r"\usepackage{amsmath}",
+}
+
+FIG_DPI = 180
 
 
 def selection_data_dir(selection_tag: str) -> Path:
@@ -102,16 +116,22 @@ def load_sweep(variant: str, cut: float, *, random: bool = False) -> dict:
     )
 
 
-def _save(fig: plt.Figure, stem: Path) -> None:
+def _save(fig: plt.Figure, stem: Path, *, dpi: int | None = None, extra_artists=()) -> None:
     FIGURES.mkdir(parents=True, exist_ok=True)
+    save_dpi = FIG_DPI if dpi is None else dpi
     for suffix in ("png", "pdf"):
         out = stem.with_suffix(f".{suffix}")
-        fig.savefig(out, dpi=180, bbox_inches="tight")
+        fig.savefig(
+            out,
+            dpi=save_dpi,
+            bbox_inches="tight",
+            bbox_extra_artists=extra_artists,
+        )
         print(f"wrote {out.relative_to(REPO)}", flush=True)
     plt.close(fig)
 
 
-def _panel_grid(ylabel: str, title: str):
+def _panel_grid(ylabel: str, title: str | None = None):
     fig, axes = plt.subplots(
         len(VARIANTS),
         len(Q_CUTS),
@@ -121,7 +141,8 @@ def _panel_grid(ylabel: str, title: str):
         gridspec_kw={"hspace": 0.12, "wspace": 0.06},
     )
     axes = np.atleast_2d(axes)
-    fig.suptitle(title, y=0.97)
+    if title is not None:
+        fig.suptitle(title, y=0.97)
     for j in range(len(Q_CUTS)):
         axes[-1, j].set_xlabel(r"masking radius $R$  [$\theta_{500}$]")
     for i in range(len(VARIANTS)):
@@ -131,19 +152,32 @@ def _panel_grid(ylabel: str, title: str):
 
 def figure_residual(sweeps: dict) -> None:
     """``D_ell(R) / D_ell(unmasked)`` -- the fraction of power that survives."""
-    fig, axes = _panel_grid(
-        r"$D_\ell(R)\,/\,D_\ell^{\rm unmasked}$",
-        "Masking-radius null test: surviving tSZ power",
+    ncols = len(Q_CUTS_PLOT)
+    fig, axes = plt.subplots(
+        len(VARIANTS),
+        ncols,
+        figsize=(4.0 * ncols, 2.9 * len(VARIANTS)),
+        sharex=True,
+        sharey="row",
+        gridspec_kw={"hspace": 0.28, "wspace": 0.08},
     )
-    colors = plt.cm.viridis(np.linspace(0.05, 0.85, len(ELL_SHOW)))
+    axes = np.atleast_2d(axes)
+    for j in range(ncols):
+        axes[-1, j].set_xlabel(r"masking radius $R$  [$\theta_{500}$]")
+    for i in range(len(VARIANTS)):
+        axes[i, 0].set_ylabel(r"$D_\ell(R)\,/\,D_\ell^{\rm unmasked}$")
+
+    colors = plt.cm.viridis(np.linspace(0.08, 0.88, len(ELL_SHOW)))
+    legend_handles, legend_labels = [], []
 
     for i, variant in enumerate(VARIANTS):
-        for j, cut in enumerate(Q_CUTS):
+        for j, cut in enumerate(Q_CUTS_PLOT):
             ax = axes[i, j]
+            ax.set_title(rf"{variant}, $q>{cut:g}$", fontsize=10, pad=6)
             s = sweeps[variant, cut]
             for c, k in zip(colors, ELL_SHOW) if len(s["r"]) else ():
                 ratio = s["dl_12"][:, k] / s["dl_unmasked"][k]
-                ax.plot(
+                (line,) = ax.plot(
                     np.concatenate([[0.0], s["r"]]),
                     np.concatenate([[1.0], ratio]),
                     "o-",
@@ -152,19 +186,21 @@ def figure_residual(sweeps: dict) -> None:
                     color=c,
                     label=rf"$\ell\simeq{s['ell_log'][k]:.0f}$",
                 )
-            ax.axvline(R_PRODUCTION, color="0.4", ls="--", lw=1.0)
-            ax.set_ylim(0.0, 1.05)
+                if i == 0 and j == 0:
+                    legend_handles.append(line)
+                    legend_labels.append(rf"$\ell\simeq{s['ell_log'][k]:.0f}$")
+            ax.axvline(R_PRODUCTION, color="0.4", ls="--", lw=1.0, zorder=0)
+            ax.set_yscale("log")
+            ax.set_ylim(0.11, 1.08)
             ax.set_xlim(0.0, max(R_MULTS) + 0.3)
-            ax.text(
-                0.97, 0.95, rf"{variant}, $q>{cut:g}$",
-                transform=ax.transAxes, ha="right", va="top", fontsize=9,
-            )
-            if i == 0 and j == 0:
-                ax.legend(fontsize=7, loc="lower left", frameon=False)
-    axes[0, 0].annotate(
-        r"paper: $4\theta_{500}$",
-        xy=(R_PRODUCTION, 0.08), xytext=(R_PRODUCTION + 0.4, 0.08),
-        fontsize=7, color="0.4",
+
+    axes[0, 0].legend(
+        legend_handles,
+        legend_labels,
+        loc="lower right",
+        frameon=False,
+        fontsize=8,
+        handlelength=2.0,
     )
     _save(fig, product_path("masking_radius_null_test", SELECTION_TAG))
 
@@ -336,12 +372,22 @@ def write_table(sweeps: dict) -> None:
 
 
 def main() -> None:
-    global DATA, SELECTION_TAG
+    global DATA, SELECTION_TAG, FIG_DPI
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--selection", choices=(LEGACY_TAG, "qfrommap"), default=LEGACY_TAG)
+    parser.add_argument(
+        "--product",
+        choices=("all", "residual", "convergence", "random"),
+        default="all",
+        help="figure to write (residual = C_ell plateau plot)",
+    )
+    parser.add_argument("--dpi", type=int, default=None, help="figure DPI (default: 300 for qfrommap)")
     args = parser.parse_args()
     SELECTION_TAG = args.selection
     DATA = selection_data_dir(SELECTION_TAG)
+    FIG_DPI = args.dpi if args.dpi is not None else (300 if SELECTION_TAG == "qfrommap" else 180)
+    if SELECTION_TAG == "qfrommap":
+        plt.rcParams.update(PAPER_RC)
 
     sweeps = {
         (v, cut): load_sweep(v, cut) for v in VARIANTS for cut in Q_CUTS
@@ -357,11 +403,15 @@ def main() -> None:
             if len(c["r"]):
                 controls[v, cut] = c
 
-    figure_residual(sweeps)
-    figure_convergence(sweeps)
-    figure_random_control(sweeps, controls)
-    export_datapoints(sweeps, controls)
-    write_table(sweeps)
+    if args.product in ("all", "residual"):
+        figure_residual(sweeps)
+    if args.product in ("all", "convergence"):
+        figure_convergence(sweeps)
+    if args.product in ("all", "random"):
+        figure_random_control(sweeps, controls)
+    if args.product == "all":
+        export_datapoints(sweeps, controls)
+        write_table(sweeps)
 
 
 if __name__ == "__main__":

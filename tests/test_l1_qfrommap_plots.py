@@ -188,6 +188,52 @@ def test_feedback_ratio_plot_selects_qfrommap_bandpower():
     assert "q>5" not in description
 
 
+def test_feedback_ratio_qfrommap_uses_fullsky_and_q5_theory_bands():
+    module = _load_script(
+        "l1_feedback_ratio_qfrommap_bands_test",
+        "plot_l1_m9_feedback_ratio_vs_q.py",
+    )
+
+    assert module.selection_error_band_kinds("qfrommap") == (
+        ("fullsky", "full sky"),
+        (5.0, r"$q>5$"),
+    )
+    assert module.cov_path_for_band(5.0, log=False).name == (
+        "cov_full_L1_m9_customgnfw_bestfit_masked_qgt5_Dl_yy_binned_18.npy"
+    )
+
+
+def test_feedback_ratio_binned_figure_has_no_main_title_and_both_band_labels(monkeypatch):
+    module = _load_script(
+        "l1_feedback_ratio_qfrommap_layout_test",
+        "plot_l1_m9_feedback_ratio_vs_q.py",
+    )
+    module.TAG = "qfrommap"
+    module.OUTPUT_TAG = "qfrommap"
+    module.ERROR_BAND_KINDS = module.selection_error_band_kinds("qfrommap")
+    captured = {}
+
+    def capture_figure(fig, stem):
+        captured["fig"] = fig
+        return stem.with_suffix(".png")
+
+    monkeypatch.setattr(module, "_save", capture_figure)
+    module.plot_all_feedback_ratio_vs_q(
+        log=False,
+        ell_range=(10.0, 959.5),
+        show_title=False,
+    )
+
+    fig = captured["fig"]
+    try:
+        assert len(fig.axes) == 8
+        assert fig._suptitle is None
+        legend_labels = [text.get_text() for text in fig.legends[0].get_texts()]
+        assert legend_labels[-2:] == [r"full sky $1\sigma$", r"$q>5$ $1\sigma$"]
+    finally:
+        module.plt.close(fig)
+
+
 def test_paper_plot_selects_qfrommap_bandpower():
     path = paper_figures.masked_bandpower_path("Jet", "qgt5", mask_tag="qfrommap")
 
@@ -201,3 +247,28 @@ def test_legacy_selection_remains_default():
     )
 
     assert "qfrommz_alpha_fixed_1p12" in module.bandpower_path("Jet", 5.0, log=False).name
+
+
+def test_asz_fit_bandpower_figure_is_single_panel():
+    module = _load_script(
+        "l1_asz_fit_bandpower_layout_test",
+        "plot_l1_m9_asz_fit_bandpowers.py",
+    )
+
+    summaries = module._load_summary()
+    fig = module.build_figure(summaries)
+    try:
+        assert len(fig.axes) == 1
+        ax = fig.axes[0]
+        assert len(ax.lines) == 15
+        assert len(ax.containers) == 0
+        assert [text.get_text() for text in ax.get_legend().get_texts()] == [
+            "full sky",
+            r"$q>50$",
+            r"$q>20$",
+            r"$q>10$",
+            r"$q>5$",
+        ]
+        assert fig._suptitle is None
+    finally:
+        module.plt.close(fig)

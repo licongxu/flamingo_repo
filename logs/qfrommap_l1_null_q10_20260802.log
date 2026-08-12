@@ -1,0 +1,69 @@
+=== L1_m9: map + catalogue ===
+E0802 05:18:35.405836 2909159 cuda_executor.cc:1206] [0] Failed to allocate device memory: INTERNAL: [0] Failed to allocate 71.23GiB (76478791680 bytes) of device memory: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+E0802 05:18:35.406524 2909159 cuda_executor.cc:1206] [0] Failed to allocate device memory: INTERNAL: [0] Failed to allocate 64.10GiB (68830912512 bytes) of device memory: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+E0802 05:18:35.407334 2909159 cuda_executor.cc:1206] [0] Failed to allocate device memory: INTERNAL: [0] Failed to allocate 57.69GiB (61947817984 bytes) of device memory: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+E0802 05:18:35.407987 2909159 cuda_executor.cc:1206] [0] Failed to allocate device memory: INTERNAL: [0] Failed to allocate 51.92GiB (55753035776 bytes) of device memory: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+E0802 05:18:35.408612 2909159 cuda_executor.cc:1206] [0] Failed to allocate device memory: INTERNAL: [0] Failed to allocate 46.73GiB (50177732608 bytes) of device memory: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+E0802 05:18:35.409221 2909159 cuda_executor.cc:1206] [0] Failed to allocate device memory: INTERNAL: [0] Failed to allocate 42.06GiB (45159956480 bytes) of device memory: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+E0802 05:18:35.409833 2909159 cuda_executor.cc:1206] [0] Failed to allocate device memory: INTERNAL: [0] Failed to allocate 37.85GiB (40643960832 bytes) of device memory: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+E0802 05:18:35.410490 2909159 cuda_executor.cc:1206] [0] Failed to allocate device memory: INTERNAL: [0] Failed to allocate 34.07GiB (36579565568 bytes) of device memory: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+E0802 05:18:35.411149 2909159 cuda_executor.cc:1206] [0] Failed to allocate device memory: INTERNAL: [0] Failed to allocate 30.66GiB (32921608192 bytes) of device memory: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+E0802 05:18:35.412099 2909159 cuda_executor.cc:1206] [0] Failed to allocate device memory: INTERNAL: [0] Failed to allocate 27.59GiB (29629446144 bytes) of device memory: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+E0802 05:18:35.412883 2909159 cuda_executor.cc:1206] [0] Failed to allocate device memory: INTERNAL: [0] Failed to allocate 24.83GiB (26666500096 bytes) of device memory: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+E0802 05:18:35.413443 2909159 cuda_executor.cc:1206] [0] Failed to allocate device memory: INTERNAL: [0] Failed to allocate 22.35GiB (23999848448 bytes) of device memory: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+  catalogue: 1,000,000 rows
+  catalogue: 1,538,317 rows
+  catalogue: 1,538,317 halos total
+  nside=4096, 1,538,317 halos, mean y=1.503e-06
+  rotation sanity: rot ratio=5.50, nat ratio=1.00
+  cached L1_m9_unmasked.npz
+  unit mask vs stored full sky: max|frac diff| = 4.165e-08
+=== q>10, r=0.5*theta500: 589 halos ===
+  f_sky raw=0.9993 eff=0.9968 (105s)
+  wrote L1_m9_qgt10_r0p5.npz (798s)
+  [805s elapsed]
+=== q>10, r=1*theta500: 589 halos ===
+  f_sky raw=0.9971 eff=0.9932 (105s)
+=== L1_m9: map + catalogue ===
+  catalogue: 1,000,000 rows
+  catalogue: 1,538,317 rows
+  catalogue: 1,538,317 halos total
+  nside=4096, 1,538,317 halos, mean y=1.503e-06
+  rotation sanity: rot ratio=5.50, nat ratio=1.00
+  cached L1_m9_unmasked.npz
+  unit mask vs stored full sky: max|frac diff| = 4.165e-08
+  cached L1_m9_qgt10_r0p5.npz
+  [6s elapsed]
+=== q>10, r=1*theta500: 589 halos ===
+  f_sky raw=0.9971 eff=0.9932 (105s)
+  wrote L1_m9_qgt10_r1.npz (795s)
+  [801s elapsed]
+=== q>10, r=1.5*theta500: 589 halos ===
+  f_sky raw=0.9934 eff=0.9883 (105s)
+  wrote L1_m9_qgt10_r1p5.npz (792s)
+  [1592s elapsed]
+=== q>10, r=2*theta500: 589 halos ===
+  f_sky raw=0.9884 eff=0.9819 (105s)
+  wrote L1_m9_qgt10_r2.npz (806s)
+  [2398s elapsed]
+=== q>10, r=3*theta500: 589 halos ===
+  f_sky raw=0.9741 eff=0.9651 (103s)
+  wrote L1_m9_qgt10_r3.npz (798s)
+  [3197s elapsed]
+=== q>10, r=4*theta500: 589 halos ===
+  f_sky raw=0.9549 eff=0.9436 (101s)
+  wrote L1_m9_qgt10_r4.npz (792s)
+  [3989s elapsed]
+=== q>10, r=5*theta500: 589 halos ===
+  f_sky raw=0.9313 eff=0.9178 (99s)
+  wrote L1_m9_qgt10_r5.npz (776s)
+  [4764s elapsed]
+=== q>10, r=6*theta500: 589 halos ===
+  f_sky raw=0.9036 eff=0.8882 (97s)
+  wrote L1_m9_qgt10_r6.npz (717s)
+  [5481s elapsed]
+=== q>10, r=8*theta500: 589 halos ===
+  f_sky raw=0.8383 eff=0.8200 (91s)
+  wrote L1_m9_qgt10_r8.npz (701s)
+  [6182s elapsed]
+done (6182s)

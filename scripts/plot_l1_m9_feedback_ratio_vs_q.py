@@ -55,9 +55,16 @@ ERROR_BAND_KINDS = (
     (5.0, r"$q>5$"),
 )
 
+
+def selection_error_band_kinds(
+    selection_tag: str,
+) -> tuple[tuple[str | float, str], ...]:
+    """Theory bands used by both catalogue selections."""
+    return (("fullsky", "full sky"), (5.0, r"$q>5$"))
+
 # y-padding around ratio curves (fraction of span, plus absolute floor).
-Y_PAD_FRAC = 0.12
-Y_PAD_ABS = 0.03
+Y_PAD_FRAC = 0.04
+Y_PAD_ABS = 0.01
 
 FEEDBACK_VARIANTS = [
     "fgas+2sigma",
@@ -260,15 +267,29 @@ def _error_band_alpha(kind: str | float) -> float:
 def _ylim_from_ratios(
     ratios: dict[str | float, np.ndarray],
     inside: np.ndarray,
+    *,
+    center: float = 1.0,
+    symmetric: bool = True,
 ) -> tuple[float, float]:
-    """Tight y-limits from ratio curves only (ignore wide error bands)."""
+    """Y-limits from ratio curves; symmetric about ``center`` or min/max padding."""
     stack = np.concatenate([r[inside] for r in ratios.values()])
     stack = stack[np.isfinite(stack)]
     lo = float(np.min(stack))
     hi = float(np.max(stack))
+    if symmetric:
+        half_span = max(abs(lo - center), abs(hi - center), 1e-3)
+        pad = max(Y_PAD_FRAC * 2.0 * half_span, Y_PAD_ABS)
+        return center - half_span - pad, center + half_span + pad
     span = max(hi - lo, 1e-3)
     pad = max(Y_PAD_FRAC * span, Y_PAD_ABS)
     return lo - pad, hi + pad
+
+
+def _xlim_from_ell(x: np.ndarray) -> tuple[float, float]:
+    """Log x-limits from plotted bin centers (exact min/max, no extra margin)."""
+    if x.size == 0:
+        raise ValueError("no ell values to set x limits")
+    return float(np.min(x)), float(np.max(x))
 
 
 def _save(fig: plt.Figure, stem: Path) -> Path:
@@ -295,6 +316,8 @@ def _draw_ratio_panel(
     ell_range: tuple[float, float],
     show_curve_legend: bool = False,
     ylim: tuple[float, float] | None = None,
+    symmetric_ylim: bool = True,
+    xlim_from_data: bool = True,
 ) -> None:
     """Ratio curves + fullsky/q>5 error bands about 1; ylim from curves or fixed."""
     ell, ratios = ratios_by_q(variant, curves, log=log)
@@ -302,7 +325,7 @@ def _draw_ratio_panel(
     inside = (ell >= ell_range[0]) & (ell <= ell_range[1])
     x = ell[inside]
     if ylim is None:
-        ymin, ymax = _ylim_from_ratios(ratios, inside)
+        ymin, ymax = _ylim_from_ratios(ratios, inside, symmetric=symmetric_ylim)
     else:
         ymin, ymax = ylim
 
@@ -333,13 +356,11 @@ def _draw_ratio_panel(
             ratios[kind][inside],
             lw=1.6,
             color=color,
-            marker="o",
-            markersize=3.2,
             label=curve_label(kind) if show_curve_legend else None,
             zorder=3,
         )
 
-    ax.set_xlim(*ell_range)
+    ax.set_xlim(_xlim_from_ell(x) if xlim_from_data else ell_range)
     ax.set_ylim(ymin, ymax)
     ax.set_xscale("log")
     ax.grid(False)
@@ -355,9 +376,7 @@ def _legend_handles(curves: list[str | float]) -> list:
                 [0],
                 [0],
                 color=color,
-                marker="o",
                 lw=1.6,
-                markersize=4,
                 label=curve_label(kind),
             )
         )
@@ -401,7 +420,7 @@ def plot_ratio_vs_q(
     )
 
     if own_fig:
-        ax.set_xlabel(r"multipole $\ell$")
+        ax.set_xlabel(r"$\ell$")
         ax.set_ylabel(r"$D_\ell^{\rm variant} / D_\ell^{\rm fiducial}$")
         vlab = VARIANT_LABELS.get(variant, variant)
         bin_note = r"12 log bins ($\Delta\ln\ell=0.4$)" if log else "18 Planck bins"
@@ -434,6 +453,9 @@ def plot_all_feedback_ratio_vs_q(
     stem: Path | None = None,
     variants: list[str] | None = None,
     shared_ylim: bool = True,
+    symmetric_ylim: bool = True,
+    xlim_from_data: bool = True,
+    show_title: bool = True,
 ) -> Path:
     """Multi-panel figure: one panel per feedback prescription."""
     curves = list(DEFAULT_CURVES if q_cuts is None else q_cuts)
@@ -454,7 +476,7 @@ def plot_all_feedback_ratio_vs_q(
                 all_ratios[f"{variant}:{key}"] = arr
         assert ell_ref is not None
         inside = (ell_ref >= ell_range[0]) & (ell_ref <= ell_range[1])
-        ylim = _ylim_from_ratios(all_ratios, inside)
+        ylim = _ylim_from_ratios(all_ratios, inside, symmetric=symmetric_ylim)
         print(f"shared ylim ({'log' if log else '18'}): {ylim[0]:.4f} … {ylim[1]:.4f}", flush=True)
 
     n = len(variants)
@@ -479,10 +501,12 @@ def plot_all_feedback_ratio_vs_q(
             ell_range=ell_range,
             show_curve_legend=False,
             ylim=ylim,
+            symmetric_ylim=symmetric_ylim,
+            xlim_from_data=xlim_from_data,
         )
         ax.set_title(VARIANT_LABELS.get(variant, variant), fontsize=10)
         if i // ncols == nrows - 1:
-            ax.set_xlabel(r"multipole $\ell$")
+            ax.set_xlabel(r"$\ell$")
         if i % ncols == 0:
             ax.set_ylabel(r"variant / fiducial")
         ax.grid(False)
@@ -499,16 +523,18 @@ def plot_all_feedback_ratio_vs_q(
         fontsize=8.5,
         bbox_to_anchor=(0.5, -0.02),
     )
-    bin_note = r"12 log bins ($\Delta\ln\ell=0.4$)" if log else "18 Planck bins"
-    fig.suptitle(
-        rf"FLAMINGO L1_m9 feedback / fiducial ratio vs sky cut ({bin_note})"
-        "\n"
-        rf"shaded bands about 1: {error_band_description()} custom-GNFW theory $1\sigma$ "
-        r"($\sigma_D/D_\ell^{\rm fid}$); y-range from ratio curves",
-        fontsize=11,
-        y=1.01,
-    )
-    fig.tight_layout(rect=(0.0, 0.05, 1.0, 0.96))
+    if show_title:
+        bin_note = r"12 log bins ($\Delta\ln\ell=0.4$)" if log else "18 Planck bins"
+        fig.suptitle(
+            rf"FLAMINGO L1_m9 feedback / fiducial ratio vs sky cut ({bin_note})"
+            "\n"
+            rf"shaded bands about 1: {error_band_description()} custom-GNFW theory $1\sigma$ "
+            r"($\sigma_D/D_\ell^{\rm fid}$); y-range from ratio curves",
+            fontsize=11,
+            y=1.01,
+        )
+    layout_top = 0.96 if show_title else 0.99
+    fig.tight_layout(rect=(0.0, 0.05, 1.0, layout_top))
 
     if stem is None:
         bin_tag = "logbins" if log else "binned_18"
@@ -525,11 +551,18 @@ def main() -> None:
     if TAG == "qfrommap":
         OUTPUT_TAG = "qfrommap"
         SELECTION_DESCRIPTION = "empirical aperture q"
-        ERROR_BAND_KINDS = (("fullsky", "full sky"),)
+    ERROR_BAND_KINDS = selection_error_band_kinds(TAG)
     plt.rcParams.update(
         {
-            "font.size": 10,
-            "text.usetex": False,
+            "font.size": 13 if TAG == "qfrommap" else 10,
+            "font.family": "serif" if TAG == "qfrommap" else "sans-serif",
+            "axes.labelsize": 14 if TAG == "qfrommap" else 10,
+            "axes.titlesize": 13 if TAG == "qfrommap" else 10,
+            "xtick.labelsize": 11 if TAG == "qfrommap" else 10,
+            "ytick.labelsize": 11 if TAG == "qfrommap" else 10,
+            "legend.fontsize": 11 if TAG == "qfrommap" else 10,
+            "text.usetex": TAG == "qfrommap",
+            "text.latex.preamble": r"\usepackage{amsmath}",
             "mathtext.fontset": "cm",
             "axes.grid": False,
         }
@@ -553,13 +586,24 @@ def main() -> None:
                 flush=True,
             )
 
-    # Shared y only for the 18-bin multi-panel (user request). Log-bin panels
-    # keep per-panel ylim so the q>5 error band stays visible.
     plot_all_feedback_ratio_vs_q(
-        q_cuts=curves, log=False, ell_range=(10.0, 959.5), shared_ylim=True
+        q_cuts=curves,
+        log=False,
+        ell_range=(10.0, 959.5),
+        shared_ylim=True,
+        show_title=TAG != "qfrommap",
     )
     plot_all_feedback_ratio_vs_q(
-        q_cuts=curves, log=True, ell_range=(100.0, 10000.0), shared_ylim=False
+        q_cuts=curves, log=True, ell_range=(100.0, 3680.0), shared_ylim=True
+    )
+    plot_all_feedback_ratio_vs_q(
+        q_cuts=curves,
+        log=True,
+        ell_range=(100.0, 10000.0),
+        shared_ylim=False,
+        symmetric_ylim=False,
+        xlim_from_data=False,
+        stem=FIGURES / f"l1_m9_all_feedback_ratio_vs_q_logbins_{OUTPUT_TAG}_lmax10000",
     )
     plot_ratio_vs_q(DEFAULT_VARIANT, q_cuts=curves, log=False, ell_range=(10.0, 959.5))
     plot_ratio_vs_q(DEFAULT_VARIANT, q_cuts=curves, log=True, ell_range=(100.0, 10000.0))

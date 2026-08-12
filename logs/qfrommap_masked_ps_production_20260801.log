@@ -1,0 +1,7 @@
+OUT_DIR=/scratch/scratch-lxu/flamingo_repo/data_paper/binned_bandpowers
+variants=['fiducial', 'fgas+2sigma', 'fgas-2sigma', 'fgas-4sigma', 'fgas-8sigma', 'Jet', 'Jet_fgas-4sigma', 'Mstar-1sigma', 'Mstar-1sigma_fgas-4sigma']
+selection=qfrommap q_column=q_from_aperture
+q_cuts=[50.0, 20.0, 10.0, 5.0, 1.0]
+workers=2  OMP_NUM_THREADS=8
+[fiducial] computing ['qgt10', 'qgt5', 'qgt1'] (19:59:49)
+[fgas+2sigma] computing ['qgt20', 'qgt10', 'qgt5', 'qgt1'] (19:59:49)

@@ -1,0 +1,92 @@
+=== L1_m9: map + catalogue ===
+E0802 05:18:35.407516 2909160 cuda_executor.cc:1206] [0] Failed to allocate device memory: INTERNAL: [0] Failed to allocate 71.23GiB (76478791680 bytes) of device memory: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+E0802 05:18:35.408150 2909160 cuda_executor.cc:1206] [0] Failed to allocate device memory: INTERNAL: [0] Failed to allocate 64.10GiB (68830912512 bytes) of device memory: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+E0802 05:18:35.408767 2909160 cuda_executor.cc:1206] [0] Failed to allocate device memory: INTERNAL: [0] Failed to allocate 57.69GiB (61947817984 bytes) of device memory: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+E0802 05:18:35.409379 2909160 cuda_executor.cc:1206] [0] Failed to allocate device memory: INTERNAL: [0] Failed to allocate 51.92GiB (55753035776 bytes) of device memory: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+E0802 05:18:35.409983 2909160 cuda_executor.cc:1206] [0] Failed to allocate device memory: INTERNAL: [0] Failed to allocate 46.73GiB (50177732608 bytes) of device memory: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+E0802 05:18:35.410632 2909160 cuda_executor.cc:1206] [0] Failed to allocate device memory: INTERNAL: [0] Failed to allocate 42.06GiB (45159956480 bytes) of device memory: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+E0802 05:18:35.411347 2909160 cuda_executor.cc:1206] [0] Failed to allocate device memory: INTERNAL: [0] Failed to allocate 37.85GiB (40643960832 bytes) of device memory: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+E0802 05:18:35.412245 2909160 cuda_executor.cc:1206] [0] Failed to allocate device memory: INTERNAL: [0] Failed to allocate 34.07GiB (36579565568 bytes) of device memory: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+E0802 05:18:35.413025 2909160 cuda_executor.cc:1206] [0] Failed to allocate device memory: INTERNAL: [0] Failed to allocate 30.66GiB (32921608192 bytes) of device memory: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+E0802 05:18:35.413589 2909160 cuda_executor.cc:1206] [0] Failed to allocate device memory: INTERNAL: [0] Failed to allocate 27.59GiB (29629446144 bytes) of device memory: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+E0802 05:18:35.413833 2909160 cuda_executor.cc:1206] [0] Failed to allocate device memory: INTERNAL: [0] Failed to allocate 24.83GiB (26666500096 bytes) of device memory: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+E0802 05:18:35.413930 2909160 cuda_executor.cc:1206] [0] Failed to allocate device memory: INTERNAL: [0] Failed to allocate 22.35GiB (23999848448 bytes) of device memory: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+E0802 05:18:35.414243 2909160 cuda_executor.cc:1206] [0] Failed to allocate device memory: INTERNAL: [0] Failed to allocate 20.12GiB (21599862784 bytes) of device memory: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+E0802 05:18:35.414372 2909160 cuda_executor.cc:1206] [0] Failed to allocate device memory: INTERNAL: [0] Failed to allocate 18.10GiB (19439876096 bytes) of device memory: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+E0802 05:18:35.414472 2909160 cuda_executor.cc:1206] [0] Failed to allocate device memory: INTERNAL: [0] Failed to allocate 16.29GiB (17495887872 bytes) of device memory: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+E0802 05:18:35.414555 2909160 cuda_executor.cc:1206] [0] Failed to allocate device memory: INTERNAL: [0] Failed to allocate 14.66GiB (15746298880 bytes) of device memory: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+E0802 05:18:35.414630 2909160 cuda_executor.cc:1206] [0] Failed to allocate device memory: INTERNAL: [0] Failed to allocate 13.20GiB (14171668480 bytes) of device memory: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+E0802 05:18:35.414705 2909160 cuda_executor.cc:1206] [0] Failed to allocate device memory: INTERNAL: [0] Failed to allocate 11.88GiB (12754501632 bytes) of device memory: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+E0802 05:18:35.414818 2909160 cuda_executor.cc:1206] [0] Failed to allocate device memory: INTERNAL: [0] Failed to allocate 10.69GiB (11479051264 bytes) of device memory: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+E0802 05:18:35.414914 2909160 cuda_executor.cc:1206] [0] Failed to allocate device memory: INTERNAL: [0] Failed to allocate 9.62GiB (10331146240 bytes) of device memory: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+E0802 05:18:35.415007 2909160 cuda_executor.cc:1206] [0] Failed to allocate device memory: INTERNAL: [0] Failed to allocate 8.66GiB (9298031616 bytes) of device memory: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+E0802 05:18:35.415082 2909160 cuda_executor.cc:1206] [0] Failed to allocate device memory: INTERNAL: [0] Failed to allocate 7.79GiB (8368228352 bytes) of device memory: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+E0802 05:18:35.415156 2909160 cuda_executor.cc:1206] [0] Failed to allocate device memory: INTERNAL: [0] Failed to allocate 7.01GiB (7531405312 bytes) of device memory: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+E0802 05:18:35.415228 2909160 cuda_executor.cc:1206] [0] Failed to allocate device memory: INTERNAL: [0] Failed to allocate 6.31GiB (6778264576 bytes) of device memory: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+E0802 05:18:35.415297 2909160 cuda_executor.cc:1206] [0] Failed to allocate device memory: INTERNAL: [0] Failed to allocate 5.68GiB (6100438016 bytes) of device memory: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+E0802 05:18:35.415367 2909160 cuda_executor.cc:1206] [0] Failed to allocate device memory: INTERNAL: [0] Failed to allocate 5.11GiB (5490394112 bytes) of device memory: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+E0802 05:18:35.415436 2909160 cuda_executor.cc:1206] [0] Failed to allocate device memory: INTERNAL: [0] Failed to allocate 4.60GiB (4941354496 bytes) of device memory: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+E0802 05:18:35.415504 2909160 cuda_executor.cc:1206] [0] Failed to allocate device memory: INTERNAL: [0] Failed to allocate 4.14GiB (4447218688 bytes) of device memory: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+E0802 05:18:35.415573 2909160 cuda_executor.cc:1206] [0] Failed to allocate device memory: INTERNAL: [0] Failed to allocate 3.73GiB (4002496768 bytes) of device memory: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+E0802 05:18:35.415640 2909160 cuda_executor.cc:1206] [0] Failed to allocate device memory: INTERNAL: [0] Failed to allocate 3.35GiB (3602246912 bytes) of device memory: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+E0802 05:18:35.415707 2909160 cuda_executor.cc:1206] [0] Failed to allocate device memory: INTERNAL: [0] Failed to allocate 3.02GiB (3242022144 bytes) of device memory: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+E0802 05:18:35.415775 2909160 cuda_executor.cc:1206] [0] Failed to allocate device memory: INTERNAL: [0] Failed to allocate 2.72GiB (2917819904 bytes) of device memory: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+E0802 05:18:35.415843 2909160 cuda_executor.cc:1206] [0] Failed to allocate device memory: INTERNAL: [0] Failed to allocate 2.45GiB (2626037760 bytes) of device memory: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+E0802 05:18:35.415910 2909160 cuda_executor.cc:1206] [0] Failed to allocate device memory: INTERNAL: [0] Failed to allocate 2.20GiB (2363433984 bytes) of device memory: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+E0802 05:18:35.415977 2909160 cuda_executor.cc:1206] [0] Failed to allocate device memory: INTERNAL: [0] Failed to allocate 1.98GiB (2127090688 bytes) of device memory: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+  catalogue: 1,000,000 rows
+  catalogue: 1,538,317 rows
+  catalogue: 1,538,317 halos total
+  nside=4096, 1,538,317 halos, mean y=1.503e-06
+  rotation sanity: rot ratio=5.50, nat ratio=1.00
+  cached L1_m9_unmasked.npz
+  unit mask vs stored full sky: max|frac diff| = 4.165e-08
+=== q>5, r=0.5*theta500: 3,090 halos ===
+  f_sky raw=0.9983 eff=0.9880 (105s)
+  wrote L1_m9_qgt5_r0p5.npz (793s)
+  [799s elapsed]
+=== q>5, r=1*theta500: 3,090 halos ===
+  f_sky raw=0.9932 eff=0.9783 (104s)
+=== L1_m9: map + catalogue ===
+  catalogue: 1,000,000 rows
+  catalogue: 1,538,317 rows
+  catalogue: 1,538,317 halos total
+  nside=4096, 1,538,317 halos, mean y=1.503e-06
+  rotation sanity: rot ratio=5.50, nat ratio=1.00
+  cached L1_m9_unmasked.npz
+  unit mask vs stored full sky: max|frac diff| = 4.165e-08
+  cached L1_m9_qgt5_r0p5.npz
+  [6s elapsed]
+=== q>5, r=1*theta500: 3,090 halos ===
+  f_sky raw=0.9932 eff=0.9783 (105s)
+  wrote L1_m9_qgt5_r1.npz (795s)
+  [800s elapsed]
+=== q>5, r=1.5*theta500: 3,090 halos ===
+  f_sky raw=0.9848 eff=0.9655 (104s)
+  wrote L1_m9_qgt5_r1p5.npz (793s)
+  [1594s elapsed]
+=== q>5, r=2*theta500: 3,090 halos ===
+  f_sky raw=0.9733 eff=0.9497 (104s)
+  wrote L1_m9_qgt5_r2.npz (807s)
+  [2400s elapsed]
+=== q>5, r=3*theta500: 3,090 halos ===
+  f_sky raw=0.9416 eff=0.9107 (100s)
+  wrote L1_m9_qgt5_r3.npz (794s)
+  [3194s elapsed]
+=== q>5, r=4*theta500: 3,090 halos ===
+  f_sky raw=0.8999 eff=0.8630 (97s)
+  wrote L1_m9_qgt5_r4.npz (790s)
+  [3984s elapsed]
+=== q>5, r=5*theta500: 3,090 halos ===
+  f_sky raw=0.8500 eff=0.8081 (92s)
+  wrote L1_m9_qgt5_r5.npz (764s)
+  [4748s elapsed]
+=== q>5, r=6*theta500: 3,090 halos ===
+  f_sky raw=0.7940 eff=0.7489 (86s)
+  wrote L1_m9_qgt5_r6.npz (707s)
+  [5455s elapsed]
+=== q>5, r=8*theta500: 3,090 halos ===
+  f_sky raw=0.6713 eff=0.6227 (74s)
+  wrote L1_m9_qgt5_r8.npz (681s)
+  [6135s elapsed]
+done (6135s)

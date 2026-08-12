@@ -1,0 +1,21 @@
+/scratch/scratch-lxu/flamingo_repo/chains/l1_m9_qfrommap_signal_only/fullsky/chain.1.txt
+Removed 0.3 as burn in
+/scratch/scratch-lxu/flamingo_repo/chains/l1_m9_qfrommap_signal_only/qgt50/chain.1.txt
+Removed 0.3 as burn in
+/scratch/scratch-lxu/flamingo_repo/chains/l1_m9_qfrommap_signal_only/qgt20/chain.1.txt
+Removed 0.3 as burn in
+/scratch/scratch-lxu/flamingo_repo/chains/l1_m9_qfrommap_signal_only/qgt10/chain.1.txt
+Removed 0.3 as burn in
+/scratch/scratch-lxu/flamingo_repo/chains/l1_m9_qfrommap_signal_only/qgt5/chain.1.txt
+Removed 0.3 as burn in
+{
+  "completion_audit": "/scratch/scratch-lxu/flamingo_repo/chains/l1_m9_qfrommap_signal_only/completion_audit.json",
+  "completion_audit_passed": true,
+  "plots": {
+    "cosmology_pdf": "/scratch/scratch-lxu/flamingo_repo/chains/l1_m9_qfrommap_signal_only/getdist_posterior_cosmology.pdf",
+    "cosmology_png": "/scratch/scratch-lxu/flamingo_repo/chains/l1_m9_qfrommap_signal_only/getdist_posterior_cosmology.png",
+    "sz_pdf": "/scratch/scratch-lxu/flamingo_repo/chains/l1_m9_qfrommap_signal_only/getdist_posterior_sz.pdf",
+    "sz_png": "/scratch/scratch-lxu/flamingo_repo/chains/l1_m9_qfrommap_signal_only/getdist_posterior_sz.png"
+  },
+  "posterior_summary": "/scratch/scratch-lxu/flamingo_repo/chains/l1_m9_qfrommap_signal_only/posterior_summary.json"
+}

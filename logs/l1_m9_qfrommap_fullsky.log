@@ -1,0 +1,910 @@
+
+=== fullsky (q_cat=None) ===
+Authorization required, but no authorization protocol specified
+
+Authorization required, but no authorization protocol specified
+
+Authorization required, but no authorization protocol specified
+
+Authorization required, but no authorization protocol specified
+
+[output] Output to be read-from/written-into folder '/scratch/scratch-lxu/flamingo_repo/chains/l1_m9_qfrommap_signal_only/fullsky', with prefix 'chain'
+[mcmc] Getting initial point... (this may take a few seconds)
+[mcmc] Initial point: H0:69.32134, sigma_8:0.7996005, n_s:0.9848787, omega_b:0.02097099, Omega_m:0.3171811, A_SZ:-4.091994, alpha_SZ:1.112888, sigma_lnY:0.1915656
+[model] Measuring speeds... (this may take a few seconds)
+[model] Setting measured speeds (per sec): {flamingo.inference.masked_ps.MaskedBandPowerLikelihood: 14700.0, flamingo.inference.masked_ps.MaskedTSZTheory: 38.7}
+[mcmc] Covariance matrix not present. We will start learning the covariance of the proposal earlier: R-1 = 30 (would be 2 if all params loaded).
+[mcmc] Sampling! (NB: no accepted step will be saved until 50 burn-in samples have been obtained)
+[mcmc] Progress @ 2026-08-02 23:59:06 : 1 steps taken -- still burning in, 51 accepted steps left.
+[mcmc] Finished burn-in phase: discarded 50 accepted steps.
+[mcmc] Learn + convergence test @ 40 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.56296e-05 s (432 evaluations, 0.024032 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.023978 s (432 evaluations, 10.3585 s total)
+[mcmc]  - Acceptance rate: 0.166
+[mcmc]  - Convergence of means: R-1 = 254.265257 after 32 accepted steps
+[mcmc] Convergence less than requested for updates: waiting until the next convergence check.
+[mcmc] Learn + convergence test @ 80 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.46997e-05 s (612 evaluations, 0.0334762 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0239945 s (612 evaluations, 14.6846 s total)
+[mcmc]  - Acceptance rate: 0.196
+[mcmc]  - Convergence of means: R-1 = 18.948039 after 64 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 120 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.48392e-05 s (667 evaluations, 0.0365777 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0240035 s (667 evaluations, 16.0104 s total)
+[mcmc]  - Acceptance rate: 0.295
+[mcmc]  - Convergence of means: R-1 = 24.003376 after 96 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 160 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.50637e-05 s (716 evaluations, 0.0394256 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0240281 s (716 evaluations, 17.2041 s total)
+[mcmc]  - Acceptance rate: 0.366
+[mcmc]  - Convergence of means: R-1 = 18.435523 after 128 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 200 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.5044e-05 s (766 evaluations, 0.0421637 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0239761 s (766 evaluations, 18.3657 s total)
+[mcmc]  - Acceptance rate: 0.479
+[mcmc]  - Convergence of means: R-1 = 7.175979 after 160 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 240 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.50658e-05 s (816 evaluations, 0.0449337 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.024026 s (816 evaluations, 19.6052 s total)
+[mcmc]  - Acceptance rate: 0.575
+[mcmc]  - Convergence of means: R-1 = 9.016613 after 192 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 280 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.51243e-05 s (868 evaluations, 0.0478479 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.024048 s (868 evaluations, 20.8737 s total)
+[mcmc]  - Acceptance rate: 0.622
+[mcmc]  - Convergence of means: R-1 = 17.851858 after 224 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 320 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.50497e-05 s (926 evaluations, 0.050976 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0240844 s (926 evaluations, 22.3022 s total)
+[mcmc]  - Acceptance rate: 0.651
+[mcmc]  - Convergence of means: R-1 = 7.239539 after 256 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 360 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.48791e-05 s (981 evaluations, 0.0538364 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0241196 s (981 evaluations, 23.6614 s total)
+[mcmc]  - Acceptance rate: 0.702
+[mcmc]  - Convergence of means: R-1 = 11.494895 after 288 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 400 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.48816e-05 s (1032 evaluations, 0.0566378 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0241262 s (1032 evaluations, 24.8983 s total)
+[mcmc]  - Acceptance rate: 0.762
+[mcmc]  - Convergence of means: R-1 = 8.938258 after 320 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 440 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.47188e-05 s (1089 evaluations, 0.0595888 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0241187 s (1089 evaluations, 26.2653 s total)
+[mcmc]  - Acceptance rate: 0.757
+[mcmc]  - Convergence of means: R-1 = 5.110628 after 352 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 480 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.45136e-05 s (1142 evaluations, 0.0622545 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0241257 s (1142 evaluations, 27.5516 s total)
+[mcmc]  - Acceptance rate: 0.754
+[mcmc]  - Convergence of means: R-1 = 4.824383 after 384 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 520 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.45325e-05 s (1203 evaluations, 0.0656026 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0240928 s (1203 evaluations, 28.9837 s total)
+[mcmc]  - Acceptance rate: 0.740
+[mcmc]  - Convergence of means: R-1 = 3.385882 after 416 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 560 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.47831e-05 s (1261 evaluations, 0.0690815 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0241126 s (1261 evaluations, 30.406 s total)
+[mcmc]  - Acceptance rate: 0.737
+[mcmc]  - Convergence of means: R-1 = 3.688199 after 448 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 600 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.45796e-05 s (1324 evaluations, 0.0722634 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.024123 s (1324 evaluations, 31.9389 s total)
+[mcmc]  - Acceptance rate: 0.731
+[mcmc]  - Convergence of means: R-1 = 6.777881 after 480 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 640 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.43819e-05 s (1381 evaluations, 0.0751014 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0240956 s (1381 evaluations, 33.2761 s total)
+[mcmc]  - Acceptance rate: 0.729
+[mcmc]  - Convergence of means: R-1 = 8.048832 after 512 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 680 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.43241e-05 s (1448 evaluations, 0.0786614 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0240971 s (1448 evaluations, 34.8926 s total)
+[mcmc]  - Acceptance rate: 0.717
+[mcmc]  - Convergence of means: R-1 = 3.798423 after 544 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 720 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.43603e-05 s (1511 evaluations, 0.0821384 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0241099 s (1511 evaluations, 36.4301 s total)
+[mcmc]  - Acceptance rate: 0.708
+[mcmc]  - Convergence of means: R-1 = 1.535413 after 576 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 760 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.43822e-05 s (1572 evaluations, 0.0854889 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0241202 s (1572 evaluations, 37.917 s total)
+[mcmc]  - Acceptance rate: 0.704
+[mcmc]  - Convergence of means: R-1 = 1.368154 after 608 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 800 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.44557e-05 s (1630 evaluations, 0.0887629 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0241386 s (1630 evaluations, 39.3459 s total)
+[mcmc]  - Acceptance rate: 0.700
+[mcmc]  - Convergence of means: R-1 = 2.018702 after 640 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 840 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.4551e-05 s (1705 evaluations, 0.0930094 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0241548 s (1705 evaluations, 41.184 s total)
+[mcmc]  - Acceptance rate: 0.686
+[mcmc]  - Convergence of means: R-1 = 2.018020 after 672 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 880 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.45567e-05 s (1769 evaluations, 0.0965108 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0241544 s (1769 evaluations, 42.7292 s total)
+[mcmc]  - Acceptance rate: 0.681
+[mcmc]  - Convergence of means: R-1 = 1.472245 after 704 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 920 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.44618e-05 s (1847 evaluations, 0.100591 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0241321 s (1847 evaluations, 44.5721 s total)
+[mcmc]  - Acceptance rate: 0.667
+[mcmc]  - Convergence of means: R-1 = 1.811495 after 736 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 960 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.43399e-05 s (1917 evaluations, 0.10417 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0241354 s (1917 evaluations, 46.2676 s total)
+[mcmc]  - Acceptance rate: 0.661
+[mcmc]  - Convergence of means: R-1 = 1.826549 after 768 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 1000 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.43582e-05 s (1975 evaluations, 0.107357 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0241382 s (1975 evaluations, 47.673 s total)
+[mcmc]  - Acceptance rate: 0.661
+[mcmc]  - Convergence of means: R-1 = 2.271530 after 800 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 1040 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.4596e-05 s (2039 evaluations, 0.111321 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0241435 s (2039 evaluations, 49.2286 s total)
+[mcmc]  - Acceptance rate: 0.658
+[mcmc]  - Convergence of means: R-1 = 2.376718 after 832 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 1080 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.45466e-05 s (2109 evaluations, 0.115039 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0241341 s (2109 evaluations, 50.8989 s total)
+[mcmc]  - Acceptance rate: 0.653
+[mcmc]  - Convergence of means: R-1 = 1.140126 after 864 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 1120 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.46401e-05 s (2179 evaluations, 0.119061 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0241081 s (2179 evaluations, 52.5316 s total)
+[mcmc]  - Acceptance rate: 0.647
+[mcmc]  - Convergence of means: R-1 = 1.507991 after 896 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 1160 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.46815e-05 s (2267 evaluations, 0.123963 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0241378 s (2267 evaluations, 54.7205 s total)
+[mcmc]  - Acceptance rate: 0.634
+[mcmc]  - Convergence of means: R-1 = 1.541386 after 928 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 1200 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.46835e-05 s (2340 evaluations, 0.127959 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0241403 s (2340 evaluations, 56.4883 s total)
+[mcmc]  - Acceptance rate: 0.629
+[mcmc]  - Convergence of means: R-1 = 1.354435 after 960 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 1240 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.48027e-05 s (2415 evaluations, 0.132348 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0241663 s (2415 evaluations, 58.3616 s total)
+[mcmc]  - Acceptance rate: 0.624
+[mcmc]  - Convergence of means: R-1 = 1.179786 after 992 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Progress @ 2026-08-03 00:00:06 : 2451 steps taken, and 1260 accepted.
+[mcmc] Learn + convergence test @ 1280 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.48011e-05 s (2491 evaluations, 0.13651 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0241777 s (2491 evaluations, 60.2267 s total)
+[mcmc]  - Acceptance rate: 0.618
+[mcmc]  - Convergence of means: R-1 = 1.148080 after 1024 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 1320 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.46945e-05 s (2571 evaluations, 0.140619 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0241703 s (2571 evaluations, 62.1418 s total)
+[mcmc]  - Acceptance rate: 0.611
+[mcmc]  - Convergence of means: R-1 = 1.524731 after 1056 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 1360 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.46937e-05 s (2646 evaluations, 0.144719 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0241749 s (2646 evaluations, 63.9667 s total)
+[mcmc]  - Acceptance rate: 0.605
+[mcmc]  - Convergence of means: R-1 = 1.617843 after 1088 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 1400 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.49871e-05 s (2724 evaluations, 0.149785 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0241699 s (2724 evaluations, 65.8388 s total)
+[mcmc]  - Acceptance rate: 0.601
+[mcmc]  - Convergence of means: R-1 = 1.574452 after 1120 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 1440 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.49417e-05 s (2790 evaluations, 0.153287 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0241717 s (2790 evaluations, 67.4391 s total)
+[mcmc]  - Acceptance rate: 0.600
+[mcmc]  - Convergence of means: R-1 = 1.136674 after 1152 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 1480 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.49715e-05 s (2869 evaluations, 0.157713 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0241767 s (2869 evaluations, 69.3628 s total)
+[mcmc]  - Acceptance rate: 0.596
+[mcmc]  - Convergence of means: R-1 = 0.833909 after 1184 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 1520 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.50622e-05 s (2944 evaluations, 0.162103 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0241913 s (2944 evaluations, 71.2192 s total)
+[mcmc]  - Acceptance rate: 0.593
+[mcmc]  - Convergence of means: R-1 = 0.856230 after 1216 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 1560 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.50982e-05 s (3018 evaluations, 0.166286 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0241906 s (3018 evaluations, 73.0074 s total)
+[mcmc]  - Acceptance rate: 0.590
+[mcmc]  - Convergence of means: R-1 = 0.927066 after 1248 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 1600 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.51741e-05 s (3089 evaluations, 0.170433 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0241981 s (3089 evaluations, 74.7479 s total)
+[mcmc]  - Acceptance rate: 0.588
+[mcmc]  - Convergence of means: R-1 = 0.994669 after 1280 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 1640 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.52329e-05 s (3174 evaluations, 0.175309 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0242004 s (3174 evaluations, 76.812 s total)
+[mcmc]  - Acceptance rate: 0.585
+[mcmc]  - Convergence of means: R-1 = 0.946429 after 1312 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 1680 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.52395e-05 s (3241 evaluations, 0.179031 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0242005 s (3241 evaluations, 78.4339 s total)
+[mcmc]  - Acceptance rate: 0.583
+[mcmc]  - Convergence of means: R-1 = 1.052420 after 1344 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 1720 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.5197e-05 s (3337 evaluations, 0.184192 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0242109 s (3337 evaluations, 80.7918 s total)
+[mcmc]  - Acceptance rate: 0.575
+[mcmc]  - Convergence of means: R-1 = 1.116695 after 1376 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 1760 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.52929e-05 s (3451 evaluations, 0.190816 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0242284 s (3451 evaluations, 83.6123 s total)
+[mcmc]  - Acceptance rate: 0.563
+[mcmc]  - Convergence of means: R-1 = 1.306838 after 1408 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 1800 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.52462e-05 s (3538 evaluations, 0.195461 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0242357 s (3538 evaluations, 85.746 s total)
+[mcmc]  - Acceptance rate: 0.557
+[mcmc]  - Convergence of means: R-1 = 1.352135 after 1440 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 1840 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.52744e-05 s (3615 evaluations, 0.199817 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0242341 s (3615 evaluations, 87.6064 s total)
+[mcmc]  - Acceptance rate: 0.554
+[mcmc]  - Convergence of means: R-1 = 1.394845 after 1472 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 1880 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.52857e-05 s (3693 evaluations, 0.20417 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0242419 s (3693 evaluations, 89.5252 s total)
+[mcmc]  - Acceptance rate: 0.552
+[mcmc]  - Convergence of means: R-1 = 1.399300 after 1504 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 1920 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.52159e-05 s (3761 evaluations, 0.207667 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.024254 s (3761 evaluations, 91.2193 s total)
+[mcmc]  - Acceptance rate: 0.552
+[mcmc]  - Convergence of means: R-1 = 1.193961 after 1536 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 1960 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.52059e-05 s (3839 evaluations, 0.211935 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0242423 s (3839 evaluations, 93.0661 s total)
+[mcmc]  - Acceptance rate: 0.549
+[mcmc]  - Convergence of means: R-1 = 1.254896 after 1568 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 2000 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.52178e-05 s (3913 evaluations, 0.216067 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0242372 s (3913 evaluations, 94.8403 s total)
+[mcmc]  - Acceptance rate: 0.546
+[mcmc]  - Convergence of means: R-1 = 1.624940 after 1600 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 2040 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.51432e-05 s (3990 evaluations, 0.220021 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.02423 s (3990 evaluations, 96.6779 s total)
+[mcmc]  - Acceptance rate: 0.542
+[mcmc]  - Convergence of means: R-1 = 1.752708 after 1632 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 2080 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.51973e-05 s (4072 evaluations, 0.224763 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0242185 s (4072 evaluations, 98.6176 s total)
+[mcmc]  - Acceptance rate: 0.540
+[mcmc]  - Convergence of means: R-1 = 1.440707 after 1664 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 2120 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.52628e-05 s (4138 evaluations, 0.228677 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0242217 s (4138 evaluations, 100.23 s total)
+[mcmc]  - Acceptance rate: 0.540
+[mcmc]  - Convergence of means: R-1 = 1.299746 after 1696 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 2160 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.52476e-05 s (4217 evaluations, 0.232979 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.024222 s (4217 evaluations, 102.144 s total)
+[mcmc]  - Acceptance rate: 0.538
+[mcmc]  - Convergence of means: R-1 = 1.257702 after 1728 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 2200 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.5288e-05 s (4311 evaluations, 0.238347 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.024214 s (4311 evaluations, 104.386 s total)
+[mcmc]  - Acceptance rate: 0.534
+[mcmc]  - Convergence of means: R-1 = 0.947536 after 1760 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 2240 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.53317e-05 s (4403 evaluations, 0.243625 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0242043 s (4403 evaluations, 106.572 s total)
+[mcmc]  - Acceptance rate: 0.529
+[mcmc]  - Convergence of means: R-1 = 0.848218 after 1792 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 2280 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.53405e-05 s (4476 evaluations, 0.247704 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0242073 s (4476 evaluations, 108.352 s total)
+[mcmc]  - Acceptance rate: 0.525
+[mcmc]  - Convergence of means: R-1 = 0.886915 after 1824 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 2320 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.53478e-05 s (4554 evaluations, 0.252054 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0242067 s (4554 evaluations, 110.237 s total)
+[mcmc]  - Acceptance rate: 0.523
+[mcmc]  - Convergence of means: R-1 = 0.851242 after 1856 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 2360 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.52402e-05 s (4640 evaluations, 0.256315 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0242138 s (4640 evaluations, 112.352 s total)
+[mcmc]  - Acceptance rate: 0.518
+[mcmc]  - Convergence of means: R-1 = 0.825408 after 1888 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 2400 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.53081e-05 s (4735 evaluations, 0.261884 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0242154 s (4735 evaluations, 114.66 s total)
+[mcmc]  - Acceptance rate: 0.512
+[mcmc]  - Convergence of means: R-1 = 0.912364 after 1920 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 2440 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.53277e-05 s (4813 evaluations, 0.266292 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0242202 s (4813 evaluations, 116.572 s total)
+[mcmc]  - Acceptance rate: 0.511
+[mcmc]  - Convergence of means: R-1 = 0.921544 after 1952 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Progress @ 2026-08-03 00:01:06 : 5043 steps taken, and 2476 accepted.
+[mcmc] Learn + convergence test @ 2480 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.52989e-05 s (4892 evaluations, 0.270522 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0242219 s (4892 evaluations, 118.494 s total)
+[mcmc]  - Acceptance rate: 0.510
+[mcmc]  - Convergence of means: R-1 = 0.797053 after 1984 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 2520 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.52628e-05 s (4963 evaluations, 0.274269 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0242178 s (4963 evaluations, 120.193 s total)
+[mcmc]  - Acceptance rate: 0.509
+[mcmc]  - Convergence of means: R-1 = 0.833248 after 2016 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 2560 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.52798e-05 s (5055 evaluations, 0.279439 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0242155 s (5055 evaluations, 122.41 s total)
+[mcmc]  - Acceptance rate: 0.505
+[mcmc]  - Convergence of means: R-1 = 0.772142 after 2048 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 2600 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.5294e-05 s (5161 evaluations, 0.285372 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0242054 s (5161 evaluations, 124.924 s total)
+[mcmc]  - Acceptance rate: 0.501
+[mcmc]  - Convergence of means: R-1 = 0.669509 after 2080 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 2640 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.52287e-05 s (5269 evaluations, 0.291 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0241902 s (5269 evaluations, 127.458 s total)
+[mcmc]  - Acceptance rate: 0.497
+[mcmc]  - Convergence of means: R-1 = 0.622002 after 2112 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 2680 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.52408e-05 s (5348 evaluations, 0.295428 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0241909 s (5348 evaluations, 129.373 s total)
+[mcmc]  - Acceptance rate: 0.496
+[mcmc]  - Convergence of means: R-1 = 0.737117 after 2144 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 2720 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.52265e-05 s (5432 evaluations, 0.29999 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0241766 s (5432 evaluations, 131.327 s total)
+[mcmc]  - Acceptance rate: 0.495
+[mcmc]  - Convergence of means: R-1 = 0.732736 after 2176 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 2760 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.52284e-05 s (5517 evaluations, 0.304695 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0241857 s (5517 evaluations, 133.432 s total)
+[mcmc]  - Acceptance rate: 0.493
+[mcmc]  - Convergence of means: R-1 = 0.664941 after 2208 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 2800 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.52211e-05 s (5606 evaluations, 0.30957 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0241886 s (5606 evaluations, 135.601 s total)
+[mcmc]  - Acceptance rate: 0.491
+[mcmc]  - Convergence of means: R-1 = 0.671400 after 2240 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 2840 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.52042e-05 s (5695 evaluations, 0.314388 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0241861 s (5695 evaluations, 137.74 s total)
+[mcmc]  - Acceptance rate: 0.489
+[mcmc]  - Convergence of means: R-1 = 0.700302 after 2272 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 2880 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.53015e-05 s (5772 evaluations, 0.3192 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0241853 s (5772 evaluations, 139.598 s total)
+[mcmc]  - Acceptance rate: 0.489
+[mcmc]  - Convergence of means: R-1 = 0.712734 after 2304 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 2920 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.53003e-05 s (5870 evaluations, 0.324612 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0241921 s (5870 evaluations, 142.008 s total)
+[mcmc]  - Acceptance rate: 0.487
+[mcmc]  - Convergence of means: R-1 = 0.703160 after 2336 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 2960 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.53158e-05 s (5955 evaluations, 0.329405 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0241816 s (5955 evaluations, 144.001 s total)
+[mcmc]  - Acceptance rate: 0.486
+[mcmc]  - Convergence of means: R-1 = 0.730954 after 2368 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 3000 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.53323e-05 s (6036 evaluations, 0.333986 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0241842 s (6036 evaluations, 145.976 s total)
+[mcmc]  - Acceptance rate: 0.485
+[mcmc]  - Convergence of means: R-1 = 0.716347 after 2400 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 3040 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.53012e-05 s (6121 evaluations, 0.338499 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0241807 s (6121 evaluations, 148.01 s total)
+[mcmc]  - Acceptance rate: 0.485
+[mcmc]  - Convergence of means: R-1 = 0.636378 after 2432 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 3080 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.52496e-05 s (6209 evaluations, 0.343045 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0241754 s (6209 evaluations, 150.105 s total)
+[mcmc]  - Acceptance rate: 0.483
+[mcmc]  - Convergence of means: R-1 = 0.615706 after 2464 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 3120 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.52101e-05 s (6285 evaluations, 0.346996 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0241739 s (6285 evaluations, 151.933 s total)
+[mcmc]  - Acceptance rate: 0.482
+[mcmc]  - Convergence of means: R-1 = 0.598999 after 2496 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 3160 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.52493e-05 s (6380 evaluations, 0.352491 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0241727 s (6380 evaluations, 154.222 s total)
+[mcmc]  - Acceptance rate: 0.480
+[mcmc]  - Convergence of means: R-1 = 0.599183 after 2528 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 3200 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.5238e-05 s (6461 evaluations, 0.356892 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0241708 s (6461 evaluations, 156.167 s total)
+[mcmc]  - Acceptance rate: 0.480
+[mcmc]  - Convergence of means: R-1 = 0.602354 after 2560 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 3240 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.52585e-05 s (6558 evaluations, 0.362385 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0241698 s (6558 evaluations, 158.505 s total)
+[mcmc]  - Acceptance rate: 0.478
+[mcmc]  - Convergence of means: R-1 = 0.504512 after 2592 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 3280 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.53232e-05 s (6656 evaluations, 0.368232 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0241692 s (6656 evaluations, 160.87 s total)
+[mcmc]  - Acceptance rate: 0.477
+[mcmc]  - Convergence of means: R-1 = 0.412515 after 2624 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 3320 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.53022e-05 s (6755 evaluations, 0.373566 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0241637 s (6755 evaluations, 163.226 s total)
+[mcmc]  - Acceptance rate: 0.476
+[mcmc]  - Convergence of means: R-1 = 0.384951 after 2656 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 3360 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.52829e-05 s (6835 evaluations, 0.377858 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0241651 s (6835 evaluations, 165.168 s total)
+[mcmc]  - Acceptance rate: 0.474
+[mcmc]  - Convergence of means: R-1 = 0.356804 after 2688 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 3400 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.52319e-05 s (6925 evaluations, 0.382481 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0241581 s (6925 evaluations, 167.295 s total)
+[mcmc]  - Acceptance rate: 0.473
+[mcmc]  - Convergence of means: R-1 = 0.334564 after 2720 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 3440 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.52335e-05 s (7018 evaluations, 0.387629 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0241486 s (7018 evaluations, 169.475 s total)
+[mcmc]  - Acceptance rate: 0.471
+[mcmc]  - Convergence of means: R-1 = 0.318942 after 2752 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 3480 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.52038e-05 s (7098 evaluations, 0.391837 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0241449 s (7098 evaluations, 171.38 s total)
+[mcmc]  - Acceptance rate: 0.471
+[mcmc]  - Convergence of means: R-1 = 0.342706 after 2784 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 3520 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.51514e-05 s (7184 evaluations, 0.396208 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0241379 s (7184 evaluations, 173.406 s total)
+[mcmc]  - Acceptance rate: 0.470
+[mcmc]  - Convergence of means: R-1 = 0.341249 after 2816 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 3560 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.51318e-05 s (7268 evaluations, 0.400698 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0241295 s (7268 evaluations, 175.374 s total)
+[mcmc]  - Acceptance rate: 0.469
+[mcmc]  - Convergence of means: R-1 = 0.364262 after 2848 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Progress @ 2026-08-03 00:02:06 : 7664 steps taken, and 3591 accepted.
+[mcmc] Learn + convergence test @ 3600 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.51382e-05 s (7372 evaluations, 0.406479 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0241349 s (7372 evaluations, 177.922 s total)
+[mcmc]  - Acceptance rate: 0.466
+[mcmc]  - Convergence of means: R-1 = 0.352646 after 2880 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 3640 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.51874e-05 s (7457 evaluations, 0.411533 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0241329 s (7457 evaluations, 179.959 s total)
+[mcmc]  - Acceptance rate: 0.465
+[mcmc]  - Convergence of means: R-1 = 0.365636 after 2912 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 3680 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.51929e-05 s (7545 evaluations, 0.41643 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.024134 s (7545 evaluations, 182.091 s total)
+[mcmc]  - Acceptance rate: 0.465
+[mcmc]  - Convergence of means: R-1 = 0.399716 after 2944 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 3720 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.52068e-05 s (7625 evaluations, 0.420952 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.024136 s (7625 evaluations, 184.037 s total)
+[mcmc]  - Acceptance rate: 0.465
+[mcmc]  - Convergence of means: R-1 = 0.333823 after 2976 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 3760 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.51585e-05 s (7705 evaluations, 0.424996 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0241274 s (7705 evaluations, 185.902 s total)
+[mcmc]  - Acceptance rate: 0.464
+[mcmc]  - Convergence of means: R-1 = 0.310123 after 3008 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 3800 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.50484e-05 s (7786 evaluations, 0.428607 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.024077 s (7786 evaluations, 187.464 s total)
+[mcmc]  - Acceptance rate: 0.464
+[mcmc]  - Convergence of means: R-1 = 0.268879 after 3040 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 3840 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.49663e-05 s (7869 evaluations, 0.43253 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0240289 s (7869 evaluations, 189.083 s total)
+[mcmc]  - Acceptance rate: 0.464
+[mcmc]  - Convergence of means: R-1 = 0.272435 after 3072 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 3880 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.49453e-05 s (7942 evaluations, 0.436376 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0240166 s (7942 evaluations, 190.74 s total)
+[mcmc]  - Acceptance rate: 0.464
+[mcmc]  - Convergence of means: R-1 = 0.284611 after 3104 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 3920 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.49421e-05 s (8024 evaluations, 0.440856 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0240057 s (8024 evaluations, 192.622 s total)
+[mcmc]  - Acceptance rate: 0.463
+[mcmc]  - Convergence of means: R-1 = 0.292040 after 3136 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 3960 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.49528e-05 s (8105 evaluations, 0.445393 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0240129 s (8105 evaluations, 194.624 s total)
+[mcmc]  - Acceptance rate: 0.463
+[mcmc]  - Convergence of means: R-1 = 0.322145 after 3168 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 4000 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.49742e-05 s (8190 evaluations, 0.450239 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0240197 s (8190 evaluations, 196.722 s total)
+[mcmc]  - Acceptance rate: 0.463
+[mcmc]  - Convergence of means: R-1 = 0.316353 after 3200 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 4040 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.49985e-05 s (8301 evaluations, 0.456542 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0240155 s (8301 evaluations, 199.353 s total)
+[mcmc]  - Acceptance rate: 0.458
+[mcmc]  - Convergence of means: R-1 = 0.284884 after 3232 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 4080 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.49992e-05 s (8384 evaluations, 0.461114 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.024021 s (8384 evaluations, 201.392 s total)
+[mcmc]  - Acceptance rate: 0.457
+[mcmc]  - Convergence of means: R-1 = 0.287819 after 3264 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 4120 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.50101e-05 s (8466 evaluations, 0.465716 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0240241 s (8466 evaluations, 203.388 s total)
+[mcmc]  - Acceptance rate: 0.457
+[mcmc]  - Convergence of means: R-1 = 0.272805 after 3296 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 4160 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.50154e-05 s (8557 evaluations, 0.470767 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0240261 s (8557 evaluations, 205.591 s total)
+[mcmc]  - Acceptance rate: 0.457
+[mcmc]  - Convergence of means: R-1 = 0.269497 after 3328 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 4200 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.50038e-05 s (8633 evaluations, 0.474848 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0240276 s (8633 evaluations, 207.43 s total)
+[mcmc]  - Acceptance rate: 0.457
+[mcmc]  - Convergence of means: R-1 = 0.260659 after 3360 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 4240 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.5113e-05 s (8714 evaluations, 0.480255 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0240297 s (8714 evaluations, 209.395 s total)
+[mcmc]  - Acceptance rate: 0.458
+[mcmc]  - Convergence of means: R-1 = 0.266581 after 3392 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 4280 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.51128e-05 s (8802 evaluations, 0.485103 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0240395 s (8802 evaluations, 211.595 s total)
+[mcmc]  - Acceptance rate: 0.457
+[mcmc]  - Convergence of means: R-1 = 0.248722 after 3424 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 4320 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.5117e-05 s (8891 evaluations, 0.490046 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0240386 s (8891 evaluations, 213.727 s total)
+[mcmc]  - Acceptance rate: 0.457
+[mcmc]  - Convergence of means: R-1 = 0.220134 after 3456 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 4360 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.51022e-05 s (8975 evaluations, 0.494542 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0240371 s (8975 evaluations, 215.733 s total)
+[mcmc]  - Acceptance rate: 0.456
+[mcmc]  - Convergence of means: R-1 = 0.192170 after 3488 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 4400 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.51028e-05 s (9060 evaluations, 0.499232 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0240398 s (9060 evaluations, 217.801 s total)
+[mcmc]  - Acceptance rate: 0.456
+[mcmc]  - Convergence of means: R-1 = 0.165357 after 3520 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.
+[mcmc] Learn + convergence test @ 4440 samples accepted.
+[likelihoodcollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedBandPowerLikelihood : 5.51146e-05 s (9166 evaluations, 0.50518 s total)
+[theorycollection] Average computation time:
+   flamingo.inference.masked_ps.MaskedTSZTheory : 0.0240403 s (9166 evaluations, 220.354 s total)
+[mcmc]  - Acceptance rate: 0.455
+[mcmc]  - Convergence of means: R-1 = 0.148218 after 3552 accepted steps
+[mcmc]  - Updated covariance matrix of proposal pdf.

@@ -1,0 +1,46 @@
+{
+  "map": "/rds/rds-lxu/flamingo/L2p8_m9/lightcone4/healpix_map/y_unlensed_L2p8_m9_lc4.fits",
+  "catalogue": "/rds/rds-lxu/flamingo/L2p8_m9/lightcone4/catalogues/halo_catalogue_M500c_5e13_zlt3_L2p8_m9_yang26rot_qfrommz_alpha_fixed_1p12.csv",
+  "masking": {
+    "radius": "max(4*theta500, 2*FWHM), FWHM=10 arcmin",
+    "theta500": "R_500c/D_A(z), D3A cosmology",
+    "positions": "theta_rot_rad/phi_rot_rad (yang26-rotated frame)",
+    "apodization": "C2 0.25 deg",
+    "monopole": "mask-weighted, subtracted",
+    "estimator": "NaMaster MASTER, nlb=1, lmax=10000, no beam, pixwin deconvolved"
+  },
+  "unit_mask_vs_stored_fullsky_max_frac_diff": null,
+  "cuts": {
+    "qgt50": {
+      "q_cut": 50.0,
+      "n_masked": 11,
+      "f_sky_raw": 0.997477134068807,
+      "f_sky_eff": 0.9970828143053324
+    },
+    "qgt20": {
+      "q_cut": 20.0,
+      "n_masked": 167,
+      "f_sky_raw": 0.9877831439177195,
+      "f_sky_eff": 0.9844433519418296
+    },
+    "qgt10": {
+      "q_cut": 10.0,
+      "n_masked": 740,
+      "f_sky_raw": 0.9607366919517517,
+      "f_sky_eff": 0.9486782819554005
+    },
+    "qgt5": {
+      "q_cut": 5.0,
+      "n_masked": 2880,
+      "f_sky_raw": 0.9236796845992407,
+      "f_sky_eff": 0.8892032205353271
+    },
+    "qgt1": {
+      "q_cut": 1.0,
+      "n_masked": 38753,
+      "f_sky_raw": 0.6394151250521342,
+      "f_sky_eff": 0.4378503178892012
+    }
+  },
+  "runtime_seconds": 4318.249564886093
+}

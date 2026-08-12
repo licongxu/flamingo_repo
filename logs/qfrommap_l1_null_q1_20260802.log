@@ -1,0 +1,57 @@
+=== L1_m9: map + catalogue ===
+  catalogue: 1,000,000 rows
+  catalogue: 1,538,317 rows
+  catalogue: 1,538,317 halos total
+  nside=4096, 1,538,317 halos, mean y=1.503e-06
+  rotation sanity: rot ratio=5.50, nat ratio=1.00
+  cached L1_m9_unmasked.npz
+  unit mask vs stored full sky: max|frac diff| = 4.165e-08
+=== q>1, r=0.5*theta500: 57,967 halos ===
+  f_sky raw=0.9942 eff=0.8665 (106s)
+  wrote L1_m9_qgt1_r0p5.npz (796s)
+  [803s elapsed]
+=== q>1, r=1*theta500: 57,967 halos ===
+  f_sky raw=0.9772 eff=0.8203 (106s)
+=== L1_m9: map + catalogue ===
+  catalogue: 1,000,000 rows
+  catalogue: 1,538,317 rows
+  catalogue: 1,538,317 halos total
+  nside=4096, 1,538,317 halos, mean y=1.503e-06
+  rotation sanity: rot ratio=5.50, nat ratio=1.00
+  cached L1_m9_unmasked.npz
+  unit mask vs stored full sky: max|frac diff| = 4.165e-08
+  cached L1_m9_qgt1_r0p5.npz
+  [5s elapsed]
+=== q>1, r=1*theta500: 57,967 halos ===
+  f_sky raw=0.9772 eff=0.8203 (106s)
+  wrote L1_m9_qgt1_r1.npz (794s)
+  [799s elapsed]
+=== q>1, r=1.5*theta500: 57,967 halos ===
+  f_sky raw=0.9496 eff=0.7685 (104s)
+  wrote L1_m9_qgt1_r1p5.npz (795s)
+  [1594s elapsed]
+=== q>1, r=2*theta500: 57,967 halos ===
+  f_sky raw=0.9126 eff=0.7126 (102s)
+  wrote L1_m9_qgt1_r2.npz (800s)
+  [2394s elapsed]
+=== q>1, r=3*theta500: 57,967 halos ===
+  f_sky raw=0.8158 eff=0.5946 (95s)
+  wrote L1_m9_qgt1_r3.npz (785s)
+  [3179s elapsed]
+=== q>1, r=4*theta500: 57,967 halos ===
+  f_sky raw=0.6997 eff=0.4775 (83s)
+  wrote L1_m9_qgt1_r4.npz (758s)
+  [3937s elapsed]
+=== q>1, r=5*theta500: 57,967 halos ===
+  f_sky raw=0.5766 eff=0.3699 (69s)
+  wrote L1_m9_qgt1_r5.npz (697s)
+  [4634s elapsed]
+=== q>1, r=6*theta500: 57,967 halos ===
+  f_sky raw=0.4575 eff=0.2768 (57s)
+  wrote L1_m9_qgt1_r6.npz (634s)
+  [5268s elapsed]
+=== q>1, r=8*theta500: 57,967 halos ===
+  f_sky raw=0.2605 eff=0.1416 (35s)
+  wrote L1_m9_qgt1_r8.npz (598s)
+  [5866s elapsed]
+done (5866s)

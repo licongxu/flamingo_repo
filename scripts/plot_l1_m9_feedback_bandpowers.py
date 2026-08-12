@@ -134,6 +134,11 @@ def _save(fig: plt.Figure, stem: Path) -> None:
     plt.close(fig)
 
 
+def _ell_xmax(*, log: bool, selection_tag: str) -> float:
+    ell, _ = _load(_path("fiducial", masked=False, log=log, selection_tag=selection_tag))
+    return float(ell.max())
+
+
 def build_figure(
     *,
     log: bool,
@@ -181,16 +186,13 @@ def build_figure(
             ax.set_ylabel(r"$10^{12}D_\ell^{yy}$")
 
     handles, labels = axes[0, 0].get_legend_handles_labels()
-    fig.legend(
+    axes[0, 0].legend(
         handles,
         labels,
-        loc="lower center",
-        ncol=5,
+        loc="lower right",
         frameon=False,
-        bbox_to_anchor=(0.5, 0.005),
         handlelength=2.0,
     )
-    fig.subplots_adjust(bottom=0.15)
     return fig
 
 
@@ -201,7 +203,11 @@ def main() -> None:
     args = parser.parse_args()
     TAG = args.selection
 
-    for log, ell_range in ((False, (10.0, 959.5)), (True, (100.0, 10000.0))):
+    for log in (False, True):
+        if log:
+            ell_range = (100.0, _ell_xmax(log=True, selection_tag=TAG))
+        else:
+            ell_range = (10.0, 959.5)
         fig = build_figure(log=log, ell_range=ell_range, selection_tag=TAG)
         _save(fig, output_stem(log=log, selection_tag=TAG))
 

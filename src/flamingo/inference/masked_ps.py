@@ -66,8 +66,10 @@ class MaskedBandPowerLikelihood(Likelihood):
                 self.data_file, self.covariance_file, data_scale=self.data_scale
             )
         )
-        if self.observed.shape != (18,):
-            raise ValueError(f"expected 18 bandpowers, got {self.observed.size}")
+        n = self.observed.shape[0]
+        if self.covariance.shape != (n, n):
+            raise ValueError(f"covariance {self.covariance.shape} != data ({n},)")
+        self._n_bins = n
         super().initialize()
 
     def get_requirements(self) -> dict:
@@ -78,6 +80,8 @@ class MaskedBandPowerLikelihood(Likelihood):
         total = np.asarray(theory["1h"], dtype=float) + np.asarray(
             theory["2h"], dtype=float
         )
+        if total.shape[0] > self._n_bins:
+            total = total[-self._n_bins:]
         if not np.all(np.isfinite(total)):
             return -np.inf
         return gaussian_loglike(self.observed, total, self.inverse_covariance)

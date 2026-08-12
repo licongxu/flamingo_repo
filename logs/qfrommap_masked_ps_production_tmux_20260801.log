@@ -1,0 +1,15 @@
+OUT_DIR=/scratch/scratch-lxu/flamingo_repo/data_paper/binned_bandpowers
+variants=['fiducial', 'fgas+2sigma', 'fgas-2sigma', 'fgas-4sigma', 'fgas-8sigma', 'Jet', 'Jet_fgas-4sigma', 'Mstar-1sigma', 'Mstar-1sigma_fgas-4sigma']
+selection=qfrommap q_column=q_from_aperture
+q_cuts=[50.0, 20.0, 10.0, 5.0, 1.0]
+workers=2  OMP_NUM_THREADS=8
+[fgas+2sigma] computing ['qgt20', 'qgt10', 'qgt5', 'qgt1'] (20:01:08)
+[fiducial] computing ['qgt10', 'qgt5', 'qgt1'] (20:01:08)
+  catalogue: 1,538,317 halos
+[fiducial] catalogue 1,538,317 from halo_catalogue_M500c_5e13_zlt3_L1_m9_yang26rot_qfrommap.csv
+[fiducial] rotation sanity: rot=5.50, nat=1.00
+  catalogue: 1,620,947 halos
+[fgas+2sigma] catalogue 1,620,947 from halo_catalogue_M500c_5e13_zlt3_fgas+2sigma_yang26rot_qfrommap.csv
+[fgas+2sigma] rotation sanity: rot=5.68, nat=0.99
+[fiducial] q>10: N=589 f_sky_raw=0.9549 eff=0.9436 — NaMaster starting
+[fgas+2sigma] q>20: N=87 f_sky_raw=0.9864 eff=0.9839 — NaMaster starting

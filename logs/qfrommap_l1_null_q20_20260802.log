@@ -1,0 +1,39 @@
+  wrote L1_m9_unmasked.npz (625s)
+  unit mask vs stored full sky: max|frac diff| = 4.165e-08
+=== q>20, r=0.5*theta500: 86 halos ===
+  f_sky raw=0.9998 eff=0.9994 (106s)
+  wrote L1_m9_qgt20_r0p5.npz (728s)
+  [1359s elapsed]
+=== q>20, r=1*theta500: 86 halos ===
+  f_sky raw=0.9993 eff=0.9985 (125s)
+  wrote L1_m9_qgt20_r1.npz (985s)
+  [2344s elapsed]
+=== q>20, r=1.5*theta500: 86 halos ===
+  f_sky raw=0.9983 eff=0.9973 (102s)
+  wrote L1_m9_qgt20_r1p5.npz (697s)
+  [3041s elapsed]
+=== q>20, r=2*theta500: 86 halos ===
+  f_sky raw=0.9970 eff=0.9958 (103s)
+  wrote L1_m9_qgt20_r2.npz (674s)
+  [3715s elapsed]
+=== q>20, r=3*theta500: 86 halos ===
+  f_sky raw=0.9933 eff=0.9915 (96s)
+  wrote L1_m9_qgt20_r3.npz (639s)
+  [4354s elapsed]
+=== q>20, r=4*theta500: 86 halos ===
+  f_sky raw=0.9881 eff=0.9858 (96s)
+  wrote L1_m9_qgt20_r4.npz (619s)
+  [4972s elapsed]
+=== q>20, r=5*theta500: 86 halos ===
+  f_sky raw=0.9815 eff=0.9787 (93s)
+  wrote L1_m9_qgt20_r5.npz (613s)
+  [5586s elapsed]
+=== q>20, r=6*theta500: 86 halos ===
+  f_sky raw=0.9738 eff=0.9705 (90s)
+  wrote L1_m9_qgt20_r6.npz (609s)
+  [6195s elapsed]
+=== q>20, r=8*theta500: 86 halos ===
+  f_sky raw=0.9548 eff=0.9506 (91s)
+  wrote L1_m9_qgt20_r8.npz (610s)
+  [6805s elapsed]
+done (6805s)

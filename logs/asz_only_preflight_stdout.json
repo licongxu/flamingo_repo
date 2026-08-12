@@ -1,0 +1,100 @@
+{
+  "cases": {
+    "fullsky": {
+      "covariance_file": "/scratch/scratch-lxu/flamingo_repo/chains/l1_m9_qfrommap_asz_covariance/final/covariance/cov_full_L1_m9_customgnfw_qfrommap_fullsky_Dl_yy_binned_18.npy",
+      "data_file": "/scratch/scratch-lxu/flamingo_repo/data_paper/binned_bandpowers/Dl_yy_L1_m9_fullsky_binned_18.txt",
+      "output": "/scratch/scratch-lxu/flamingo_repo/chains/l1_m9_qfrommap_asz_only/fullsky/chain",
+      "q_cat": null
+    },
+    "qgt10": {
+      "covariance_file": "/scratch/scratch-lxu/flamingo_repo/chains/l1_m9_qfrommap_asz_covariance/final/covariance/cov_full_L1_m9_customgnfw_qfrommap_qgt10_Dl_yy_binned_18.npy",
+      "data_file": "/scratch/scratch-lxu/flamingo_repo/data_paper/binned_bandpowers/Dl_yy_L1_m9_masked_qgt10_qfrommap_binned_18.txt",
+      "output": "/scratch/scratch-lxu/flamingo_repo/chains/l1_m9_qfrommap_asz_only/qgt10/chain",
+      "q_cat": 10.0
+    },
+    "qgt20": {
+      "covariance_file": "/scratch/scratch-lxu/flamingo_repo/chains/l1_m9_qfrommap_asz_covariance/final/covariance/cov_full_L1_m9_customgnfw_qfrommap_qgt20_Dl_yy_binned_18.npy",
+      "data_file": "/scratch/scratch-lxu/flamingo_repo/data_paper/binned_bandpowers/Dl_yy_L1_m9_masked_qgt20_qfrommap_binned_18.txt",
+      "output": "/scratch/scratch-lxu/flamingo_repo/chains/l1_m9_qfrommap_asz_only/qgt20/chain",
+      "q_cat": 20.0
+    },
+    "qgt5": {
+      "covariance_file": "/scratch/scratch-lxu/flamingo_repo/chains/l1_m9_qfrommap_asz_covariance/final/covariance/cov_full_L1_m9_customgnfw_qfrommap_qgt5_Dl_yy_binned_18.npy",
+      "data_file": "/scratch/scratch-lxu/flamingo_repo/data_paper/binned_bandpowers/Dl_yy_L1_m9_masked_qgt5_qfrommap_binned_18.txt",
+      "output": "/scratch/scratch-lxu/flamingo_repo/chains/l1_m9_qfrommap_asz_only/qgt5/chain",
+      "q_cat": 5.0
+    },
+    "qgt50": {
+      "covariance_file": "/scratch/scratch-lxu/flamingo_repo/chains/l1_m9_qfrommap_asz_covariance/final/covariance/cov_full_L1_m9_customgnfw_qfrommap_qgt50_Dl_yy_binned_18.npy",
+      "data_file": "/scratch/scratch-lxu/flamingo_repo/data_paper/binned_bandpowers/Dl_yy_L1_m9_masked_qgt50_qfrommap_binned_18.txt",
+      "output": "/scratch/scratch-lxu/flamingo_repo/chains/l1_m9_qfrommap_asz_only/qgt50/chain",
+      "q_cat": 50.0
+    }
+  },
+  "covariance_metadata_path": "/scratch/scratch-lxu/flamingo_repo/chains/l1_m9_qfrommap_asz_covariance/final/covariance/covariance_L1_m9_customgnfw_qfrommap_metadata.json",
+  "covariance_parameter_point": {
+    "A_SZ": -4.1075073,
+    "B": 1.41,
+    "H0": 68.1,
+    "alpha_SZ": 1.12,
+    "n_s": 0.965,
+    "omega_b": 0.022538784599999993,
+    "omega_cdm": 0.11872788986038219,
+    "sigma_8": 0.8025701499024616,
+    "sigma_lnY": 0.173,
+    "tau_reio": 0.0544
+  },
+  "fit_prior": {
+    "A_SZ": {
+      "dist": "norm",
+      "loc": -4.09532,
+      "scale": 0.03
+    }
+  },
+  "jax_devices": [
+    "cuda:0"
+  ],
+  "params": {
+    "A_SZ": {
+      "latex": "A_\\mathrm{SZ}",
+      "prior": {
+        "dist": "norm",
+        "loc": -4.09532,
+        "scale": 0.03
+      },
+      "proposal": 0.01,
+      "ref": {
+        "dist": "norm",
+        "loc": -4.09532,
+        "scale": 0.01
+      }
+    },
+    "B": {
+      "value": 1.41
+    },
+    "H0": {
+      "value": 68.1
+    },
+    "alpha_SZ": {
+      "value": 1.12
+    },
+    "n_s": {
+      "value": 0.965
+    },
+    "omega_b": {
+      "value": 0.022538784599999993
+    },
+    "omega_cdm": {
+      "value": 0.11872788986038219
+    },
+    "sigma_8": {
+      "value": 0.8025701499024616
+    },
+    "sigma_lnY": {
+      "value": 0.173
+    },
+    "tau_reio": {
+      "value": 0.0544
+    }
+  }
+}

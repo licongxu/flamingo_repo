@@ -21,7 +21,7 @@ jax.config.update("jax_enable_x64", True)
 
 ELL_SMOOTH = np.geomspace(9.0, 1085.0, 50)
 MASS_GRID = np.geomspace(1e11, 1e16, 64)
-REDSHIFT_GRID = np.geomspace(0.005, 3.0, 96)
+REDSHIFT_GRID = np.geomspace(1e-6, 3.0, 96)
 
 
 def _bin_dl(ell: np.ndarray, dl: np.ndarray) -> np.ndarray:

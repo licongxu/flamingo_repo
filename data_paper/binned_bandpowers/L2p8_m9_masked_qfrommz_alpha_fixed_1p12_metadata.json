@@ -1,53 +1,53 @@
 {
-  "map": "/rds/rds-lxu/flamingo/L2p8_m9/lightcone0/healpix_map/y_unlensed_L2p8_m9_lc0.fits",
+  "aliased_from": "L2p8_m9_lc0_masked_qfrommz_alpha_fixed_1p12_metadata.json",
   "catalogue": "/rds/rds-lxu/flamingo/L2p8_m9/lightcone0/catalogues/halo_catalogue_M500c_5e13_zlt3_L2p8_m9_yang26rot_qfrommz_alpha_fixed_1p12.csv",
-  "masking": {
-    "radius": "max(4*theta500, 2*FWHM), FWHM=10 arcmin",
-    "theta500": "R_500c/D_A(z), D3A cosmology",
-    "positions": "theta_rot_rad/phi_rot_rad (yang26-rotated frame)",
-    "apodization": "C2 0.25 deg",
-    "monopole": "mask-weighted, subtracted",
-    "estimator": "NaMaster MASTER, nlb=1, lmax=10000, no beam, pixwin deconvolved"
-  },
-  "unit_mask_vs_stored_fullsky_max_frac_diff": 7.58445085624615e-08,
   "cuts": {
-    "qgt50": {
-      "q_cut": 50.0,
-      "n_masked": 1,
-      "f_sky_raw": 0.9999033957719803,
-      "f_sky_eff": 0.9998752987776188
-    },
-    "qgt20": {
-      "q_cut": 20.0,
-      "n_masked": 46,
-      "f_sky_raw": 0.9829368044932684,
-      "f_sky_eff": 0.9812053124731727
+    "qgt1": {
+      "f_sky_eff": 0.4157547529663607,
+      "f_sky_raw": 0.608739823102951,
+      "n_masked": 38897,
+      "q_cut": 1.0
     },
     "qgt10": {
-      "q_cut": 10.0,
-      "n_masked": 203,
-      "f_sky_raw": 0.9676640729109446,
-      "f_sky_eff": 0.9626264762622281
+      "f_sky_eff": 0.9232506162088572,
+      "f_sky_raw": 0.9361403832832972,
+      "n_masked": 769,
+      "q_cut": 10.0
+    },
+    "qgt20": {
+      "f_sky_eff": 0.9688301805815566,
+      "f_sky_raw": 0.9729300041993459,
+      "n_masked": 167,
+      "q_cut": 20.0
     },
     "qgt5": {
-      "q_cut": 5.0,
-      "n_masked": 884,
-      "f_sky_raw": 0.9258701155583063,
-      "f_sky_eff": 0.9111266657675717
+      "f_sky_eff": 0.8518686761565811,
+      "f_sky_raw": 0.8868051220973333,
+      "n_masked": 2913,
+      "q_cut": 5.0
     },
-    "qgt1": {
-      "q_cut": 1.0,
-      "n_masked": 14401,
-      "f_sky_raw": 0.759019672870636,
-      "f_sky_eff": 0.6468180095627475
+    "qgt50": {
+      "f_sky_eff": 0.9904878205220381,
+      "f_sky_raw": 0.991239051024119,
+      "n_masked": 16,
+      "q_cut": 50.0
     },
     "qgt6": {
+      "f_sky_eff": 0.8732844112148027,
+      "f_sky_raw": 0.9006101886431376,
+      "n_masked": 2083,
       "q_cut": 6.0,
-      "n_masked": 605,
-      "f_sky_raw": 0.9346880366404852,
-      "f_sky_eff": 0.9233453288995483,
-      "runtime_seconds": 447.42950677871704
+      "runtime_seconds": 972.9463405609131
     }
   },
-  "runtime_seconds": 2100.137026309967
+  "map": "/rds/rds-lxu/flamingo/L2p8_m9/lightcone0/healpix_map/y_unlensed_L2p8_m9_lc0.fits",
+  "masking": {
+    "apodization": "C2 0.25 deg",
+    "estimator": "NaMaster MASTER, nlb=1, lmax=10000, no beam, pixwin deconvolved",
+    "monopole": "mask-weighted, subtracted",
+    "positions": "theta_rot_rad/phi_rot_rad (yang26-rotated frame)",
+    "radius": "max(4*theta500, 2*FWHM), FWHM=10 arcmin",
+    "theta500": "R_500c/D_A(z), D3A cosmology"
+  },
+  "note": "whole-box L2p8_m9 products are lightcone 0; hard-linked by scripts/alias_l2p8_m9_lc0_as_wholebox.py"
 }

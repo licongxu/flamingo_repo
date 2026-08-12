@@ -121,14 +121,16 @@ CUT_TAGS = ["qgt50", "qgt20", "qgt10", "qgt5", "qgt1"]
 FULLSKY_TAG = "fullsky"
 
 #: Masking radius in units of the cluster angular size ``theta_500``.
-R_MASK = 5.0
+R_MASK = 4.0
 
-#: NaMaster C1 apodization scale of the binary mask, in degrees.
-APOD_DEG = 0.5
+#: NaMaster C2 apodization scale of the binary mask, in degrees.
+APOD_DEG = 0.25
 
 #: Pseudo-Cl estimation: linear bandpowers of width ``DELTA_ELL`` up to ``LMAX``.
-LMAX = 6000
-DELTA_ELL = 30
+#: The estimator is run unbinned (``DELTA_ELL = 1``); the published bandpowers
+#: are log bins of ``Delta ln ell = 0.4`` formed afterwards from these ``C_ell``.
+LMAX = 10000
+DELTA_ELL = 1
 
 #: Lowest column-mass kept by the catalogues (documented, not applied here).
 M_MIN_MSUN = 5.0e13

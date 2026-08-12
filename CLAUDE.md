@@ -10,13 +10,15 @@ Project context and behavioral guidelines for agents working in this repo.
   ```bash
   source /scratch/scratch-lxu/venv/cmbagent_env/bin/activate
   ```
-- **Theory computation:** All theory calculations live in the `hmfast` package.
+- **Theory computation:**
+  - `hmfast` — tSZ power spectrum computation
+  - `cosmocnc_jax` — cluster number count (CNC) computation
 - **Mass units:** Use physical mass units, `M_sun`, not `M_sun/h`.
 - **Cobaya reference theory:** Reference theory files are in `/home/lxu/scratch/tsz_cnc_paper_plots/chains`.
 - **Paper reference:** The paper reference location is `/home/lxu/scratch/tsz_cnc_paper_plots/6a4738926d5991d919e1a0c8`.
 - **Backend packages:** Baryon/DMB backend development lives on the `baryon_dmb` branch in:
-  - `/home/lxu/scratch/agent_dev/auto_research_agent/hmfast` — halo-model theory
-  - `/home/lxu/scratch/agent_dev/auto_research_agent/cosmocnc_jax` — CNC likelihood
+  - `/home/lxu/scratch/agent_dev/auto_research_agent/hmfast` — tSZ PS computation
+  - `/home/lxu/scratch/agent_dev/auto_research_agent/cosmocnc_jax` — CNC computation
 - **Reference papers:** `ref_papers/` contains key literature for baryonic feedback / DMB work. Read and cite these when relevant to paper drafts, methods, or validation.
   - `ref_papers/dmb_galclusters.pdf` — To et al. (2024), *Deciphering baryonic feedback with galaxy clusters*
   - `ref_papers/dmb_galclusters_act.pdf` — Dalal et al. (2026), *Deciphering Baryonic Feedback from ACT tSZ Galaxy Clusters*

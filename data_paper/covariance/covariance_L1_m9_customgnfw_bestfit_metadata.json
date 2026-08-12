@@ -2,121 +2,120 @@
   "best_fit_file": "/scratch/scratch-lxu/flamingo_repo/chains/l1_m9_customgnfw_asz_alpha_fixed_1p12/best_fit.json",
   "diagnostics_binned_18": {
     "fullsky": {
-      "condition_number": 49737.10983074803,
-      "max_asymmetry": 2.8698592549372254e-42,
+      "condition_number": 49737.109830513975,
+      "max_asymmetry": 4.304788882405838e-42,
       "max_component_residual": 0.0,
-      "max_eigenvalue": 6.703395535483666e-26,
-      "min_eigenvalue": 1.3477653925398682e-30
+      "max_eigenvalue": 6.70339553548367e-26,
+      "min_eigenvalue": 1.3477653925462116e-30
     },
     "masked_qgt1": {
-      "condition_number": 4659.498498813117,
-      "max_asymmetry": 8.758115402030107e-47,
+      "condition_number": 4659.498498813064,
+      "max_asymmetry": 1.313717310304516e-46,
       "max_component_residual": 8.758115402030107e-47,
-      "max_eigenvalue": 8.804810611577708e-31,
-      "min_eigenvalue": 1.8896476978843322e-34
+      "max_eigenvalue": 1.3942564856213716e-30,
+      "min_eigenvalue": 2.9922887323100056e-34
     },
     "masked_qgt10": {
-      "condition_number": 8889.251647543448,
-      "max_asymmetry": 5.605193857299268e-45,
+      "condition_number": 8889.251647543397,
+      "max_asymmetry": 9.80908925027372e-45,
       "max_component_residual": 2.802596928649634e-45,
-      "max_eigenvalue": 5.971869775958897e-29,
-      "min_eigenvalue": 6.718079330794093e-33
+      "max_eigenvalue": 6.140246613780767e-29,
+      "min_eigenvalue": 6.90749554320207e-33
     },
     "masked_qgt20": {
-      "condition_number": 13187.688928103287,
-      "max_asymmetry": 5.605193857299268e-44,
+      "condition_number": 13187.68892810331,
+      "max_asymmetry": 6.726232628759122e-44,
       "max_component_residual": 1.1210387714598537e-44,
-      "max_eigenvalue": 2.551322951734551e-28,
-      "min_eigenvalue": 1.9346247592310274e-32
+      "max_eigenvalue": 2.574560703243333e-28,
+      "min_eigenvalue": 1.9522455505883798e-32
     },
     "masked_qgt3": {
-      "condition_number": 4213.141051610009,
-      "max_asymmetry": 1.5764607723654192e-45,
+      "condition_number": 4213.1410516099695,
+      "max_asymmetry": 1.7516230804060213e-45,
       "max_component_residual": 3.503246160812043e-46,
-      "max_eigenvalue": 4.555098448143082e-30,
-      "min_eigenvalue": 1.0811644785551145e-33
+      "max_eigenvalue": 5.123284156376432e-30,
+      "min_eigenvalue": 1.2160248360112865e-33
     },
     "masked_qgt5": {
-      "condition_number": 5585.865215061144,
-      "max_asymmetry": 2.1019476964872256e-45,
-      "max_component_residual": 3.503246160812043e-46,
-      "max_eigenvalue": 1.3130560990693572e-29,
-      "min_eigenvalue": 2.350676302623575e-33
+      "condition_number": 5585.865215061098,
+      "max_asymmetry": 2.45227231256843e-45,
+      "max_component_residual": 7.006492321624085e-46,
+      "max_eigenvalue": 1.4054759227242168e-29,
+      "min_eigenvalue": 2.516129316788113e-33
     },
     "masked_qgt50": {
-      "condition_number": 17754.734332594086,
+      "condition_number": 17754.73433259423,
       "max_asymmetry": 5.3809861030072976e-43,
       "max_component_residual": 4.484155085839415e-44,
-      "max_eigenvalue": 1.3669007863571054e-27,
-      "min_eigenvalue": 7.698796054907751e-32
+      "max_eigenvalue": 1.3698418000185858e-27,
+      "min_eigenvalue": 7.71536072777965e-32
     }
   },
   "diagnostics_logbins": {
     "fullsky": {
-      "condition_number": 65540.26640519485,
-      "max_asymmetry": 1.4349296274686127e-42,
+      "condition_number": 65540.26640519197,
+      "max_asymmetry": 7.174648137343064e-43,
       "max_component_residual": 0.0,
-      "max_eigenvalue": 1.619331449570151e-26,
-      "min_eigenvalue": 2.470742855329315e-31
+      "max_eigenvalue": 1.6193314495701517e-26,
+      "min_eigenvalue": 2.4707428553294244e-31
     },
     "masked_qgt1": {
-      "condition_number": 3592.7719768931543,
-      "max_asymmetry": 7.006492321624085e-46,
-      "max_component_residual": 7.006492321624085e-46,
-      "max_eigenvalue": 1.6619633057656494e-29,
-      "min_eigenvalue": 4.625852451685037e-33
+      "condition_number": 3592.7719768931215,
+      "max_asymmetry": 2.1019476964872256e-45,
+      "max_component_residual": 1.401298464324817e-45,
+      "max_eigenvalue": 2.631746689567101e-29,
+      "min_eigenvalue": 7.325114720592218e-33
     },
     "masked_qgt10": {
-      "condition_number": 1531.85247497597,
+      "condition_number": 1531.8524749759752,
       "max_asymmetry": 1.1210387714598537e-44,
       "max_component_residual": 1.1210387714598537e-44,
-      "max_eigenvalue": 2.345128507636333e-28,
-      "min_eigenvalue": 1.5309101535205737e-31
+      "max_eigenvalue": 2.41124939392748e-28,
+      "min_eigenvalue": 1.574074157477401e-31
     },
     "masked_qgt20": {
-      "condition_number": 2077.0326502628873,
-      "max_asymmetry": 2.2420775429197073e-44,
-      "max_component_residual": 2.2420775429197073e-44,
-      "max_eigenvalue": 5.42965281011094e-28,
-      "min_eigenvalue": 2.6141393633960046e-31
+      "condition_number": 2077.0326502628695,
+      "max_asymmetry": 1.1210387714598537e-44,
+      "max_component_residual": 1.1210387714598537e-44,
+      "max_eigenvalue": 5.479106730750244e-28,
+      "min_eigenvalue": 2.637949254219382e-31
     },
     "masked_qgt3": {
-      "condition_number": 2227.5600557673592,
-      "max_asymmetry": 2.802596928649634e-45,
+      "condition_number": 2227.560055767357,
+      "max_asymmetry": 1.401298464324817e-45,
       "max_component_residual": 1.401298464324817e-45,
-      "max_eigenvalue": 5.010581756873857e-29,
-      "min_eigenvalue": 2.2493587743688423e-32
+      "max_eigenvalue": 5.635582725920107e-29,
+      "min_eigenvalue": 2.52993525868318e-32
     },
     "masked_qgt5": {
-      "condition_number": 1934.244899494112,
+      "condition_number": 1934.2448994941092,
       "max_asymmetry": 2.802596928649634e-45,
-      "max_component_residual": 5.605193857299268e-45,
-      "max_eigenvalue": 9.663042772591155e-29,
-      "min_eigenvalue": 4.995770067750188e-32
+      "max_component_residual": 2.802596928649634e-45,
+      "max_eigenvalue": 1.0343178761940882e-28,
+      "min_eigenvalue": 5.347398752167361e-32
     },
     "masked_qgt50": {
-      "condition_number": 5438.853099454423,
-      "max_asymmetry": 8.96831017167883e-44,
+      "condition_number": 5438.8530994545345,
+      "max_asymmetry": 4.484155085839415e-44,
       "max_component_residual": 4.484155085839415e-44,
-      "max_eigenvalue": 1.5121240119550879e-27,
-      "min_eigenvalue": 2.7802258753904764e-31
+      "max_eigenvalue": 1.5153774868388526e-27,
+      "min_eigenvalue": 2.786207788900992e-31
     }
   },
   "f_sky": {
     "fullsky": 1.0,
-    "masked_qgt1": 0.6892739642957671,
-    "masked_qgt10": 0.9819089080216745,
-    "masked_qgt20": 0.992993050667871,
-    "masked_qgt3": 0.8995310940281303,
-    "masked_qgt5": 0.9493476504305253,
-    "masked_qgt50": 0.9977038719868317
+    "masked_qgt1": 0.4352805081204909,
+    "masked_qgt10": 0.9549831626304793,
+    "masked_qgt20": 0.9840303854130572,
+    "masked_qgt3": 0.799770726237056,
+    "masked_qgt5": 0.8869214352095051,
+    "masked_qgt50": 0.9955618284913091
   },
   "feedback_metadata_file": "/scratch/scratch-lxu/flamingo_repo/data_paper/feedback_bandpower/L1_m9_feedback_bandpowers_metadata.json",
   "feedback_metadata_qgt1_file": "/scratch/scratch-lxu/flamingo_repo/data_paper/feedback_bandpower/L1_m9_feedback_bandpowers_qgt1_metadata.json",
   "fiducial_mask_metadata_file": "/scratch/scratch-lxu/flamingo_repo/data_paper/binned_bandpowers/L1_m9_masked_qfrommz_alpha_fixed_1p12_metadata.json",
   "jax_devices": [
-    "cuda:0",
-    "cuda:1"
+    "cuda:0"
   ],
   "masked_theory": {
     "n_power": {
@@ -155,5 +154,5 @@
     3.0,
     1.0
   ],
-  "runtime_seconds": 43.16895785099996
+  "runtime_seconds": 61.124604766999255
 }

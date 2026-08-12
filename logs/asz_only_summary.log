@@ -1,0 +1,18 @@
+WARNING:root:outlier fraction 0.04442508710801394 
+WARNING:root:outlier fraction 0.07983193277310924 
+WARNING:root:outlier fraction 0.06919642857142858 
+WARNING:root:outlier fraction 0.007692307692307693 
+{
+  "summary": "/scratch/scratch-lxu/flamingo_repo/chains/l1_m9_qfrommap_asz_only/posterior_summary.json",
+  "audit": {
+    "passed": true,
+    "checks": {
+      "one_sampled_parameter": true,
+      "approved_prior": true,
+      "common_fullsky_covariance_point": true,
+      "all_converged": true,
+      "direct_chi2_matches_chain": true,
+      "plots_exist": true
+    }
+  }
+}

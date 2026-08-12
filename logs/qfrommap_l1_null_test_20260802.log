@@ -1,0 +1,7 @@
+=== L1_m9: map + catalogue ===
+  catalogue: 1,000,000 rows
+  catalogue: 1,538,317 rows
+  catalogue: 1,538,317 halos total
+  nside=4096, 1,538,317 halos, mean y=1.503e-06
+  rotation sanity: rot ratio=5.50, nat ratio=1.00
+=== unmasked (unit mask) ===
