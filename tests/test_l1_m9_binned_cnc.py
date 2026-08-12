@@ -148,7 +148,7 @@ def test_combined_paper_figure_has_two_marginal_panels_and_one_legend():
     fig = module.build_combined_figure(histograms)
 
     try:
-        assert np.allclose(fig.get_size_inches(), [7.1, 4.2])
+        assert np.allclose(fig.get_size_inches(), [7.1, 6.5])
         assert len(fig.axes) == 2
         assert fig.axes[0].get_xlabel() == r"$q$"
         assert fig.axes[1].get_xlabel() == r"$z$"

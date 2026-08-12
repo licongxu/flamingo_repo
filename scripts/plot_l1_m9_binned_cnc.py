@@ -149,7 +149,9 @@ def _draw_marginal(
         ax.set_xscale("log")
         ax.set_xticks([5.0, 10.0, 20.0, 40.0], labels=[r"$5$", r"$10$", r"$20$", r"$40$"])
         ax.xaxis.set_minor_locator(mticker.NullLocator())
-    ax.set_xlim(edges[0], edges[-1])
+        ax.set_xlim(4.7, 42.0)
+    else:
+        ax.set_xlim(edges[0], edges[-1])
     ax.set_ylim(bottom=0.0)
     ax.set_xlabel(xlabel)
     ax.set_ylabel(r"$N$")
@@ -181,18 +183,15 @@ def build_figure(
 def build_combined_figure(histograms: dict[str, np.ndarray]) -> plt.Figure:
     """Build the paper-ready ``N(q)`` and ``N(z)`` two-panel figure."""
     plt.rcParams.update(PAPER_RC)
-    fig, axes = plt.subplots(1, 2, figsize=(7.1, 4.2))
+    fig, axes = plt.subplots(2, 1, figsize=(7.1, 6.5))
     _draw_marginal(axes[0], histograms, "q")
     _draw_marginal(axes[1], histograms, "z")
-    axes[1].set_ylabel("")
-    axes[0].text(0.03, 0.94, r"\textbf{(a)}", transform=axes[0].transAxes)
-    axes[1].text(0.03, 0.94, r"\textbf{(b)}", transform=axes[1].transAxes)
     handles, labels = axes[0].get_legend_handles_labels()
     fig.legend(
         handles,
         labels,
         loc="lower center",
-        bbox_to_anchor=(0.5, 0.79),
+        bbox_to_anchor=(0.5, 0.84),
         frameon=False,
         ncol=3,
         fontsize=7.2,
@@ -200,7 +199,7 @@ def build_combined_figure(histograms: dict[str, np.ndarray]) -> plt.Figure:
         handlelength=1.2,
         handletextpad=0.45,
     )
-    fig.subplots_adjust(left=0.09, right=0.98, bottom=0.14, top=0.72, wspace=0.25)
+    fig.subplots_adjust(left=0.11, right=0.98, bottom=0.09, top=0.76, hspace=0.34)
     return fig
 
 
