@@ -11,6 +11,7 @@ Run::
 from __future__ import annotations
 
 import argparse
+import json
 from pathlib import Path
 
 import matplotlib
@@ -111,7 +112,9 @@ def covariance_note(selection_tag: str) -> str:
     )
 
 
-def _load_error_sigmas(*, log: bool) -> dict[bool, tuple[np.ndarray, np.ndarray]]:
+def _load_error_sigmas(
+    *, log: bool, masked_column: int = 8
+) -> dict[bool, tuple[np.ndarray, np.ndarray]]:
     """Compatibility loader for the previous two-panel diagnostic."""
     name = (
         "Dl_yy_customgnfw_bestfit_theory_logbins_dln0p4_lmax10000.txt"
@@ -121,15 +124,15 @@ def _load_error_sigmas(*, log: bool) -> dict[bool, tuple[np.ndarray, np.ndarray]
     data = np.loadtxt(COV / name)
     return {
         False: (data[:, 0], data[:, 7] * 1e12),
-        True: (data[:, 0], data[:, 8] * 1e12),
+        True: (data[:, 0], data[:, masked_column] * 1e12),
     }
 
 
-def _save(fig: plt.Figure, stem: Path) -> None:
+def _save(fig: plt.Figure, stem: Path, *, dpi: int = 300) -> None:
     FIGURES.mkdir(parents=True, exist_ok=True)
     for suffix in ("png", "pdf"):
         out = stem.with_suffix(f".{suffix}")
-        fig.savefig(out, dpi=300, bbox_inches="tight")
+        fig.savefig(out, dpi=dpi, bbox_inches="tight")
         print(f"wrote {out.relative_to(REPO)}", flush=True)
     plt.close(fig)
 
@@ -194,12 +197,190 @@ def build_figure(
     return fig
 
 
+def single_cut_output_stem(*, log: bool, selection_tag: str, cut_tag: str) -> Path:
+    bin_tag = "logbins" if log else "binned_18"
+    output_tag = "qfrommap" if selection_tag == "qfrommap" else "alpha_fixed_1p12"
+    return FIGURES / f"l1_m9_feedback_ps_{bin_tag}_{output_tag}_{cut_tag}"
+
+
+def _q_cut(cut_tag: str) -> float:
+    return float(cut_tag.removeprefix("qgt").replace("p", "."))
+
+
+def build_single_cut_figure(
+    *,
+    log: bool,
+    ell_range: tuple[float, float],
+    selection_tag: str,
+    cut_tag: str,
+    title: str,
+    error_sigmas: dict[bool, tuple[np.ndarray, np.ndarray]] | None = None,
+) -> plt.Figure:
+    """Build the legacy full-sky/masked comparison for one q threshold."""
+    colors = plt.cm.viridis(np.linspace(0.05, 0.9, len(VARIANTS) - 1))
+    q_cut = _q_cut(cut_tag)
+    fig, axes = plt.subplots(
+        2,
+        2,
+        figsize=(11.0, 6.6),
+        sharex=True,
+        height_ratios=[2.2, 1.0],
+        gridspec_kw={"hspace": 0.06, "wspace": 0.22},
+    )
+    for col, masked in enumerate((False, True)):
+        ax, axr = axes[0, col], axes[1, col]
+        ell_ref, dl_ref = _load(
+            _path(
+                "fiducial",
+                masked=masked,
+                log=log,
+                selection_tag=selection_tag,
+                cut_tag=cut_tag,
+            )
+        )
+        inside = (ell_ref >= ell_range[0]) & (ell_ref <= ell_range[1])
+        sigma = None
+        if error_sigmas is not None:
+            ell_err, sigma = error_sigmas[masked]
+            np.testing.assert_allclose(ell_ref, ell_err, rtol=0.0, atol=5e-4)
+        if sigma is None:
+            ax.loglog(
+                ell_ref[inside],
+                dl_ref[inside],
+                "k-",
+                lw=2.2,
+                marker="o",
+                markersize=4.0,
+                label=LABELS["fiducial"],
+                zorder=3,
+            )
+        else:
+            ax.errorbar(
+                ell_ref[inside],
+                dl_ref[inside],
+                yerr=sigma[inside],
+                color="k",
+                lw=2.2,
+                marker="o",
+                markersize=4.0,
+                elinewidth=1.1,
+                capsize=2.4,
+                capthick=1.1,
+                label=LABELS["fiducial"],
+                zorder=3,
+            )
+        axr.axhline(1.0, color="k", lw=1.6, zorder=3)
+        if sigma is not None:
+            axr.errorbar(
+                ell_ref[inside],
+                np.ones_like(ell_ref[inside]),
+                yerr=(sigma / dl_ref)[inside],
+                fmt="none",
+                ecolor="k",
+                elinewidth=1.1,
+                capsize=2.4,
+                capthick=1.1,
+                zorder=4,
+            )
+            axr.set_ylim(0.75, 1.35)
+        for variant, color in zip(VARIANTS[1:], colors):
+            ell, dl = _load(
+                _path(
+                    variant,
+                    masked=masked,
+                    log=log,
+                    selection_tag=selection_tag,
+                    cut_tag=cut_tag,
+                )
+            )
+            ax.loglog(
+                ell[inside],
+                dl[inside],
+                lw=1.4,
+                color=color,
+                marker="o",
+                markersize=3.0,
+                label=LABELS[variant],
+            )
+            axr.semilogx(ell[inside], dl[inside] / dl_ref[inside], lw=1.4, color=color)
+
+        ax.set_title("full sky" if not masked else rf"masked, $q>{q_cut:g}$", fontsize=10)
+        ax.set_xscale("log")
+        axr.set_xscale("log")
+        ax.set_xlim(*ell_range)
+        axr.set_xlim(*ell_range)
+        ax.tick_params(labelbottom=False)
+        axr.set_xlabel(r"multipole $\ell$")
+        if col == 0:
+            ax.set_ylabel(r"$10^{12}\,\ell(\ell+1)C_\ell^{yy}/(2\pi)$")
+            axr.set_ylabel("variant / fiducial")
+            ax.legend(fontsize=7.5, loc="upper left", frameon=False, ncol=2)
+
+    fig.suptitle(title, fontsize=11, y=0.96)
+    return fig
+
+
+def _print_single_cut_metadata(selection_tag: str, cut_tag: str) -> None:
+    if selection_tag == "qfrommap":
+        path = MASKED_DATA / "L1_m9_feedback_multi_q_bandpowers_qfrommap_metadata.json"
+    else:
+        path = DATA / f"L1_m9_feedback_bandpowers_{cut_tag}_metadata.json"
+    if not path.exists():
+        return
+    meta = json.loads(path.read_text())
+    print("f_sky_eff per variant:")
+    for variant in VARIANTS:
+        entry = meta["variants"][variant]
+        if selection_tag == "qfrommap":
+            entry = entry["cuts"][cut_tag]
+        print(
+            f"  {variant:26s} N_masked={entry['n_masked']:5d}  "
+            f"f_sky={entry['f_sky_eff']:.4f}"
+        )
+
+
 def main() -> None:
     global TAG
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--selection", choices=(TAG, "qfrommap"), default=TAG)
+    parser.add_argument(
+        "--single-cut",
+        metavar="QTAG",
+        help="write the legacy full-sky/masked diagnostic for one cut (for example qgt1)",
+    )
     args = parser.parse_args()
     TAG = args.selection
+
+    if args.single_cut:
+        plt.rcParams.update({"font.size": 10, "text.usetex": False, "mathtext.fontset": "cm"})
+        cut_tag = args.single_cut
+        q_cut = _q_cut(cut_tag)
+        _print_single_cut_metadata(TAG, cut_tag)
+        q_description = "empirical aperture q" if TAG == "qfrommap" else r"$q$ from $\alpha_{\rm SZ}=1.12$ best fit"
+        for log, ell_range in ((False, (10.0, 959.5)), (True, (100.0, 10000.0))):
+            bin_description = (
+                r"$\Delta\ln\ell=0.4$ log bins" if log else "18 Planck bins"
+            )
+            title = (
+                "FLAMINGO L1_m9 feedback variants: tSZ power spectrum "
+                rf"({bin_description}; masked $q>{q_cut:g}$; {q_description})"
+                + covariance_note(TAG)
+            )
+            errors = None if TAG == "qfrommap" else _load_error_sigmas(log=log, masked_column=12)
+            fig = build_single_cut_figure(
+                log=log,
+                ell_range=ell_range,
+                selection_tag=TAG,
+                cut_tag=cut_tag,
+                title=title,
+                error_sigmas=errors,
+            )
+            _save(
+                fig,
+                single_cut_output_stem(log=log, selection_tag=TAG, cut_tag=cut_tag),
+                dpi=180,
+            )
+        return
 
     for log, ell_range in ((False, (10.0, 959.5)), (True, (100.0, 10000.0))):
         fig = build_figure(log=log, ell_range=ell_range, selection_tag=TAG)

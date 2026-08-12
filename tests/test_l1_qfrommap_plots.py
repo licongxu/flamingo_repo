@@ -164,14 +164,25 @@ def test_feedback_multiq_figure_has_four_spectra_panels_and_no_main_title():
 def test_feedback_q1_plot_reads_qfrommap_from_binned_bandpowers():
     module = _load_script(
         "l1_feedback_q1_qfrommap_plot_test",
-        "plot_l1_m9_feedback_bandpowers_qgt1.py",
+        "plot_l1_m9_feedback_bandpowers.py",
     )
 
-    path = module._path("Jet", masked=True, log=True, selection_tag="qfrommap")
+    path = module._path(
+        "Jet",
+        masked=True,
+        log=True,
+        selection_tag="qfrommap",
+        cut_tag="qgt1",
+    )
 
     assert path == MASKED_DATA / (
         "Dl_yy_L1_m9_Jet_masked_qgt1_qfrommap_" "logbins_dln0p4_lmax10000.txt"
     )
+    assert module.single_cut_output_stem(
+        log=True,
+        selection_tag="qfrommap",
+        cut_tag="qgt1",
+    ).name == "l1_m9_feedback_ps_logbins_qfrommap_qgt1"
 
 
 def test_feedback_ratio_plot_selects_qfrommap_bandpower():

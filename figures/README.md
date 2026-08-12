@@ -33,7 +33,7 @@ L1_m9 feedback-variant bandpowers:
 
 | File prefix | Script |
 |-------------|--------|
-| `l1_m9_feedback_ps_*_qgt1` | `scripts/plot_l1_m9_feedback_bandpowers_qgt1.py` |
+| `l1_m9_feedback_ps_*_qgt1` | `scripts/plot_l1_m9_feedback_bandpowers.py --single-cut qgt1` |
 | `l1_m9_feedback_ps_*` (q>5) | `scripts/plot_l1_m9_feedback_bandpowers.py` |
 
 ## `planck_comparison/`
