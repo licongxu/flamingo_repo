@@ -183,7 +183,7 @@ def build_figure(
 def build_combined_figure(histograms: dict[str, np.ndarray]) -> plt.Figure:
     """Build the paper-ready ``N(q)`` and ``N(z)`` two-panel figure."""
     plt.rcParams.update(PAPER_RC)
-    fig, axes = plt.subplots(2, 1, figsize=(7.1, 6.5))
+    fig, axes = plt.subplots(2, 1, figsize=(7.1, 7.1))
     _draw_marginal(axes[0], histograms, "q")
     _draw_marginal(axes[1], histograms, "z")
     handles, labels = axes[0].get_legend_handles_labels()
@@ -191,7 +191,7 @@ def build_combined_figure(histograms: dict[str, np.ndarray]) -> plt.Figure:
         handles,
         labels,
         loc="lower center",
-        bbox_to_anchor=(0.5, 0.84),
+        bbox_to_anchor=(0.5, 0.785),
         frameon=False,
         ncol=3,
         fontsize=7.2,
@@ -199,7 +199,7 @@ def build_combined_figure(histograms: dict[str, np.ndarray]) -> plt.Figure:
         handlelength=1.2,
         handletextpad=0.45,
     )
-    fig.subplots_adjust(left=0.11, right=0.98, bottom=0.09, top=0.76, hspace=0.34)
+    fig.subplots_adjust(left=0.11, right=0.98, bottom=0.08, top=0.77, hspace=0.32)
     return fig
 
 
