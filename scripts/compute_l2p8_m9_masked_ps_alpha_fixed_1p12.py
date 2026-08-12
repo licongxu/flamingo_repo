@@ -47,6 +47,7 @@ from flamingo.powerspectra.bandpowers import (  # noqa: E402
 from flamingo.powerspectra.namaster import decoupled_cl_per_ell  # noqa: E402
 from flamingo.powerspectra.q_selection import (  # noqa: E402
     QSelection,
+    cut_tags,
     resolve_q_selection,
 )
 
@@ -111,7 +112,6 @@ def masked_out_paths(
     )
 
 Q_CUTS = [50.0, 20.0, 10.0, 5.0, 1.0]
-CUT_TAGS = ["qgt50", "qgt20", "qgt10", "qgt5", "qgt1"]
 
 FWHM_ARCMIN = 10.0
 R_MULT = 4.0
@@ -168,8 +168,11 @@ def process_lightcone(
     lightcone: int,
     selection: QSelection = DEFAULT_SELECTION,
     force: bool = False,
+    q_cuts: list[float] | None = None,
 ) -> None:
     """Compute and write the masked bandpowers of one lightcone."""
+    q_cuts = Q_CUTS if q_cuts is None else q_cuts
+    tags = cut_tags(q_cuts)
     t0 = time.time()
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     name = variant(lightcone)
@@ -232,7 +235,7 @@ def process_lightcone(
     metadata: dict[str, dict] = {}
     dl18_all, dl12_all = [], []
     ell_log, _ = bin_log_dl(ell, np.ones_like(ell))
-    for cut, tag in zip(Q_CUTS, CUT_TAGS):
+    for cut, tag in zip(q_cuts, tags, strict=True):
         output_18, output_log = masked_out_paths(
             lightcone, tag, selection.tag
         )
@@ -302,8 +305,8 @@ def process_lightcone(
         dl_18=np.stack(dl18_all),
         ell_log=ell_log,
         dl_12=np.stack(dl12_all),
-        q_cuts=np.array(Q_CUTS),
-        cut_tags=np.array(CUT_TAGS),
+        q_cuts=np.array(q_cuts),
+        cut_tags=np.array(tags),
     )
     meta = {
         "map": str(map_path),
@@ -340,6 +343,7 @@ def main() -> None:
         default=TAG,
     )
     parser.add_argument("--l2-root", type=Path)
+    parser.add_argument("--q-cuts", nargs="+", type=float, default=Q_CUTS)
     parser.add_argument("--force", action="store_true")
     parser.add_argument(
         "--workers",
@@ -360,18 +364,18 @@ def main() -> None:
         for lightcone in lightcones:
             print(f"lightcone{lightcone}: map={map_file(lightcone)}")
             print(f"  catalogue={cat_file(lightcone, selection)}")
-            for tag in CUT_TAGS:
+            for tag in cut_tags(args.q_cuts):
                 print(
                     f"  outputs={masked_out_paths(lightcone, tag, selection.tag)}"
                 )
         return
     if args.workers == 1:
         for lightcone in lightcones:
-            process_lightcone(lightcone, selection, args.force)
+            process_lightcone(lightcone, selection, args.force, args.q_cuts)
         return
     with ProcessPoolExecutor(max_workers=args.workers) as pool:
         futures = {
-            pool.submit(process_lightcone, lightcone, selection, args.force): lightcone
+            pool.submit(process_lightcone, lightcone, selection, args.force, args.q_cuts): lightcone
             for lightcone in lightcones
         }
         for future in as_completed(futures):

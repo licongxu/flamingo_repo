@@ -22,6 +22,17 @@ class QSelection:
     l2_root: Path
 
 
+def cut_tag(q_cut: float) -> str:
+    """Filename tag for a q threshold, preserving the existing decimal convention."""
+    if float(q_cut).is_integer():
+        return f"qgt{int(q_cut)}"
+    return f"qgt{str(q_cut).replace('.', 'p')}"
+
+
+def cut_tags(q_cuts: list[float]) -> list[str]:
+    return [cut_tag(q_cut) for q_cut in q_cuts]
+
+
 def resolve_q_selection(
     name: str,
     *,

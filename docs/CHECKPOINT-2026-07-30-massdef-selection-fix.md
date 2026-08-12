@@ -176,16 +176,12 @@ are unaffected and must NOT be regenerated.
 
 | # | job | scale | est. serial |
 |---|---|---|---|
-| 1 | L1_m9 fiducial `q>1` + metadata/npz (finish the interrupted run) | 1 cut | 10 min |
-| 2 | `compute_masked_ps_qgt6` | 1 cut | 8 min |
-| 3 | `compute_l1_m9_feedback_bandpowers` (q>5) | 9 variants | 2.2 h |
-| 4 | `compute_l1_m9_feedback_bandpowers_qgt1` | 9 variants | 1.5 h |
-| 5 | `compute_l1_m9_feedback_ratio_vs_q_bandpowers` (q=50,20,10,5,3,1) | 54 runs | 5.5 h |
-| 6 | `compute_l2p8_m9_masked_ps_alpha_fixed_1p12` (**all 8 lightcones**) | 40 runs | 4.1 h |
-| 7 | `compute_l1_m9_customgnfw_bestfit_covariance` (needs new `f_sky_eff`) | — | 1 min |
-| 8 | all `plot_*.py` + `paper_results/figures.py` | — | 15 min |
-| 9 | `run_masked_ps_chains.py` (5 chains) + getdist | — | 25 min |
-| 10 | `masking_radius_null_test` + random control + its plot — **run last** | 80 runs | 6.7 h |
+| 1 | `compute_l1_m9_feedback_bandpowers` (q=50,20,10,5,3,1; use `--q-cuts 6` for q>6) | 54 runs | 5.5 h |
+| 2 | `compute_l2p8_m9_masked_ps_alpha_fixed_1p12` (**all 8 lightcones**; arbitrary `--q-cuts`) | 40 runs | 4.1 h |
+| 3 | `compute_l1_m9_customgnfw_bestfit_covariance` (needs new `f_sky_eff`) | — | 1 min |
+| 4 | all `plot_*.py` + `paper_results/figures.py` | — | 15 min |
+| 5 | `run_masked_ps_chains.py` (5 chains) + getdist | — | 25 min |
+| 6 | `masking_radius_null_test` + random control + its plot — **run last** | 80 runs | 6.7 h |
 
 ~20 h serial; ~6-8 h with 6 concurrent jobs at `OMP_NUM_THREADS=16`.
 

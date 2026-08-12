@@ -19,11 +19,15 @@ def _load_script(name: str, filename: str):
     return module
 
 
-def test_qgt6_l2_qfrommap_uses_lightcone0_canonical_catalogue():
-    module = _load_script("qgt6_qfrommap_test", "compute_masked_ps_qgt6.py")
+def test_l2_qgt6_uses_lightcone0_canonical_catalogue():
+    module = _load_script(
+        "l2_qgt6_qfrommap_test",
+        "compute_l2p8_m9_masked_ps_alpha_fixed_1p12.py",
+    )
     selection = resolve_q_selection("qfrommap")
 
-    map_path, catalogue_path = module.input_paths("L2p8_m9", selection)
+    map_path = module.map_file(0)
+    catalogue_path = module.cat_file(0, selection)
 
     assert map_path == Path(
         "/rds/rds-lxu/flamingo/L2p8_m9/lightcone0/healpix_map/" "y_unlensed_L2p8_m9_lc0.fits"
@@ -31,6 +35,7 @@ def test_qgt6_l2_qfrommap_uses_lightcone0_canonical_catalogue():
     assert catalogue_path == selection.l2_root / "lightcone0/catalogues" / (
         "halo_catalogue_M500c_5e13_zlt3_L2p8_m9_yang26rot_qfrommap.csv"
     )
+    assert module.cut_tags([6.0, 0.5]) == ["qgt6", "qgt0p5"]
 
 
 def test_l1_qfrommap_null_test_uses_corrected_catalogue_and_isolated_cache():
@@ -74,7 +79,7 @@ def test_null_test_plot_routes_qfrommap_products_without_overwriting_legacy():
 def test_incremental_multi_q_metadata_preserves_existing_cuts():
     module = _load_script(
         "multi_q_metadata_merge_test",
-        "compute_l1_m9_feedback_ratio_vs_q_bandpowers.py",
+        "compute_l1_m9_feedback_bandpowers.py",
     )
     existing = {
         "q_cuts": [50.0, 20.0, 10.0, 5.0, 1.0],

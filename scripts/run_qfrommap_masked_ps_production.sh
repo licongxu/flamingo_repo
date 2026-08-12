@@ -15,7 +15,7 @@ worktree="$repo/.worktrees/stable-halo-catalogue-rebuild"
 bandpowers="$repo/data_paper/binned_bandpowers"
 
 cd "$worktree"
-python scripts/compute_l1_m9_feedback_ratio_vs_q_bandpowers.py \
+python scripts/compute_l1_m9_feedback_bandpowers.py \
   --selection qfrommap --workers 8
 
 l1_count=$(find "$bandpowers" -maxdepth 1 -type f \

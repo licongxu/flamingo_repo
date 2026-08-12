@@ -75,7 +75,7 @@ def test_feedback_catalogue_loader_selects_requested_q_column(tmp_path):
 def test_l1_multi_q_paths_are_selection_tagged_and_use_corrected_catalogue():
     module = _load_script(
         "l1_multi_q_selection_test",
-        "scripts/compute_l1_m9_feedback_ratio_vs_q_bandpowers.py",
+        "scripts/compute_l1_m9_feedback_bandpowers.py",
     )
     selection = resolve_q_selection("qfrommap")
 
@@ -113,7 +113,7 @@ def test_l2_paths_are_selection_tagged_and_use_canonical_qfrommap_catalogue():
 def test_qfrommap_defaults_exclude_legacy_q3_cut():
     module = _load_script(
         "l1_multi_q_default_cuts_test",
-        "scripts/compute_l1_m9_feedback_ratio_vs_q_bandpowers.py",
+        "scripts/compute_l1_m9_feedback_bandpowers.py",
     )
 
     assert module.default_q_cuts("qfrommap") == [50.0, 20.0, 10.0, 5.0, 1.0]

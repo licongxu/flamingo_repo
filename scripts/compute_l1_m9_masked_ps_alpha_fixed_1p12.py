@@ -37,6 +37,7 @@ Run::
 """
 from __future__ import annotations
 
+import argparse
 import json
 import sys
 import time
@@ -61,6 +62,7 @@ from flamingo.powerspectra.bandpowers import (  # noqa: E402
     write_bandpowers,
 )
 from flamingo.powerspectra.namaster import decoupled_cl_per_ell  # noqa: E402
+from flamingo.powerspectra.q_selection import cut_tags  # noqa: E402
 
 MAP_FILE = Path("/rds/rds-lxu/flamingo/L1_m9/maps/y_unlensed_L1_m9_lc0_nside4096.fits")
 CAT_FILE = Path(
@@ -72,7 +74,6 @@ FULLSKY_18 = OUT_DIR / "Dl_yy_L1_m9_fullsky_binned_18.txt"
 TAG = "qfrommz_alpha_fixed_1p12"
 
 Q_CUTS = [50.0, 20.0, 10.0, 5.0, 1.0]
-CUT_TAGS = ["qgt50", "qgt20", "qgt10", "qgt5", "qgt1"]
 
 # Synthetic-data masking prescription (painted-map benchmark).
 FWHM_ARCMIN = 10.0
@@ -117,7 +118,9 @@ def load_catalogue() -> dict[str, np.ndarray]:
     return out
 
 
-def main() -> None:
+def main(q_cuts: list[float] | None = None) -> None:
+    q_cuts = Q_CUTS if q_cuts is None else q_cuts
+    tags = cut_tags(q_cuts)
     t0 = time.time()
     OUT_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -151,7 +154,7 @@ def main() -> None:
 
     metadata: dict[str, dict] = {}
     dl18_all, dl12_all = [], []
-    for cut, tag in zip(Q_CUTS, CUT_TAGS):
+    for cut, tag in zip(q_cuts, tags, strict=True):
         keep = q > cut
         radius = np.maximum(R_MULT * t500[keep], mask_floor)
         print(
@@ -213,8 +216,8 @@ def main() -> None:
         dl_18=np.stack(dl18_all),
         ell_log=ell_log,
         dl_12=np.stack(dl12_all),
-        q_cuts=np.array(Q_CUTS),
-        cut_tags=np.array(CUT_TAGS),
+        q_cuts=np.array(q_cuts),
+        cut_tags=np.array(tags),
     )
     meta = {
         "map": str(MAP_FILE),
@@ -237,4 +240,6 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument("--q-cuts", nargs="+", type=float, default=Q_CUTS)
+    main(parser.parse_args().q_cuts)
