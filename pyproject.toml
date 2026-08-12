@@ -14,12 +14,15 @@ dependencies = [
     "healpy>=1.16",
     "pandas>=2.0",
     "hmfast>=0.1",
+    "jax>=0.4",
 ]
 
 [project.optional-dependencies]
-# Power-spectrum estimation relies on NaMaster (pymaster), which is heavy and
-# is installed separately. Everything else works without it.
+# Mask-decoupled power spectra rely on NaMaster (pymaster) and flat-sky stamps
+# on pixell; both are heavy and installed separately. Everything else works
+# without them.
 powerspectra = ["pymaster>=1.5"]
+stamps = ["pixell>=0.26"]
 plot = ["matplotlib>=3.7"]
 dev = ["pytest>=7"]
 

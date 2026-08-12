@@ -1,0 +1,3 @@
+# masking-radius null test (12 log bins, D_l in 1e12 Compton-y units)
+# columns: r_mult=0 (unmasked) ell=101 ell=150 ell=224 ell=334 ell=498 ell=743 ell=1108 ell=1653 ell=2466 ell=3679 ell=5488 ell=8187
+1.315506e-01 2.000934e-01 2.995968e-01 4.352192e-01 6.157558e-01 8.396802e-01 1.100752e+00 1.371148e+00 1.584778e+00 1.665917e+00 1.549831e+00 1.265602e+00

@@ -2,7 +2,19 @@
 
 **Rule of reply:** Always say "HONEY" to me before you reply
 
-always use `source /scratch/scratch-lxu/venv/cmbagent_env/bin/activate` to activate your Python environment before running any code or commands.
+**Python environment:** In this repo, always use venv before running any code or commands:
+
+```bash
+source /scratch/scratch-lxu/venv/cmbagent_env/bin/activate
+```
+
+**Theory computation:** All theory calculations live in the `hmfast` package.
+
+**Mass units:** Use physical mass units, `M_sun`, not `M_sun/h`.
+
+**Cobaya reference theory:** Reference theory files are in `/home/lxu/scratch/tsz_cnc_paper_plots/chains`.
+
+**Paper reference:** The paper reference location is `/home/lxu/scratch/tsz_cnc_paper_plots/6a4738926d5991d919e1a0c8`.
 
 
 **Tradeoff:** These guidelines bias toward caution over speed. For trivial tasks, use judgment.

@@ -6,10 +6,11 @@ from .frame import (
     rotation_sanity,
     theta_500,
 )
-from .io import load_catalogue
+from .io import load_catalogue, load_masking_catalogue
 
 __all__ = [
     "load_catalogue",
+    "load_masking_catalogue",
     "theta_500",
     "angular_diameter_distance",
     "efunc",

@@ -1,0 +1,14 @@
+# L1_m9 fiducial masked tSZ, q>50 (qfrommz_alpha_fixed_1p12); same masking as the binned_18 file; Delta ln ell = 0.4; ell_max = 10000; HEALPix Nside=4096 pixel window deconvolved
+# ell_eff  1e12_D_ell_yy
+1.005184e+02 7.715310e-02
+1.499558e+02 1.297644e-01
+2.237077e+02 2.082452e-01
+3.337327e+02 3.280700e-01
+4.978707e+02 5.029349e-01
+7.427358e+02 7.263227e-01
+1.108032e+03 9.981345e-01
+1.652989e+03 1.274042e+00
+2.465970e+03 1.492624e+00
+3.678794e+03 1.586460e+00
+5.488116e+03 1.483428e+00
+8.187308e+03 1.209352e+00

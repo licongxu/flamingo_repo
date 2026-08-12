@@ -1,4 +1,8 @@
-"""HEALPix map I/O and sampling."""
+"""HEALPix map I/O and sampling.
+
+Flat-sky stamps live in :mod:`flamingo.maps.stamps`; import that module
+explicitly, it requires pixell (``pip install -e ".[stamps]"``).
+"""
 from .io import nside_of, read_map, write_map
 from .sampling import sample_at, sample_neighbour_max
 
