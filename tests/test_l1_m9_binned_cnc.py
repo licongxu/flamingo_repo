@@ -117,8 +117,8 @@ def test_separate_figures_group_all_nine_marginals():
         assert len(fig_z.axes[0].patches) == 10 * len(module.VARIANTS) == 90
         assert fig_q.axes[0].get_xscale() == "log"
         assert fig_z.axes[0].get_xscale() == "linear"
-        assert np.allclose(fig_q.get_size_inches(), [7.1, 5.4])
-        assert np.allclose(fig_z.get_size_inches(), [7.1, 5.4])
+        assert np.allclose(fig_q.get_size_inches(), [7.1, 4.4])
+        assert np.allclose(fig_z.get_size_inches(), [7.1, 4.4])
         assert fig_q.axes[0].get_xlabel() == r"$q$"
         assert fig_z.axes[0].get_xlabel() == r"$z$"
         assert fig_q.axes[0].get_ylabel() == fig_z.axes[0].get_ylabel() == r"$N$"
@@ -127,8 +127,10 @@ def test_separate_figures_group_all_nine_marginals():
         assert q_bars[5].get_alpha() == 1.0
         assert all(bar.get_alpha() == 0.68 for bar in q_bars[:5])
         assert all(bar.get_alpha() == 0.68 for bar in q_bars[10:])
+        assert len(fig_q.legends) == 1
+        assert len(fig_z.legends) == 1
         labels = [
-            text.get_text() for text in fig_q.axes[0].get_legend().get_texts()
+            text.get_text() for text in fig_q.legends[0].get_texts()
         ]
         assert len(labels) == 9
         for index, label in enumerate(labels):
@@ -148,11 +150,12 @@ def test_combined_paper_figure_has_two_marginal_panels_and_one_legend():
     fig = module.build_combined_figure(histograms)
 
     try:
-        assert np.allclose(fig.get_size_inches(), [7.1, 7.1])
+        assert np.allclose(fig.get_size_inches(), [7.1, 6.1])
         assert len(fig.axes) == 2
         assert fig.axes[0].get_xlabel() == r"$q$"
         assert fig.axes[1].get_xlabel() == r"$z$"
         assert len(fig.legends) == 1
         assert len(fig.legends[0].get_texts()) == 9
+        assert fig.legends[0].get_texts()[0].get_fontsize() == 12.0
     finally:
         module.plt.close(fig)

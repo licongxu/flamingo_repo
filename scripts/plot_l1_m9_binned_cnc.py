@@ -35,7 +35,8 @@ PAPER_RC = {
     "axes.labelsize": 15,
     "xtick.labelsize": 12,
     "ytick.labelsize": 12,
-    "legend.fontsize": 10,
+    # Match tick labels: figure is ~7.1in wide but shown at columnwidth (~3.4in).
+    "legend.fontsize": 12,
     "mathtext.fontset": "cm",
     "text.latex.preamble": r"\usepackage{amsmath}",
 }
@@ -164,42 +165,41 @@ def build_figure(
 ) -> plt.Figure:
     """Build one standalone marginal-count figure."""
     plt.rcParams.update(PAPER_RC)
-    fig, ax = plt.subplots(figsize=(7.1, 5.4))
+    fig, ax = plt.subplots(figsize=(7.1, 4.4), layout="constrained")
     _draw_marginal(ax, histograms, marginal)
-    ax.legend(
-        loc="lower center",
-        bbox_to_anchor=(0.5, 1.02),
+    handles, labels = ax.get_legend_handles_labels()
+    fig.legend(
+        handles,
+        labels,
+        loc="outside upper center",
         frameon=False,
         ncol=3,
-        fontsize=7.2,
+        fontsize=12,
         columnspacing=0.8,
-        handlelength=1.2,
-        handletextpad=0.45,
+        handlelength=1.15,
+        handletextpad=0.35,
     )
-    fig.subplots_adjust(left=0.11, right=0.98, bottom=0.13, top=0.70)
     return fig
 
 
 def build_combined_figure(histograms: dict[str, np.ndarray]) -> plt.Figure:
     """Build the paper-ready ``N(q)`` and ``N(z)`` two-panel figure."""
     plt.rcParams.update(PAPER_RC)
-    fig, axes = plt.subplots(2, 1, figsize=(7.1, 7.1))
+    fig, axes = plt.subplots(2, 1, figsize=(7.1, 6.1), layout="constrained")
     _draw_marginal(axes[0], histograms, "q")
     _draw_marginal(axes[1], histograms, "z")
     handles, labels = axes[0].get_legend_handles_labels()
     fig.legend(
         handles,
         labels,
-        loc="lower center",
-        bbox_to_anchor=(0.5, 0.785),
+        loc="outside upper center",
         frameon=False,
         ncol=3,
-        fontsize=7.2,
+        fontsize=12,
         columnspacing=0.8,
-        handlelength=1.2,
-        handletextpad=0.45,
+        handlelength=1.15,
+        handletextpad=0.35,
     )
-    fig.subplots_adjust(left=0.11, right=0.98, bottom=0.08, top=0.77, hspace=0.32)
     return fig
 
 
@@ -208,7 +208,7 @@ def save_figure(fig: plt.Figure, stem: Path) -> None:
     stem.parent.mkdir(parents=True, exist_ok=True)
     for suffix in ("png", "pdf"):
         output = stem.with_suffix(f".{suffix}")
-        fig.savefig(output, dpi=300, bbox_inches="tight")
+        fig.savefig(output, dpi=300, bbox_inches="tight", pad_inches=0.02)
         print(f"wrote {output}", flush=True)
     plt.close(fig)
 
