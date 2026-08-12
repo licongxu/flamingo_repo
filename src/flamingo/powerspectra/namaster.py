@@ -42,6 +42,26 @@ def apodize(mask: np.ndarray, aperture_deg: float = 0.5, *, apotype: str = "C1")
     return nmt.mask_apodization(mask, aperture_deg, apotype=apotype)
 
 
+def decoupled_cl_per_ell(
+    m: np.ndarray,
+    mask: np.ndarray,
+    pixwin2: np.ndarray,
+    *,
+    lmax: int,
+) -> np.ndarray:
+    """Return pixel-window-corrected, mask-decoupled ``C_ell`` at every multipole."""
+    monopole = float(np.sum(mask * m) / np.sum(mask))
+    field = nmt.NmtField(mask, [m - monopole], lmax=lmax)
+    bands = nmt.NmtBin.from_lmax_linear(lmax, nlb=1)
+    workspace = nmt.NmtWorkspace()
+    workspace.compute_coupling_matrix(field, field, bands)
+    cl = workspace.decouple_cell(nmt.compute_coupled_cell(field, field))[0]
+
+    result = np.full(lmax + 1, np.nan)
+    result[bands.get_effective_ells().astype(int)] = cl
+    return result / pixwin2
+
+
 def decoupled_dl(
     m: np.ndarray,
     mask: np.ndarray | None,
