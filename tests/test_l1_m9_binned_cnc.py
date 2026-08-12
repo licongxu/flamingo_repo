@@ -114,6 +114,8 @@ def test_separate_figures_group_all_nine_marginals():
         assert len(fig_z.axes[0].patches) == 10 * len(module.VARIANTS) == 90
         assert fig_q.axes[0].get_xscale() == "log"
         assert fig_z.axes[0].get_xscale() == "linear"
+        assert np.allclose(fig_q.get_size_inches(), [7.1, 5.4])
+        assert np.allclose(fig_z.get_size_inches(), [7.1, 5.4])
         assert fig_q.axes[0].get_xlabel() == r"$q$"
         assert fig_z.axes[0].get_xlabel() == r"$z$"
         assert fig_q.axes[0].get_ylabel() == fig_z.axes[0].get_ylabel() == r"$N$"

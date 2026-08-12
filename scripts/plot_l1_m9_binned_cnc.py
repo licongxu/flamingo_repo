@@ -124,7 +124,7 @@ def build_figure(
         raise ValueError(f"unknown marginal: {marginal}")
 
     plt.rcParams.update(PAPER_RC)
-    fig, ax = plt.subplots(figsize=(10.0, 5.8))
+    fig, ax = plt.subplots(figsize=(7.1, 5.4))
     for index, variant in enumerate(VARIANTS):
         counts = histograms[variant].sum(axis=sum_axis)
         left, widths = _grouped_bar_geometry(
@@ -157,11 +157,12 @@ def build_figure(
         bbox_to_anchor=(0.5, 1.02),
         frameon=False,
         ncol=3,
-        fontsize=9,
-        columnspacing=1.2,
-        handlelength=1.5,
+        fontsize=7.2,
+        columnspacing=0.8,
+        handlelength=1.2,
+        handletextpad=0.45,
     )
-    fig.subplots_adjust(left=0.10, right=0.98, bottom=0.14, top=0.66)
+    fig.subplots_adjust(left=0.11, right=0.98, bottom=0.13, top=0.70)
     return fig
 
 
