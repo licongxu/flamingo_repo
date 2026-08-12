@@ -11,7 +11,7 @@ MASKED_DATA = REPO / "data_paper" / "binned_bandpowers"
 
 
 def _load_script(name: str, filename: str):
-    path = REPO / "scripts" / filename
+    path = REPO / "scripts/figures" / filename
     spec = importlib.util.spec_from_file_location(name, path)
     assert spec is not None and spec.loader is not None
     module = importlib.util.module_from_spec(spec)

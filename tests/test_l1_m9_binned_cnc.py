@@ -12,7 +12,7 @@ REPO = Path(__file__).resolve().parents[1]
 
 
 def _load_script():
-    path = REPO / "scripts" / "plot_l1_m9_binned_cnc.py"
+    path = REPO / "scripts/figures/plot_l1_m9_binned_cnc.py"
     spec = importlib.util.spec_from_file_location("l1_m9_binned_cnc_test", path)
     assert spec is not None and spec.loader is not None
     module = importlib.util.module_from_spec(spec)
@@ -31,7 +31,7 @@ def test_catalogue_path_selects_qfrommap():
 
 
 def test_script_loads_without_repository_on_python_path(tmp_path):
-    script = REPO / "scripts" / "plot_l1_m9_binned_cnc.py"
+    script = REPO / "scripts/figures/plot_l1_m9_binned_cnc.py"
     command = (
         "import runpy; "
         f"runpy.run_path({str(script)!r}, run_name='l1_m9_binned_cnc_entrypoint_test')"

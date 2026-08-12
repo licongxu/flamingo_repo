@@ -54,7 +54,7 @@ clusters (732 of them, where a true q>5 cut has 2780).
   `convert_masses=True`, `hm_consistency=False`; `B_HYDROSTATIC` 1.35 -> **1.41**
   so selection and pressure profile share one mass calibration. No `B=1.35`
   remains on this branch.
-* `scripts/regenerate_q_catalogues.py` — **new**. Rewrites `q_from_mz` in every
+* `scripts/catalogue/regenerate_q_catalogues.py` — **new**. Rewrites `q_from_mz` in every
   `*_qfrommz*.csv` in place (atomic, keeps `.pre_massdef_fix.bak`, skips files
   already carrying the fix marker, `--force` to redo). One selection convention
   everywhere: `A_SZ=-4.0953238`, `alpha_SZ=1.12`, `B=1.41`, `sigma_lnY=0.173`.
@@ -64,10 +64,10 @@ clusters (732 of them, where a true q>5 cut has 2780).
   brackets are linear and sourced by distinct halos). Validated: reproduces the
   stored covariance-script theory to ratio **1.0000** for full-sky and q>5.
   Benchmarks at **22 ms** per evaluation.
-* `scripts/run_masked_ps_chains.py` — **new**. Signal-only chains for
+* `scripts/inference/run_masked_ps_chains.py` — **new**. Signal-only chains for
   `fullsky, qgt50, qgt20, qgt10, qgt5`, priors copied from the reference
   case01/case02 runs with `A_SZ` recentred on the L1_m9 full-sky best fit.
-* `scripts/compute_l2p8_m9_masked_ps_alpha_fixed_1p12.py` — generalised from
+* `scripts/powerspectra/compute_l2p8_m9_masked_ps_alpha_fixed_1p12.py` — generalised from
   lightcone-0-only to **all 8 lightcones**; outputs are now per lightcone,
   `Dl_yy_L2p8_m9_lc{i}_masked_...`. Paper figures use lc0.
 * The separate best-fit `q`-catalogue generator and its test were **removed**,
@@ -91,7 +91,7 @@ clusters (732 of them, where a true q>5 cut has 2780).
 
 > **These live on this cluster's `/rds` and are NOT in git.** On a new cluster
 > either copy `/rds/rds-lxu/flamingo/*/catalogues/*_qfrommz*.csv` across, or
-> re-run `scripts/regenerate_q_catalogues.py` (~45 min for all 34). Note the
+> re-run `scripts/catalogue/regenerate_q_catalogues.py` (~45 min for all 34). Note the
 > script *rewrites existing* catalogues, so the source FLAMINGO catalogues must
 > be present either way.
 
@@ -144,8 +144,8 @@ already carries the corrected selection:
 The cut that was interrupted is `q>1`, which the goal does not use. So:
 
 ```bash
-python scripts/compute_l1_m9_customgnfw_bestfit_covariance.py   # ~1 min, new f_sky
-python scripts/run_masked_ps_chains.py                          # 5 chains, ~25 min
+python scripts/powerspectra/compute_l1_m9_customgnfw_bestfit_covariance.py   # ~1 min, new f_sky
+python scripts/inference/run_masked_ps_chains.py                          # 5 chains, ~25 min
 # then getdist triangle plots
 ```
 
@@ -196,11 +196,11 @@ export FLAMINGO_ROOT=<repo>            # products go to $FLAMINGO_ROOT/data_pape
 export PYTHONPATH=<repo>/src
 export OMP_NUM_THREADS=16              # x6 concurrent jobs keeps a shared box healthy
 
-python scripts/regenerate_q_catalogues.py          # only if /rds catalogues not copied
-python scripts/compute_l1_m9_masked_ps_alpha_fixed_1p12.py
-python scripts/compute_l2p8_m9_masked_ps_alpha_fixed_1p12.py --lightcone 0   # ... 1..7
-python scripts/compute_l1_m9_customgnfw_bestfit_covariance.py
-python scripts/run_masked_ps_chains.py
+python scripts/catalogue/regenerate_q_catalogues.py          # only if /rds catalogues not copied
+python scripts/powerspectra/compute_l1_m9_masked_ps_alpha_fixed_1p12.py
+python scripts/powerspectra/compute_l2p8_m9_masked_ps_alpha_fixed_1p12.py --lightcone 0   # ... 1..7
+python scripts/powerspectra/compute_l1_m9_customgnfw_bestfit_covariance.py
+python scripts/inference/run_masked_ps_chains.py
 ```
 
 ---

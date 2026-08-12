@@ -9,7 +9,7 @@ import pytest
 
 def test_make_log_bins_has_exact_log_width_and_geometric_centres():
     try:
-        from scripts.plot_l1_m9_bestfit_customgnfw_highell import make_log_bins
+        from scripts.figures.plot_l1_m9_bestfit_customgnfw_highell import make_log_bins
     except ModuleNotFoundError:
         pytest.fail("high-ell plotting module is missing")
 
@@ -21,7 +21,7 @@ def test_make_log_bins_has_exact_log_width_and_geometric_centres():
 
 def test_bin_cl_log_excludes_internal_right_edges_and_includes_final_edge():
     try:
-        from scripts.plot_l1_m9_bestfit_customgnfw_highell import bin_cl_log
+        from scripts.figures.plot_l1_m9_bestfit_customgnfw_highell import bin_cl_log
     except ModuleNotFoundError:
         pytest.fail("high-ell plotting module is missing")
 
@@ -37,7 +37,7 @@ def test_bin_cl_log_excludes_internal_right_edges_and_includes_final_edge():
 
 def test_compute_theory_bandpowers_returns_positive_total_equal_to_sum():
     try:
-        from scripts.plot_l1_m9_bestfit_customgnfw_highell import (
+        from scripts.figures.plot_l1_m9_bestfit_customgnfw_highell import (
             compute_theory_bandpowers,
         )
     except ImportError:
@@ -55,7 +55,7 @@ def test_compute_theory_bandpowers_returns_positive_total_equal_to_sum():
 
 
 def test_compute_theory_bandpowers_uses_requested_custom_parameters():
-    from scripts.plot_l1_m9_bestfit_customgnfw_highell import (
+    from scripts.figures.plot_l1_m9_bestfit_customgnfw_highell import (
         compute_theory_bandpowers,
     )
 
@@ -79,7 +79,7 @@ def test_compute_theory_bandpowers_uses_requested_custom_parameters():
 
 def test_compute_simple_gnfw_bandpowers_uses_requested_mass_bias():
     try:
-        from scripts.plot_l1_m9_bestfit_customgnfw_highell import (
+        from scripts.figures.plot_l1_m9_bestfit_customgnfw_highell import (
             compute_simple_gnfw_bandpowers,
         )
     except ImportError:
@@ -99,7 +99,7 @@ def test_compute_simple_gnfw_bandpowers_uses_requested_mass_bias():
 
 
 def test_fit_simple_gnfw_mass_bias_recovers_log_space_minimum(monkeypatch):
-    import scripts.plot_l1_m9_bestfit_customgnfw_highell as module
+    import scripts.figures.plot_l1_m9_bestfit_customgnfw_highell as module
 
     edges = np.array([100.0, 200.0, 400.0])
 
@@ -122,7 +122,7 @@ def test_fit_simple_gnfw_mass_bias_recovers_log_space_minimum(monkeypatch):
 
 def test_compute_map_bandpowers_applies_pixel_window_deconvolution(tmp_path):
     try:
-        from scripts.plot_l1_m9_bestfit_customgnfw_highell import (
+        from scripts.figures.plot_l1_m9_bestfit_customgnfw_highell import (
             compute_map_bandpowers,
         )
     except ImportError:
@@ -153,7 +153,7 @@ def test_compute_map_bandpowers_applies_pixel_window_deconvolution(tmp_path):
 
 def test_write_empirical_bandpowers_roundtrips_values_and_metadata(tmp_path):
     try:
-        from scripts.plot_l1_m9_bestfit_customgnfw_highell import (
+        from scripts.figures.plot_l1_m9_bestfit_customgnfw_highell import (
             write_empirical_bandpowers,
         )
     except ImportError:
@@ -173,7 +173,7 @@ def test_write_empirical_bandpowers_roundtrips_values_and_metadata(tmp_path):
 
 def test_make_high_ell_figure_has_full_range_ratio_and_no_2h_line():
     try:
-        from scripts.plot_l1_m9_bestfit_customgnfw_highell import (
+        from scripts.figures.plot_l1_m9_bestfit_customgnfw_highell import (
             make_high_ell_figure,
         )
     except ImportError:
@@ -211,8 +211,8 @@ def test_make_high_ell_figure_has_full_range_ratio_and_no_2h_line():
     np.testing.assert_allclose(ratio.lines[0].get_xdata(), ell)
 
 
-def test_high_ell_script_imports_from_the_scripts_directory():
-    scripts_dir = Path(__file__).resolve().parents[1] / "scripts"
+def test_high_ell_script_imports_from_the_figures_directory():
+    scripts_dir = Path(__file__).resolve().parents[1] / "scripts/figures"
 
     result = subprocess.run(
         [sys.executable, "-c", "import plot_l1_m9_bestfit_customgnfw_highell"],

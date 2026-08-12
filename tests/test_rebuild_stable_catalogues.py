@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 
 
-SCRIPT = Path(__file__).parents[1] / "scripts/rebuild_stable_catalogues.py"
+SCRIPT = Path(__file__).parents[1] / "scripts/catalogue/rebuild_stable_catalogues.py"
 
 
 @pytest.fixture

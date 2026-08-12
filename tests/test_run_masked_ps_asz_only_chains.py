@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from scripts import run_masked_ps_asz_only_chains as runner
+from scripts.inference import run_masked_ps_asz_only_chains as runner
 
 
 def _artifacts(tmp_path):

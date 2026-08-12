@@ -48,7 +48,7 @@ def test_legacy_selection_defaults_are_unchanged():
 def test_feedback_catalogue_loader_selects_requested_q_column(tmp_path):
     module = _load_script(
         "feedback_bandpowers_q_selection_test",
-        "scripts/compute_l1_m9_feedback_bandpowers.py",
+        "scripts/powerspectra/compute_l1_m9_feedback_bandpowers.py",
     )
     rows = 10_000
     path = tmp_path / "catalogue.csv"
@@ -75,7 +75,7 @@ def test_feedback_catalogue_loader_selects_requested_q_column(tmp_path):
 def test_l1_multi_q_paths_are_selection_tagged_and_use_corrected_catalogue():
     module = _load_script(
         "l1_multi_q_selection_test",
-        "scripts/compute_l1_m9_feedback_bandpowers.py",
+        "scripts/powerspectra/compute_l1_m9_feedback_bandpowers.py",
     )
     selection = resolve_q_selection("qfrommap")
 
@@ -94,7 +94,7 @@ def test_l1_multi_q_paths_are_selection_tagged_and_use_corrected_catalogue():
 def test_l2_paths_are_selection_tagged_and_use_canonical_qfrommap_catalogue():
     module = _load_script(
         "l2_multi_q_selection_test",
-        "scripts/compute_l2p8_m9_masked_ps_alpha_fixed_1p12.py",
+        "scripts/powerspectra/compute_l2p8_m9_masked_ps_alpha_fixed_1p12.py",
     )
     selection = resolve_q_selection("qfrommap")
 
@@ -113,7 +113,7 @@ def test_l2_paths_are_selection_tagged_and_use_canonical_qfrommap_catalogue():
 def test_qfrommap_defaults_exclude_legacy_q3_cut():
     module = _load_script(
         "l1_multi_q_default_cuts_test",
-        "scripts/compute_l1_m9_feedback_bandpowers.py",
+        "scripts/powerspectra/compute_l1_m9_feedback_bandpowers.py",
     )
 
     assert module.default_q_cuts("qfrommap") == [50.0, 20.0, 10.0, 5.0, 1.0]
@@ -130,7 +130,7 @@ def test_qfrommap_defaults_exclude_legacy_q3_cut():
 def test_comparison_plot_uses_l2_lightcone0_qfrommap_product(tmp_path):
     module = _load_script(
         "masked_ps_plot_selection_test",
-        "scripts/plot_l1_l2p8_m9_masked_ps_comparison.py",
+        "scripts/figures/plot_l1_l2p8_m9_masked_ps_comparison.py",
     )
 
     path = module._paths(
@@ -149,7 +149,7 @@ def test_comparison_plot_uses_l2_lightcone0_qfrommap_product(tmp_path):
 def test_standalone_l2_plot_routes_qfrommap_to_lightcone0(tmp_path):
     module = _load_script(
         "standalone_l2_qfrommap_input_test",
-        "scripts/plot_l2p8_m9_masked_ps_alpha_fixed_1p12.py",
+        "scripts/figures/plot_l2p8_m9_masked_ps_alpha_fixed_1p12.py",
     )
 
     path = module._masked_paths(
@@ -164,7 +164,7 @@ def test_standalone_l2_plot_routes_qfrommap_to_lightcone0(tmp_path):
 def test_standalone_l2_plot_tags_qfrommap_output():
     module = _load_script(
         "standalone_l2_qfrommap_output_test",
-        "scripts/plot_l2p8_m9_masked_ps_alpha_fixed_1p12.py",
+        "scripts/figures/plot_l2p8_m9_masked_ps_alpha_fixed_1p12.py",
     )
 
     assert module.output_stem(log=True, selection_tag="qfrommap").name == (

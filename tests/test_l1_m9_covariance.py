@@ -9,7 +9,7 @@ from flamingo.inference.bandpowers import (
     trispectrum_bandpower_covariance,
     validate_covariance as validate_exact_covariance,
 )
-from scripts.compute_l1_m9_simplegnfw_covariance import (
+from scripts.powerspectra.compute_l1_m9_simplegnfw_covariance import (
     ELL_EFF,
     ELL_MAX,
     ELL_MIN,
@@ -19,7 +19,7 @@ from scripts.compute_l1_m9_simplegnfw_covariance import (
     gaussian_covariance,
     validate_covariance,
 )
-from scripts.compute_l1_m9_customgnfw_bestfit_covariance import (
+from scripts.powerspectra.compute_l1_m9_customgnfw_bestfit_covariance import (
     QFROMMAP_F_SKY,
     build_covariance_18 as build_exact_covariance_18,
 )

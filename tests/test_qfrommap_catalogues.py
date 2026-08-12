@@ -14,7 +14,7 @@ import pytest
 from flamingo.aperture_snr import APERTURE_COLUMNS
 
 
-SCRIPT = Path(__file__).parents[1] / "scripts" / "compute_qfrommap_catalogues.py"
+SCRIPT = Path(__file__).parents[1] / "scripts/catalogue/compute_qfrommap_catalogues.py"
 
 
 @pytest.fixture(scope="module")

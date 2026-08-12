@@ -3,16 +3,11 @@ from __future__ import annotations
 
 import numpy as np
 
-
-ELL_MIN = np.array(
-    [9, 12, 16, 21, 27, 35, 46, 60, 78, 102, 133, 173, 224, 292, 380, 494, 642, 835],
-    dtype=int,
+from flamingo.powerspectra.bandpowers import (
+    PLANCK_ELL_EFF as ELL_EFF,
+    PLANCK_ELL_MAX as ELL_MAX,
+    PLANCK_ELL_MIN as ELL_MIN,
 )
-ELL_MAX = np.array(
-    [12, 16, 21, 27, 35, 46, 60, 78, 102, 133, 173, 224, 292, 380, 494, 642, 835, 1085],
-    dtype=int,
-)
-ELL_EFF = 0.5 * (ELL_MIN + ELL_MAX - 1)
 
 
 def _bin_edges(

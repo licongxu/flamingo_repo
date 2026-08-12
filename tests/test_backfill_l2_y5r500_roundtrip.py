@@ -11,7 +11,7 @@ REPO = Path(__file__).resolve().parents[1]
 
 
 def test_validation_reader_round_trips_17_digit_soap_value(tmp_path):
-    script = REPO / "scripts/backfill_l2_y5r500.py"
+    script = REPO / "scripts/catalogue/backfill_l2_y5r500.py"
     spec = importlib.util.spec_from_file_location("backfill_l2_roundtrip_test", script)
     assert spec is not None and spec.loader is not None
     module = importlib.util.module_from_spec(spec)

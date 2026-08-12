@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 from getdist import MCSamples
 
-from scripts.summarize_masked_ps_chains import (
+from scripts.inference.summarize_masked_ps_chains import (
     REQUIRED_PARAMETERS,
     read_convergence,
     summarize_samples,

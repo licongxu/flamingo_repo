@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 from getdist import MCSamples
 
-from scripts.summarize_masked_ps_asz_only import summarize_asz_samples
+from scripts.inference.summarize_masked_ps_asz_only import summarize_asz_samples
 
 
 def test_asz_summary_reports_constraint_and_data_chi2():

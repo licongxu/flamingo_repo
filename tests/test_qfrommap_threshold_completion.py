@@ -22,7 +22,7 @@ def _load_script(name: str, filename: str):
 def test_l2_qgt6_uses_lightcone0_canonical_catalogue():
     module = _load_script(
         "l2_qgt6_qfrommap_test",
-        "compute_l2p8_m9_masked_ps_alpha_fixed_1p12.py",
+        "powerspectra/compute_l2p8_m9_masked_ps_alpha_fixed_1p12.py",
     )
     selection = resolve_q_selection("qfrommap")
 
@@ -39,7 +39,9 @@ def test_l2_qgt6_uses_lightcone0_canonical_catalogue():
 
 
 def test_l1_qfrommap_null_test_uses_corrected_catalogue_and_isolated_cache():
-    module = _load_script("null_test_qfrommap_test", "masking_radius_null_test.py")
+    module = _load_script(
+        "null_test_qfrommap_test", "powerspectra/masking_radius_null_test.py"
+    )
     selection = resolve_q_selection("qfrommap")
 
     catalogue_path = module.catalogue_path("L1_m9", selection)
@@ -55,7 +57,9 @@ def test_l1_qfrommap_null_test_uses_corrected_catalogue_and_isolated_cache():
 
 
 def test_legacy_null_test_cache_location_is_unchanged():
-    module = _load_script("null_test_legacy_path_test", "masking_radius_null_test.py")
+    module = _load_script(
+        "null_test_legacy_path_test", "powerspectra/masking_radius_null_test.py"
+    )
 
     assert module.point_path("L1_m9", 5.0, 4.0) == REPO / (
         "data_paper/masking_radius_null_test/L1_m9_qgt5_r4.npz"
@@ -63,7 +67,9 @@ def test_legacy_null_test_cache_location_is_unchanged():
 
 
 def test_null_test_plot_routes_qfrommap_products_without_overwriting_legacy():
-    module = _load_script("null_test_qfrommap_plot_test", "plot_masking_radius_null_test.py")
+    module = _load_script(
+        "null_test_qfrommap_plot_test", "figures/plot_masking_radius_null_test.py"
+    )
 
     assert module.selection_data_dir("qfrommap") == REPO / (
         "data_paper/masking_radius_null_test/qfrommap"
@@ -79,7 +85,7 @@ def test_null_test_plot_routes_qfrommap_products_without_overwriting_legacy():
 def test_incremental_multi_q_metadata_preserves_existing_cuts():
     module = _load_script(
         "multi_q_metadata_merge_test",
-        "compute_l1_m9_feedback_bandpowers.py",
+        "powerspectra/compute_l1_m9_feedback_bandpowers.py",
     )
     existing = {
         "q_cuts": [50.0, 20.0, 10.0, 5.0, 1.0],

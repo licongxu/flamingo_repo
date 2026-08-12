@@ -12,7 +12,7 @@ REPO = Path(__file__).resolve().parents[1]
 
 
 def _load_module():
-    path = REPO / "scripts/backfill_l2_y5r500.py"
+    path = REPO / "scripts/catalogue/backfill_l2_y5r500.py"
     spec = importlib.util.spec_from_file_location("backfill_l2_y5r500_test", path)
     assert spec is not None and spec.loader is not None
     module = importlib.util.module_from_spec(spec)

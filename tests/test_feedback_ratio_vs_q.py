@@ -9,7 +9,7 @@ import numpy as np
 import pytest
 
 REPO = Path(__file__).resolve().parents[1]
-SCRIPT = REPO / "scripts" / "plot_l1_m9_feedback_ratio_vs_q.py"
+SCRIPT = REPO / "scripts/figures/plot_l1_m9_feedback_ratio_vs_q.py"
 DATA = REPO / "data_paper" / "binned_bandpowers"
 DATA_FB = REPO / "data_paper" / "feedback_bandpower"
 TAG = "qfrommz_alpha_fixed_1p12"

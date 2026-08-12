@@ -3,7 +3,7 @@ from pathlib import Path
 
 import numpy as np
 
-from scripts.iterate_l1_m9_asz_covariance import build_asz_info, iterate
+from scripts.inference.iterate_l1_m9_asz_covariance import build_asz_info, iterate
 
 
 def test_asz_fit_varies_only_asz(tmp_path):

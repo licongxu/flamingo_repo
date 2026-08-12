@@ -9,7 +9,7 @@ REPO = Path(__file__).resolve().parents[1]
 
 
 def _load_module():
-    path = REPO / "scripts/postprocess_asz_alpha_fixed.py"
+    path = REPO / "scripts/inference/postprocess_asz_alpha_fixed.py"
     spec = importlib.util.spec_from_file_location("postprocess_asz_alpha_fixed", path)
     assert spec is not None and spec.loader is not None
     module = importlib.util.module_from_spec(spec)
