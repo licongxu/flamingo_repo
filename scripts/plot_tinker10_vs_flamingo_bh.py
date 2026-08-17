@@ -1,5 +1,9 @@
 """Compare Tinker10 b_h(M_500c) to public FLAMINGO L1_m9 DMO P_hm/P_mm.
 
+Everything here is M_500c. hmfast T10 evaluates sigma(M) at the input mass
+and only uses the mass definition for Tinker's Delta; it does not convert
+M_500c to M_200c. The 2-halo theory path uses the same HaloModel setup.
+
 Uses the van Daalen et al. (2026) resummation data product:
 b_i = <P_mh,i(k)/P_mm(k)>_{k low} / f_{M,i}  (their eq. 1, mass-unnormalised P_mh).
 
@@ -46,6 +50,8 @@ PAPER_RC = {
     "legend.fontsize": 9,
 }
 
+MASS_500C = MassDefinition(500, "critical")
+
 
 def _load_json_pk(path: Path) -> tuple[np.ndarray, np.ndarray]:
     data = json.loads(path.read_text())
@@ -66,32 +72,52 @@ def flamingo_bh(z: float) -> tuple[np.ndarray, np.ndarray]:
     return 10.0**logm, bh
 
 
-def tinker_bh(mass: np.ndarray, z: float) -> np.ndarray:
-    halo_model = HaloModel(
+def _halo_model(*, convert_masses: bool) -> HaloModel:
+    return HaloModel(
         cosmology=D3A_COSMOLOGY,
-        mass_definition=MassDefinition(500, "critical"),
-        convert_masses=True,
+        mass_definition=MASS_500C,
+        convert_masses=convert_masses,
         hm_consistency=False,
     )
+
+
+def tinker_bh(mass: np.ndarray, z: float, *, convert_masses: bool = True) -> np.ndarray:
+    halo_model = _halo_model(convert_masses=convert_masses)
+    mdef = halo_model.mass_definition
+    if mdef.delta != 500 or mdef.reference != "critical":
+        raise RuntimeError(f"T10 must be evaluated at M_500c, got {mdef.delta}{mdef.reference[0]}")
     return np.asarray(halo_model.halo_bias.halo_bias(halo_model, mass, np.array([z]))[:, 0])
 
 
 def main() -> Path:
     plt.rcParams.update(PAPER_RC)
-    fig, axes = plt.subplots(1, 3, figsize=(11.2, 3.8), sharey=True)
-    for ax, z in zip(axes, (0.0, 0.5, 1.0)):
+    fig, axes = plt.subplots(
+        2, 3, figsize=(11.2, 6.2), sharex=True, gridspec_kw={"height_ratios": [3.0, 1.4]}
+    )
+    for col, z in enumerate((0.0, 0.5, 1.0)):
         mass, b_fl = flamingo_bh(z)
-        b_t10 = tinker_bh(mass, z)
-        ax.loglog(mass, b_t10, color="0.15", lw=2.0, label=r"Tinker 2010")
-        ax.loglog(mass, b_fl, "o", color="#d95f02", ms=5, label=r"FLAMINGO L1\_m9 DMO")
+        b_t10 = tinker_bh(mass, z, convert_masses=True)
+        b_t10_noconv = tinker_bh(mass, z, convert_masses=False)
+        if not np.allclose(b_t10, b_t10_noconv, rtol=1e-10, atol=0.0):
+            raise RuntimeError("T10 changed under convert_masses; mass conversion leaked into bias")
+        ax = axes[0, col]
+        ax.loglog(mass, b_t10, color="0.15", lw=2.0, label=r"Tinker 2010 ($M_{500c}$)")
+        ax.loglog(mass, b_fl, "o", color="#d95f02", ms=5, label=r"FLAMINGO L1\_m9 DMO ($M_{500c}$)")
         ax.set_title(rf"$z={z:g}$")
-        ax.set_xlabel(r"$M_{500c}\,[M_\odot]$")
         ax.grid(True, which="both", alpha=0.25)
+        ratio = b_fl / b_t10
+        axr = axes[1, col]
+        axr.axhline(1.0, color="0.15", lw=1.0)
+        axr.semilogx(mass, ratio, "o", color="#d95f02", ms=5)
+        axr.set_xlabel(r"$M_{500c}\,[M_\odot]$")
+        axr.set_ylim(0.75, 1.15)
+        axr.grid(True, which="both", alpha=0.25)
         print(f"z={z:g}")
         for m, bf, bt in zip(mass, b_fl, b_t10):
-            print(f"  logM={np.log10(m):5.2f}  b_FL={bf:6.3f}  b_T10={bt:6.3f}  ratio={bf/bt:5.3f}")
-    axes[0].set_ylabel(r"$b_h(M_{500c})$")
-    axes[2].legend(frameon=False, loc="upper left")
+            print(f"  logM500c={np.log10(m):5.2f}  b_FL={bf:6.3f}  b_T10={bt:6.3f}  ratio={bf/bt:5.3f}")
+    axes[0, 0].set_ylabel(r"$b_h(M_{500c})$")
+    axes[1, 0].set_ylabel(r"FLAMINGO / T10")
+    axes[0, 2].legend(frameon=False, loc="upper left")
     fig.tight_layout()
     FIGURES.mkdir(parents=True, exist_ok=True)
     stem = FIGURES / "bh_tinker10_vs_flamingo_l1_m9_dmo"

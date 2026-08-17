@@ -23,11 +23,16 @@ def _load_script():
 
 def test_catalogue_path_selects_qfrommap():
     module = _load_script()
+    from flamingo.powerspectra.q_selection import resolve_q_selection
 
-    assert module.catalogue_path("Jet").name == (
+    selection = resolve_q_selection("qfrommap")
+    path = module.catalogue_path("Jet")
+
+    assert path.name == (
         "halo_catalogue_M500c_5e13_zlt3_Jet_yang26rot_qfrommap.csv"
     )
-    assert module.Q_COLUMN == "q_from_aperture"
+    assert path.parent == selection.l1_catalogue_dir
+    assert module.Q_COLUMN == selection.q_column
 
 
 def test_script_loads_without_repository_on_python_path(tmp_path):

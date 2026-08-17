@@ -15,16 +15,19 @@ import pandas as pd
 
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO))
+sys.path.insert(0, str(REPO / "src"))
 
+from flamingo.powerspectra.q_selection import resolve_q_selection
 from paper_results.config import (
-    CAT_DIR,
     COLORS,
     FIGURES_FEEDBACK,
     LABELS,
     VARIANTS,
 )
 
-Q_COLUMN = "q_from_aperture"
+_QFROMMAP = resolve_q_selection("qfrommap")
+CAT_DIR = _QFROMMAP.l1_catalogue_dir
+Q_COLUMN = _QFROMMAP.q_column
 Z_EDGES = np.linspace(0.005, 1.0, 11)
 Q_EDGES = np.geomspace(5.0, 40.0, 6)
 
