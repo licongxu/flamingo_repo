@@ -11,6 +11,7 @@ from __future__ import annotations
 import os
 import sys
 import time
+from functools import lru_cache
 from pathlib import Path
 
 os.environ.setdefault("CUDA_VISIBLE_DEVICES", "0")
@@ -39,6 +40,7 @@ CAT_MASK = CAT_DIR / "halo_catalogue_M500c_5e13_zlt3_L1_m9_yang26rot_qfrommap.cs
 OUT_TAG = "m1e13"
 DATA = REPO / "data_paper" / "binned_bandpowers"
 HYDRO_MAP = Path("/rds/rds-lxu/flamingo/L1_m9/maps/y_unlensed_L1_m9_lc0_nside4096.fits")
+MAP_DIR = HYDRO_MAP.parent
 HERE = Path(__file__).resolve().parent
 
 NSIDE = 1024
@@ -53,9 +55,15 @@ R_MULT = 4.0
 APOSIZE_DEG = 0.25
 LMAX = int(ELL_MAX.max()) + 500
 Q_CUTS = (("qgt50", 50.0), ("qgt20", 20.0), ("qgt10", 10.0), ("qgt5", 5.0))
+Q_PDF_CUT = 5.0
 BATCH = 5000
 N_PER_HALO = 30_000
 E_PER_HALO = 64
+# 5e13 has no separate paint catalogue; same halos as the qfrommap mask file.
+PAINT_JOBS = (
+    ("5e13", CAT_MASK, r"painted $M>5\times 10^{13}$", "#1f77b4"),
+    ("m1e13", CAT_FILE, r"painted $M>10^{13}$", "#d95f02"),
+)
 
 
 def healpy_to_jxpaint(theta, phi):
@@ -125,7 +133,7 @@ def load_catalogue(path=CAT_FILE, need_q=False):
     return out
 
 
-def paint_map(cat):
+def paint_map(cat, ckpt=None):
     FlatLCDM, CustomGNFWPressureProfile, load_beamed_table, paint = _jxpaint()
     cosmo = FlatLCDM(h=H0 / 100.0, Omega_m=OMEGA_M)
     profile = CustomGNFWPressureProfile(
@@ -136,7 +144,13 @@ def paint_map(cat):
     print(f"  F(0)={F0:.4f}  y0_true = y0_param * B^(1/3) / F(0)  BATCH={BATCH}", flush=True)
     st = load_beamed_table()
     n = cat["M"].size
+    i_start = 0
     ymap = np.zeros(hp.nside2npix(NSIDE), dtype=np.float64)
+    if ckpt is not None and Path(ckpt).exists():
+        data = np.load(ckpt)
+        ymap = np.asarray(data["ymap"], dtype=np.float64)
+        i_start = int(data["i1"])
+        print(f"  resume {ckpt} from {i_start:,}/{n:,}", flush=True)
     t0 = time.time()
 
     def paint_slice(i0, i1, batch):
@@ -161,7 +175,14 @@ def paint_map(cat):
             n_per_halo=N_PER_HALO,
         )
 
-    for i0 in range(0, n, BATCH):
+    def save_ckpt(i1):
+        if ckpt is None:
+            return
+        # ponytail: GPU abort is uncatchable; dump ymap so a death only costs one print cadence.
+        np.savez(ckpt, ymap=ymap, i1=np.int64(i1))
+        print(f"  ckpt {ckpt} i1={i1:,}", flush=True)
+
+    for i0 in range(i_start, n, BATCH):
         i1 = min(i0 + BATCH, n)
         try:
             ymap += paint_slice(i0, i1, BATCH)
@@ -175,12 +196,14 @@ def paint_map(cat):
             for j0 in range(i0, i1, 2000):
                 j1 = min(j0 + 2000, i1)
                 ymap += paint_slice(j0, j1, 2000)
-        if i0 == 0 or (i0 // BATCH) % 50 == 0:
+        if i0 == i_start or (i0 // BATCH) % 50 == 0:
             print(
                 f"  painted {i1:,}/{n:,} ({time.time() - t0:.0f}s) "
                 f"z=[{cat['z'][i0:i1].min():.3f},{cat['z'][i0:i1].max():.3f}]",
                 flush=True,
             )
+            save_ckpt(i1)
+    save_ckpt(n)
     print(f"  done in {time.time() - t0:.0f}s  max={ymap.max():.4e}  mean={ymap.mean():.4e}", flush=True)
     return ymap
 
@@ -243,35 +266,136 @@ def deconvolve_beam(m, fwhm_arcmin=FWHM_ARCMIN, lmax=LMAX):
     return hp.alm2map(hp.almxfl(alm, 1.0 / np.maximum(bl, 1e-2)), nside=hp.get_nside(m), lmax=lmax)
 
 
+def painted_map_path(tag):
+    """Durable Nside=1024 FITS, next to the hydro y map. Repo copy is extra."""
+    return MAP_DIR / f"y_painted_L1_m9_{tag}_d3a_asz_nside1024.fits"
+
+
+def painted_map_repo_path(tag):
+    return HERE / f"l1_m9_{tag}_d3a_asz_fullsky_nside1024.fits"
+
+
+def write_painted_map(tag, ymap):
+    ymap = np.asarray(ymap, dtype=np.float64)
+    nside = hp.get_nside(ymap)
+    if nside != NSIDE:
+        raise RuntimeError(f"painted nside={nside} != {NSIDE}")
+    paths = (painted_map_path(tag), painted_map_repo_path(tag))
+    for path in paths:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        hp.write_map(str(path), ymap, dtype=np.float64, overwrite=True)
+        print("wrote", path, f"nside={nside}", flush=True)
+    return paths[0]
+
+
+@lru_cache(maxsize=1)
+def load_hydro_nside():
+    return hp.ud_grade(hp.read_map(str(HYDRO_MAP), dtype=np.float64), nside_out=NSIDE)
+
+
+@lru_cache(maxsize=4)
+def qfrommap_binary_mask(cut=Q_PDF_CUT):
+    """Binary qfrommap holes, same discs as the painted PS (no apodization)."""
+    cat = load_catalogue(CAT_MASK, need_q=True)
+    keep = cat["q"] > float(cut)
+    floor = np.deg2rad(2.0 * FWHM_ARCMIN / 60.0)
+    radius = np.maximum(R_MULT * cat["t500"][keep], floor)
+    print(f"  qfrommap q>{cut:g}: {int(keep.sum()):,} holes", flush=True)
+    return binary_disc_mask(NSIDE, cat["theta"][keep], cat["phi"][keep], radius)
+
+
+def _pdf_series(painted):
+    hydro = load_hydro_nside()
+    mask = qfrommap_binary_mask(Q_PDF_CUT)
+    keep = mask > 0.5
+    qlab = rf"$q>{Q_PDF_CUT:g}$ qfrommap"
+    series = [
+        (hydro, r"L1_m9 hydro", "k", "-"),
+        (hydro[keep], rf"L1_m9 hydro {qlab}", "k", "--"),
+    ]
+    labels = {tag: lab for tag, _, lab, _ in PAINT_JOBS}
+    colors = {tag: color for tag, _, _, color in PAINT_JOBS}
+    for tag, ymap in painted.items():
+        arr = deconvolve_beam(ymap)
+        lab = labels.get(tag, f"painted {tag}")
+        color = colors.get(tag, "#1b9e77")
+        series.append((arr, lab, color, "-"))
+        series.append((arr[keep], rf"{lab} {qlab}", color, "--"))
+    return series
+
+
 def plot_one_point_pdf(ymap):
-    """Pixel-y PDF: beam-deconvolved painted map vs unbeamed hydro, same nside."""
+    """Pixel-y PDF before/after qfrommap masking: painted vs unbeamed hydro."""
     import matplotlib.pyplot as plt
 
-    painted = deconvolve_beam(ymap)
-    hydro = hp.ud_grade(hp.read_map(str(HYDRO_MAP), dtype=np.float64), nside_out=NSIDE)
-    lo = float(min(painted.min(), hydro.min(), 0.0))
-    hi = float(np.percentile(np.concatenate([painted, hydro]), 99.9))
+    painted = ymap if isinstance(ymap, dict) else {OUT_TAG: ymap}
+    series = _pdf_series(painted)
+    stacked = np.concatenate([np.asarray(a, dtype=np.float64) for a, *_ in series])
+    lo = float(min(stacked.min(), 0.0))
+    hi = float(np.percentile(stacked, 99.9))
     bins = np.linspace(lo, hi, 80)
-    fig, ax = plt.subplots(figsize=(6.2, 4.8))
-    for arr, label, ls in (
-        (painted, r"painted (beam-deconvolved)", "-"),
-        (hydro, r"L1_m9 hydro ($N_{\mathrm{side}}=1024$)", "--"),
-    ):
-        ax.hist(arr, bins=bins, density=True, histtype="step", lw=1.8, ls=ls, label=label)
+    pos = stacked[stacked > 0.0]
+    log_lo = float(max(np.percentile(pos, 0.1), 1e-9)) if pos.size else 1e-9
+    log_hi = float(np.percentile(pos, 99.99)) if pos.size else 1e-5
+    log_bins = np.logspace(np.log10(log_lo), np.log10(log_hi), 80)
+
+    fig, axes = plt.subplots(1, 2, figsize=(10.6, 4.6))
+    ax, axlog = axes
+    for arr, label, color, ls in series:
+        ax.hist(arr, bins=bins, density=True, histtype="step", lw=1.6, ls=ls, color=color, label=label)
+        axlog.hist(
+            np.asarray(arr)[np.asarray(arr) > 0.0],
+            bins=log_bins,
+            density=True,
+            histtype="step",
+            lw=1.6,
+            ls=ls,
+            color=color,
+        )
     ax.set_xlabel(r"$y$")
     ax.set_ylabel(r"$P(y)$")
-    ax.legend(frameon=False)
+    ax.legend(frameon=False, fontsize=8)
+    axlog.set_xlabel(r"$y$")
+    axlog.set_xscale("log")
+    axlog.set_yscale("log")
+    axlog.set_ylabel(r"$P(y)$")
     fig.tight_layout()
+    tag = "qfrommap" if len(painted) != 1 else f"{next(iter(painted))}_qfrommap"
     for suffix in ("png", "pdf"):
-        out = HERE / f"painted_vs_hydro_onepoint_pdf_{OUT_TAG}.{suffix}"
+        out = HERE / f"painted_vs_hydro_onepoint_pdf_{tag}.{suffix}"
         fig.savefig(out, dpi=300, bbox_inches="tight")
         print("wrote", out, flush=True)
     plt.close(fig)
 
 
+def ensure_painted(tag, cat_file):
+    for path in (painted_map_path(tag), painted_map_repo_path(tag)):
+        if path.exists():
+            print(f"  load {path}", flush=True)
+            return hp.read_map(str(path), dtype=np.float64)
+    print(f"=== paint {tag} ===", flush=True)
+    ckpt = painted_map_repo_path(tag).with_name(f"l1_m9_{tag}_paint_ckpt.npz")
+    ymap = paint_map(load_catalogue(cat_file, need_q=False), ckpt=ckpt)
+    write_painted_map(tag, ymap)
+    Path(ckpt).unlink(missing_ok=True)
+    return ymap
+
+
+def pdf_main():
+    """Hydro PDF immediately; paint missing 5e13 then 1e13 maps and replot."""
+    HERE.mkdir(parents=True, exist_ok=True)
+    painted = {}
+    print("=== 1-point PDF (hydro, qfrommap) ===", flush=True)
+    plot_one_point_pdf(painted)
+    for tag, cat_file, *_ in PAINT_JOBS:
+        painted[tag] = ensure_painted(tag, cat_file)
+        print(f"=== 1-point PDF (+{tag}) ===", flush=True)
+        plot_one_point_pdf(painted)
+    print("=== done ===", flush=True)
+
+
 def main():
     HERE.mkdir(parents=True, exist_ok=True)
-    map_path = HERE / f"l1_m9_{OUT_TAG}_d3a_asz_fullsky_nside1024.fits"
     print("=== catalogue ===", flush=True)
     cat = load_catalogue(CAT_FILE, need_q=False)
     mask_cat = load_catalogue(CAT_MASK, need_q=True)
@@ -290,8 +414,7 @@ def main():
 
     print("=== paint ===", flush=True)
     ymap = paint_map(cat)
-    hp.write_map(str(map_path), ymap, dtype=np.float64, overwrite=True)
-    print("wrote", map_path, flush=True)
+    write_painted_map(OUT_TAG, ymap)
 
     import pymaster as nmt
 
@@ -333,4 +456,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    if "--pdf" in sys.argv:
+        pdf_main()
+    else:
+        main()

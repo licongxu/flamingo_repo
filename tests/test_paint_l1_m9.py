@@ -54,6 +54,24 @@ def test_m1e13_outputs_do_not_clobber_cnc():
     assert "qfrommap" in mod.CAT_MASK.name
 
 
+def test_pdf_jobs_use_qfrommap_mask_and_both_mass_cuts():
+    assert mod.Q_PDF_CUT == 5.0
+    assert "qfrommap" in mod.CAT_MASK.name
+    tags = [job[0] for job in mod.PAINT_JOBS]
+    assert tags == ["5e13", "m1e13"]
+    assert mod.PAINT_JOBS[0][1] == mod.CAT_MASK
+    assert mod.PAINT_JOBS[1][1] == mod.CAT_FILE
+
+
+def test_painted_map_paths_are_nside1024_fits():
+    p = mod.painted_map_path("m1e13")
+    r = mod.painted_map_repo_path("m1e13")
+    assert p.name == "y_painted_L1_m9_m1e13_d3a_asz_nside1024.fits"
+    assert p.parent == mod.HYDRO_MAP.parent
+    assert r.name.endswith("nside1024.fits")
+    assert r.parent == mod.HERE
+
+
 def test_bin_dl_18_no_pixwin_mean():
     ell = np.arange(mod.LMAX + 1, dtype=float)
     cl = np.full(ell.shape, 2.0 * np.pi / np.maximum(ell * (ell + 1.0), 1.0))
