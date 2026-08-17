@@ -1,9 +1,4 @@
-"""L1_m9 Y_5R500 inferred vs SOAP truth.
-
-Spherical SOAP Y_5R500 is compared to (1) a cylindrical Compton-y map
-aperture at 5 R_500 converted to spherical with the custom-GNFW shape,
-and (2) the spherical integral of the full-sky tSZ best-fit parametric
-GNFW (A_SZ and P0).
+"""L1_m9 map Y^cyl = int y dOmega vs official SOAP spherical Y.
 
     python scripts/plot_l1_m9_y5r500_inferred_vs_truth.py
 """
@@ -29,9 +24,7 @@ sys.path.insert(0, str(REPO))
 sys.path.insert(0, str(REPO / "src"))
 
 from flamingo.aperture_snr import aperture_y500  # noqa: E402
-from flamingo.catalogue.frame import efunc  # noqa: E402
-from flamingo.inference.masked_ps import B_HYDROSTATIC, GNFW_SHAPE  # noqa: E402
-from scripts.iterate_l1_m9_asz_covariance import FIXED  # noqa: E402
+from flamingo.inference.masked_ps import GNFW_SHAPE  # noqa: E402
 
 CATALOGUE = Path(
     "/rds/rds-lxu/flamingo/L1_m9/catalogues/"
@@ -39,14 +32,7 @@ CATALOGUE = Path(
 )
 YMAP = Path("/rds/rds-lxu/flamingo/L1_m9/maps/y_unlensed_L1_m9_lc0_nside4096.fits")
 FIGURES = REPO / "figures" / "diagnostics"
-# Full-sky A_SZ-only best-likelihood sample (paint_l1_m9 / asz_only/fullsky).
-A_SZ = -4.1075214
-ALPHA_SZ = float(FIXED["alpha_SZ"])
-B = float(B_HYDROSTATIC)
-H0 = float(FIXED["H0"])
-X_OUT = 5.0
 Q_MIN = 5.0
-I_LOS_A10 = 0.470502095
 ARCMIN_PER_RAD = 180.0 * 60.0 / np.pi
 PAPER_RC = {
     "text.usetex": True,
@@ -63,8 +49,12 @@ def gnfw_p(x: np.ndarray, *, P0: float, c500: float, gamma: float, alpha: float,
     return P0 * cx ** (-gamma) * (1.0 + cx ** alpha) ** (-(beta - gamma) / alpha)
 
 
-def sph_over_cyl(x_out: float = X_OUT, n: int = 4000, s_max: float = 30.0, **shape) -> float:
-    """Y_sph(<x_out) / Y_cyl(<x_out) for an isolated GNFW; amplitude cancels."""
+def sph_over_cyl(x_out: float, n: int = 4000, s_max: float = 30.0, **shape) -> float:
+    """cyl→sph factor Y_sph(<x_out)/Y_cyl(<x_out) for an isolated GNFW.
+
+    Amplitude cancels. The cylinder uses an infinite line of sight, so it
+    includes the r > x_out caps that the sphere drops.
+    """
     shape = {**GNFW_SHAPE, **shape, "P0": 1.0}
     b = np.linspace(0.0, x_out, n)
     s = np.linspace(0.0, s_max, n)
@@ -77,84 +67,83 @@ def sph_over_cyl(x_out: float = X_OUT, n: int = 4000, s_max: float = 30.0, **sha
     return float(i_sph / i_cyl)
 
 
-def i_sph_shape(x_out: float = X_OUT, n: int = 8000) -> float:
-    x = np.linspace(0.0, x_out, n)
-    return float(np.trapezoid(x**2 * gnfw_p(x, **{**GNFW_SHAPE, "P0": 1.0}), x))
-
-
-def y0_parametric(m: np.ndarray, z: np.ndarray) -> np.ndarray:
-    h = H0 / 100.0
-    m_tilde = (np.asarray(m, dtype=float) * h / B) / (0.7 * 3e14)
-    return (10.0 ** A_SZ) * m_tilde ** ALPHA_SZ * efunc(z) ** 2 * (h / 0.7) ** (-0.5)
-
-
-def model_y5r500_mpc2(m: np.ndarray, z: np.ndarray, r500: np.ndarray) -> np.ndarray:
-    """Spherical Y(<5 R_500) of the full-sky parametric GNFW, in Mpc^2."""
-    return y0_parametric(m, z) * 2.0 * np.pi * np.asarray(r500, dtype=float) ** 2 * i_sph_shape() / I_LOS_A10
-
-
 def y_arcmin2_to_mpc2(y_arcmin2: np.ndarray, r500: np.ndarray, theta500_arcmin: np.ndarray) -> np.ndarray:
+    """Convert ∫ y dΩ from arcmin² to Mpc² with D_A = R_500 / theta_500."""
     return np.asarray(y_arcmin2, dtype=float) * (np.asarray(r500, dtype=float) / np.asarray(theta500_arcmin, dtype=float)) ** 2
 
 
 def load_catalogue(path: Path = CATALOGUE) -> pd.DataFrame:
     cols = [
-        "z",
-        "M_500c_Msun",
         "R_500c_Mpc",
         "theta_rot_rad",
         "phi_rot_rad",
         "theta_500_arcmin",
+        "Y_500c_Mpc2",
         "Y_5R500c_Mpc2",
         "q_from_aperture",
     ]
     frame = pd.read_csv(path, comment="#", usecols=cols)
-    if not np.all(np.isfinite(frame["Y_5R500c_Mpc2"])) or not np.all(frame["Y_5R500c_Mpc2"] > 0.0):
-        raise ValueError("SOAP Y_5R500c must be finite and positive")
+    for column in ("Y_500c_Mpc2", "Y_5R500c_Mpc2"):
+        values = frame[column].to_numpy(np.float64)
+        if not np.all(np.isfinite(values)) or not np.all(values > 0.0):
+            raise ValueError(f"SOAP {column} must be finite and positive")
     return frame
 
 
-def map_y5r500_cyl_arcmin2(frame: pd.DataFrame, ymap: np.ndarray) -> np.ndarray:
-    radius = 5.0 * frame["theta_500_arcmin"].to_numpy(np.float64) / ARCMIN_PER_RAD
-    y500, _ = aperture_y500(
+def inferred_cyl_mpc2(frame: pd.DataFrame, ymap: np.ndarray, r_mult: float) -> np.ndarray:
+    """Cylindrical Y = ∫_{θ < r_mult θ_500} y dΩ, in Mpc²."""
+    radius = r_mult * frame["theta_500_arcmin"].to_numpy(np.float64) / ARCMIN_PER_RAD
+    y_arcmin2, _ = aperture_y500(
         ymap,
         frame["theta_rot_rad"].to_numpy(np.float64),
         frame["phi_rot_rad"].to_numpy(np.float64),
         radius,
     )
-    return y500
+    return y_arcmin2_to_mpc2(
+        y_arcmin2,
+        frame["R_500c_Mpc"].to_numpy(np.float64),
+        frame["theta_500_arcmin"].to_numpy(np.float64),
+    )
 
 
-def _panel(ax, truth, inferred, label):
+def inferred_sph_mpc2(frame: pd.DataFrame, ymap: np.ndarray, r_mult: float) -> np.ndarray:
+    """Map Y^cyl converted to spherical with the GNFW cyl→sph factor."""
+    return sph_over_cyl(r_mult) * inferred_cyl_mpc2(frame, ymap, r_mult)
+
+
+def _series(ax, truth, inferred, color, label):
     ok = np.isfinite(truth) & np.isfinite(inferred) & (truth > 0.0) & (inferred > 0.0)
     x, y = truth[ok], inferred[ok]
-    ax.plot(x, y, ".", ms=2.4, alpha=0.4, color="#1b9e77", rasterized=True, zorder=2)
-    lo = min(x.min(), y.min())
-    hi = max(x.max(), y.max())
+    ax.plot(
+        x,
+        y,
+        ".",
+        ms=2.4,
+        alpha=0.45,
+        color=color,
+        rasterized=True,
+        zorder=2,
+        label=rf"{label}, median ${np.median(y / x):.2f}$",
+    )
+    return x, y
+
+
+def build_figure(truth_500, inf_500, truth_5r, inf_5r) -> plt.Figure:
+    plt.rcParams.update(PAPER_RC)
+    fig, ax = plt.subplots(figsize=(6.4, 6.0), layout="constrained")
+    x500, y500 = _series(ax, truth_500, inf_500, "#1b9e77", rf"$Y_{{500c}}$, $f={sph_over_cyl(1.0):.3f}$")
+    x5, y5 = _series(ax, truth_5r, inf_5r, "#d95f02", rf"$Y_{{5R_{{500}}}}$, $f={sph_over_cyl(5.0):.3f}$")
+    lo = min(x500.min(), y500.min(), x5.min(), y5.min())
+    hi = max(x500.max(), y500.max(), x5.max(), y5.max())
     ax.plot([lo, hi], [lo, hi], color="0.2", lw=1.0, zorder=3)
     ax.set_xscale("log")
     ax.set_yscale("log")
     ax.set_xlim(lo, hi)
     ax.set_ylim(lo, hi)
     ax.set_aspect("equal", adjustable="box")
-    ax.text(0.04, 0.96, label, transform=ax.transAxes, va="top")
-    ax.text(
-        0.04,
-        0.88,
-        rf"median ratio ${np.median(y / x):.2f}$",
-        transform=ax.transAxes,
-        va="top",
-    )
-
-
-def build_figure(truth, y_map, y_model) -> plt.Figure:
-    plt.rcParams.update(PAPER_RC)
-    fig, axes = plt.subplots(1, 2, figsize=(10.4, 4.8), sharex=True, sharey=True, layout="constrained")
-    _panel(axes[0], truth, y_map, rf"map $Y_{{\rm cyl}}\to Y_{{\rm sph}}$, $q>{Q_MIN:.0f}$")
-    _panel(axes[1], truth, y_model, rf"GNFW $A_{{\rm SZ}}={A_SZ:.4f}$, $q>{Q_MIN:.0f}$")
-    axes[0].set_xlabel(r"SOAP $Y_{5R_{500}}^{\rm sph}\,[{\rm Mpc}^{2}]$")
-    axes[1].set_xlabel(r"SOAP $Y_{5R_{500}}^{\rm sph}\,[{\rm Mpc}^{2}]$")
-    axes[0].set_ylabel(r"inferred $Y_{5R_{500}}\,[{\rm Mpc}^{2}]$")
+    ax.set_xlabel(r"SOAP $Y^{\rm sph}\,[{\rm Mpc}^{2}]$")
+    ax.set_ylabel(r"map $Y^{\rm sph}=f_{\rm cyl\to sph}\,Y^{\rm cyl}\,[{\rm Mpc}^{2}]$")
+    ax.legend(loc="upper left", frameon=False, markerscale=4)
     return fig
 
 
@@ -173,26 +162,26 @@ def main() -> Path:
     print("loading catalogue", CATALOGUE, flush=True)
     frame = load_catalogue()
     frame = frame.loc[frame["q_from_aperture"].to_numpy(np.float64) > Q_MIN].copy()
-    factor = sph_over_cyl()
-    print(f"GNFW sph/cyl at 5 R500 = {factor:.5f}; N(q>{Q_MIN:g})={len(frame):,}", flush=True)
-    y_model = model_y5r500_mpc2(
-        frame["M_500c_Msun"].to_numpy(np.float64),
-        frame["z"].to_numpy(np.float64),
-        frame["R_500c_Mpc"].to_numpy(np.float64),
+    print(
+        f"cyl→sph  R500={sph_over_cyl(1.0):.5f}  5R500={sph_over_cyl(5.0):.5f}; "
+        f"N(q>{Q_MIN:g})={len(frame):,}",
+        flush=True,
     )
     print("reading y map", YMAP, flush=True)
     ymap = np.asarray(hp.read_map(YMAP, dtype=np.float32), dtype=np.float32)
     ymap -= float(np.mean(ymap, dtype=np.float64))
-    print(f"aperture 5 R500 for {len(frame):,} mean-subtracted map pixels", flush=True)
-    y_cyl = map_y5r500_cyl_arcmin2(frame, ymap)
-    y_map = factor * y_arcmin2_to_mpc2(
-        y_cyl,
-        frame["R_500c_Mpc"].to_numpy(np.float64),
-        frame["theta_500_arcmin"].to_numpy(np.float64),
-    )
-    truth = frame["Y_5R500c_Mpc2"].to_numpy(np.float64)
+    inf_500 = inferred_sph_mpc2(frame, ymap, 1.0)
+    inf_5r = inferred_sph_mpc2(frame, ymap, 5.0)
     stem = FIGURES / "l1_m9_y5r500_inferred_vs_truth"
-    _save(build_figure(truth, y_map, y_model), stem)
+    _save(
+        build_figure(
+            frame["Y_500c_Mpc2"].to_numpy(np.float64),
+            inf_500,
+            frame["Y_5R500c_Mpc2"].to_numpy(np.float64),
+            inf_5r,
+        ),
+        stem,
+    )
     return stem.with_suffix(".pdf")
 
 
