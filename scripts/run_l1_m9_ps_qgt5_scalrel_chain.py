@@ -1,4 +1,4 @@
-"""q>5 masked tSZ chain with the CNC scalrel priors, D3A cosmology fixed."""
+"""Masked tSZ chains with the CNC scalrel priors, D3A cosmology fixed."""
 from __future__ import annotations
 
 import argparse
@@ -17,10 +17,17 @@ from scripts.run_l1_m9_cnc_qgt5_chain import (  # noqa: E402
     HMFAST_SRC,
     parameters as cnc_parameters,
 )
-from scripts.run_masked_ps_chains import data_files, load_converged_artifacts  # noqa: E402
+from scripts.run_masked_ps_chains import (  # noqa: E402
+    CASES,
+    data_files,
+    load_converged_artifacts,
+)
 
-CHAINS = REPO / "chains" / "l1_m9_qfrommap_ps_qgt5_scalrel"
+CHAINS_ROOT = REPO / "chains" / "l1_m9_qfrommap_ps_scalrel"
+# q>5 chain path kept as CHAINS so existing MAP/triangle scripts keep working.
+CHAINS = CHAINS_ROOT / "qgt5"
 CASE = "qgt5"
+DEFAULT_CASES = ("fullsky", "qgt50", "qgt20", "qgt10")
 THEORY_PARAMS = (
     "H0",
     "omega_cdm",
@@ -33,6 +40,10 @@ THEORY_PARAMS = (
     "alpha_SZ",
     "sigma_lnY",
 )
+
+
+def chain_dir(case: str) -> Path:
+    return CHAINS_ROOT / case
 
 
 def parameters() -> dict:
@@ -50,19 +61,22 @@ def _validate_covariance_point(artifacts: dict) -> None:
 
 
 def build_info(
+    case: str = CASE,
     *,
     artifacts: dict | None = None,
     rminus1: float = 0.01,
 ) -> dict:
-    """q>5 bandpowers + the same covariance used by the A_SZ-only PS chains."""
+    """One masking case, with the same covariance used by the A_SZ-only PS chains."""
+    if case not in CASES:
+        raise ValueError(f"unknown case {case!r}; expected one of {tuple(CASES)}")
     artifacts = load_converged_artifacts() if artifacts is None else artifacts
     _validate_covariance_point(artifacts)
-    data, covariance = data_files(CASE, artifacts["covariance_paths"])
+    data, covariance = data_files(case, artifacts["covariance_paths"])
     for path in (data, covariance):
         if not Path(path).is_file():
             raise FileNotFoundError(path)
     return {
-        "output": str(CHAINS / "chain"),
+        "output": str(chain_dir(case) / "chain"),
         "likelihood": {
             "flamingo.inference.masked_ps.MaskedBandPowerLikelihood": {
                 "data_file": str(data),
@@ -71,7 +85,7 @@ def build_info(
             }
         },
         "theory": {
-            "flamingo.inference.masked_ps.MaskedTSZTheory": {"q_cat": 5.0}
+            "flamingo.inference.masked_ps.MaskedTSZTheory": {"q_cat": CASES[case]}
         },
         "params": parameters(),
         "sampler": {
@@ -104,6 +118,7 @@ def _prepare_runtime() -> None:
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--case", action="append", choices=tuple(CASES))
     parser.add_argument("--Rminus1-stop", type=float, default=0.01)
     parser.add_argument("--dry-run", action="store_true")
     return parser.parse_args(argv)
@@ -111,18 +126,24 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 
 def main(argv: list[str] | None = None) -> None:
     args = parse_args(argv)
+    selected = tuple(args.case or DEFAULT_CASES)
     artifacts = load_converged_artifacts()
-    info = build_info(artifacts=artifacts, rminus1=args.Rminus1_stop)
+    infos = {
+        case: build_info(case, artifacts=artifacts, rminus1=args.Rminus1_stop)
+        for case in selected
+    }
     if args.dry_run:
         import json
 
-        print(json.dumps(info, indent=2, sort_keys=True))
+        print(json.dumps({case: info["output"] for case, info in infos.items()}, indent=2))
         return
     _prepare_runtime()
-    CHAINS.mkdir(parents=True, exist_ok=True)
     from cobaya.run import run
 
-    run(info)
+    for case, info in infos.items():
+        print(f"\n=== {case} (q_cat={CASES[case]}) ===", flush=True)
+        chain_dir(case).mkdir(parents=True, exist_ok=True)
+        run(info)
 
 
 if __name__ == "__main__":
