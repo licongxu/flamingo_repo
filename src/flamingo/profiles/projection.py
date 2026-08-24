@@ -58,3 +58,26 @@ def projected_shape(
     # so the returned shape is exactly unity at the centre.
     central = jnp.trapezoid(p_func(s), s)
     return los / central
+
+
+def y500_normalized_projected(
+    b: jnp.ndarray,
+    *,
+    p_func: Callable[[jnp.ndarray], jnp.ndarray] = gnfw,
+    s_max: float = 30.0,
+    n_s: int = 4000,
+    n_aperture: int = 2000,
+) -> jnp.ndarray:
+    """Cylindrical ``y(b)`` divided by the aperture mean inside ``R_500``.
+
+    The denominator is ``Y_{500}^{\\rm cyl}/(\\pi \\theta_{500}^2)``, i.e.
+    ``2 \\int_0^1 x\\, y^{\\rm cyl}(x)\\, dx``. This is the map-stack
+    normalisation: azimuthally averaged ``y(\\theta)`` over the same factor
+    measured in an aperture of radius ``\\theta_{500}``. A spherical
+    ``p(r)/\\langle p\\rangle_{r<R_{500}}`` curve does not match that estimator.
+    """
+    b = jnp.atleast_1d(jnp.asarray(b, dtype=float))
+    y = projected_shape(b, p_func=p_func, s_max=s_max, n_s=n_s)
+    x = jnp.linspace(0.0, 1.0, n_aperture)
+    y_in = projected_shape(x, p_func=p_func, s_max=s_max, n_s=n_s)
+    return y / (2.0 * jnp.trapezoid(x * y_in, x))

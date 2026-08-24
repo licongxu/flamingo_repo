@@ -25,9 +25,10 @@ sys.path.insert(0, str(REPO / "src"))
 
 from flamingo.aperture_snr import aperture_y500  # noqa: E402
 from flamingo.inference.masked_ps import GNFW_SHAPE  # noqa: E402
+from flamingo.powerspectra.q_selection import resolve_q_selection  # noqa: E402
 
-CATALOGUE = Path(
-    "/rds/rds-lxu/flamingo/L1_m9/catalogues/"
+_QFROMMAP = resolve_q_selection("qfrommap")
+CATALOGUE = _QFROMMAP.l1_catalogue_dir / (
     "halo_catalogue_M500c_5e13_zlt3_L1_m9_yang26rot_qfrommap.csv"
 )
 YMAP = Path("/rds/rds-lxu/flamingo/L1_m9/maps/y_unlensed_L1_m9_lc0_nside4096.fits")
@@ -142,7 +143,7 @@ def build_figure(truth_500, inf_500, truth_5r, inf_5r) -> plt.Figure:
     ax.set_ylim(lo, hi)
     ax.set_aspect("equal", adjustable="box")
     ax.set_xlabel(r"SOAP $Y^{\rm sph}\,[{\rm Mpc}^{2}]$")
-    ax.set_ylabel(r"map $Y^{\rm sph}=f_{\rm cyl\to sph}\,Y^{\rm cyl}\,[{\rm Mpc}^{2}]$")
+    ax.set_ylabel(r"map $Y^{\rm sph}=f_{\rm cyl\to sph}\,Y^{\rm cyl}\,[{\rm Mpc}^{2}]$ (no BG)")
     ax.legend(loc="upper left", frameon=False, markerscale=4)
     return fig
 
@@ -169,7 +170,6 @@ def main() -> Path:
     )
     print("reading y map", YMAP, flush=True)
     ymap = np.asarray(hp.read_map(YMAP, dtype=np.float32), dtype=np.float32)
-    ymap -= float(np.mean(ymap, dtype=np.float64))
     inf_500 = inferred_sph_mpc2(frame, ymap, 1.0)
     inf_5r = inferred_sph_mpc2(frame, ymap, 5.0)
     stem = FIGURES / "l1_m9_y5r500_inferred_vs_truth"
